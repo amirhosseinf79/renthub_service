@@ -38,7 +38,7 @@ func (h *homsaService) GetHeader() map[string]string {
 	return map[string]string{
 		"user-Agent":      "Dart/2.19 (dart:io)",
 		"accept":          "application/json",
-		"accept-Encoding": "gzip",
+		"accept-Encoding": "chunked",
 		"host":            "www.homsa.net",
 		"content-type":    "application/json; charset=UTF-8",
 		"accept-charset":  "UTF-8",

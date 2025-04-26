@@ -30,3 +30,8 @@ type ApiEndpoints struct {
 	SetMinNight     string
 	UnsetMinNight   string
 }
+
+type TokenResponse struct {
+	AccessToken  string
+	RefreshToken string
+}
