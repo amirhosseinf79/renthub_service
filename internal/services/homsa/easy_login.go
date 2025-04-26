@@ -1,7 +1,6 @@
 package homsa
 
 import (
-	"encoding/json"
 	"errors"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
@@ -9,7 +8,7 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 )
 
-func (h *homsaService) EasyLogin(fields dto.ApiEasyLogin) (final *dto.TokenResponse, err error) {
+func (h *homsaService) EasyLogin(fields dto.ApiEasyLogin) (err error) {
 	if fields.Username == "" || fields.Password == "" {
 		return
 	}
@@ -24,35 +23,35 @@ func (h *homsaService) EasyLogin(fields dto.ApiEasyLogin) (final *dto.TokenRespo
 	request := requests.New("POST", url, h.GetHeader(), map[string]string{})
 	err = request.RequestBody(bodyRow)
 	if err != nil {
-		return
+		return err
 	}
 	request.PrintRequestDump()
-	resp, err := request.CommitRequest()
+	err = request.CommitRequest()
 	if err != nil {
-		return
+		return err
 	}
 
-	if request.Ok() {
+	if !request.Ok() {
 		var errResponse dto.HomsaErrorResponse
-		err = json.NewDecoder(resp.Body).Decode(&errResponse)
+		err = request.Json(&errResponse)
 		if err != nil {
-			return
+			return err
 		}
 		err = errors.New(errResponse.Code)
-		return
+		return err
 	}
 
 	var response dto.HomsaAuthResponse
-	err = json.NewDecoder(resp.Body).Decode(&response)
+	err = request.Json(&response)
 	if err != nil {
-		return
+		return err
 	}
 
 	exists := h.apiAuthRepo.CheckExists(fields.UserID, fields.ClientID, h.service)
 	if exists {
 		apiM, err := h.apiAuthRepo.GetByUnique(fields.UserID, fields.ClientID, h.service)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		apiM.AccessToken = response.AccessToken
 		apiM.RefreshToken = response.RefreshToken
@@ -60,7 +59,7 @@ func (h *homsaService) EasyLogin(fields dto.ApiEasyLogin) (final *dto.TokenRespo
 		apiM.Password = fields.Password
 		err = h.apiAuthRepo.Update(apiM)
 		if err != nil {
-			return nil, err
+			return err
 		}
 	} else {
 		model := &models.ApiAuth{
@@ -74,13 +73,8 @@ func (h *homsaService) EasyLogin(fields dto.ApiEasyLogin) (final *dto.TokenRespo
 		}
 		err = h.apiAuthRepo.Create(model)
 		if err != nil {
-			return nil, err
+			return err
 		}
 	}
-
-	final = &dto.TokenResponse{
-		AccessToken:  response.AccessToken,
-		RefreshToken: response.RefreshToken,
-	}
-	return final, nil
+	return nil
 }

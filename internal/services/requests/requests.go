@@ -2,7 +2,6 @@ package requests
 
 import (
 	"bytes"
-	"compress/gzip"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -83,24 +82,24 @@ func (f *fetchS) PrintRequestDump() {
 	fmt.Println(string(dump))
 }
 
-func (f *fetchS) CommitRequest() (*http.Response, error) {
+func (f *fetchS) CommitRequest() error {
 	client := &http.Client{}
 	resp, err := client.Do(f.httpReq)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	f.httpResp = resp
-	return resp, nil
+	return nil
 }
 
-func (f *fetchS) Unzip() ([]byte, error) {
-	bodyReader, err := gzip.NewReader(f.httpResp.Body)
+func (f *fetchS) Json(v any) error {
+	body, err := io.ReadAll(f.httpResp.Body)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	defer bodyReader.Close()
-	body, err := io.ReadAll(bodyReader)
-	return body, err
+	fmt.Printf("Raw Response Body: %s\n", string(body))
+	err = json.Unmarshal(body, v)
+	return err
 }
 
 func (f *fetchS) Ok() bool {
