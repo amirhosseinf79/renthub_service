@@ -29,7 +29,8 @@ func (h *homsaService) SendOtp(fields dto.RequiredFields, phoneNumber string) er
 	}
 
 	response := h.generateOTPResponse()
-	if !request.Ok() {
+	ok, _ := request.Ok()
+	if !ok {
 		response = h.generateErrResponse()
 	}
 	err = request.ParseInterface(response)

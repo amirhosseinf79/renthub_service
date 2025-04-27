@@ -9,6 +9,7 @@ import (
 	"net/http/httputil"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
+	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	"github.com/google/go-querystring/query"
 )
 
@@ -115,7 +116,8 @@ func (f *fetchS) Start(body any, contentType string) error {
 }
 
 func (f *fetchS) ParseBody(response, failed any) error {
-	if !f.Ok() {
+	ok, _ := f.Ok()
+	if !ok {
 		err := f.Json(failed)
 		if err != nil {
 			return err
@@ -138,6 +140,17 @@ func (f *fetchS) ParseInterface(response interfaces.ApiResponseManager) (err err
 	return
 }
 
-func (f *fetchS) Ok() bool {
-	return 200 <= f.httpResp.StatusCode && f.httpResp.StatusCode < 300
+func (f *fetchS) Ok() (bool, error) {
+	ok := 200 <= f.httpResp.StatusCode && f.httpResp.StatusCode < 300
+	var result error
+	if !ok {
+		result = dto.ErrInvalidRequest
+	}
+
+	if f.httpResp.StatusCode == 401 {
+		result = dto.ErrorUnauthorized
+	} else if f.httpResp.StatusCode == 403 {
+		result = dto.ErrorPermission
+	}
+	return ok, result
 }

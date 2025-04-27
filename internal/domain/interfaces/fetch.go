@@ -10,5 +10,5 @@ type FetchService interface {
 	PrintRequestDump()
 	Json(any) error
 	SetHeaders()
-	Ok() bool
+	Ok() (bool, error)
 }

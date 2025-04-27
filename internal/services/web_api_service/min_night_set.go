@@ -20,9 +20,13 @@ func (h *homsaService) SetMinNight(fields dto.UpdateFields) error {
 	}
 	request := requests.New(endpoint.Method, url, h.getHeader(), h.getExtraHeader(model))
 	body := h.generateSetMinNightBody(fields.RoomID, fields.Amount, fields.Dates)
-	request.Start(body, endpoint.ContentType)
-	if !request.Ok() {
-		return dto.ErrInvalidRequest
+	err = request.Start(body, endpoint.ContentType)
+	if err != nil {
+		return err
+	}
+	ok, result := request.Ok()
+	if !ok {
+		return result
 	}
 	response := h.generateMihmanshoErrResponse()
 	if response != nil {

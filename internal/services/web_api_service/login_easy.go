@@ -31,7 +31,8 @@ func (h *homsaService) performLoginRequest(fields dto.ApiEasyLogin, otp bool) (a
 		return nil, err
 	}
 	response := h.generateAuthResponse()
-	if !request.Ok() {
+	ok, _ := request.Ok()
+	if !ok {
 		response = h.generateErrResponse()
 	}
 	err = request.ParseInterface(response)

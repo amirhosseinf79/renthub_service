@@ -23,8 +23,9 @@ func (h *homsaService) CheckLogin(fields dto.RequiredFields) error {
 	if err != nil {
 		return err
 	}
-	if !request.Ok() {
-		return dto.ErrorUnauthorized
+	ok, result := request.Ok()
+	if !ok {
+		return result
 	}
 
 	response := h.generateProfileResponse()
