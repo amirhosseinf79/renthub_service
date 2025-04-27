@@ -1,4 +1,4 @@
-package homsa
+package cloner
 
 import "github.com/amirhosseinf79/renthub_service/internal/dto"
 

@@ -1,4 +1,4 @@
-package dto
+package mihmansho_dto
 
 type MihmanshoProfileResponse struct {
 	ErrorCode        int      `json:"errorCode"`

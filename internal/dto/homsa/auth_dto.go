@@ -1,4 +1,4 @@
-package dto
+package homsa_dto
 
 type homsaOTPData struct {
 	New bool `json:"new"`

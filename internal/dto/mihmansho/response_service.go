@@ -1,4 +1,4 @@
-package dto
+package mihmansho_dto
 
 import "github.com/amirhosseinf79/renthub_service/internal/domain/models"
 

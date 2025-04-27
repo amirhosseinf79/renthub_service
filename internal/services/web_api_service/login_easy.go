@@ -1,4 +1,4 @@
-package homsa
+package cloner
 
 import (
 	"errors"

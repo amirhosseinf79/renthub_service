@@ -1,4 +1,4 @@
-package dto
+package homsa_dto
 
 import (
 	"fmt"

@@ -1,4 +1,4 @@
-package homsa
+package cloner
 
 import (
 	"errors"
@@ -7,6 +7,8 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/repository"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
+	homsa_dto "github.com/amirhosseinf79/renthub_service/internal/dto/homsa"
+	mihmansho_dto "github.com/amirhosseinf79/renthub_service/internal/dto/mihmansho"
 )
 
 type homsaService struct {
@@ -78,7 +80,7 @@ func (h *homsaService) getExtraHeader(token *models.ApiAuth) map[string]string {
 
 func (h *homsaService) generateEasyLoginBody(fields dto.ApiEasyLogin, otp bool) any {
 	if h.service == "homsa" {
-		return dto.HomsaLoginUserPass{
+		return homsa_dto.HomsaLoginUserPass{
 			Mobile:   fields.Username,
 			Password: fields.Password,
 			UseOTP:   otp,
@@ -89,35 +91,35 @@ func (h *homsaService) generateEasyLoginBody(fields dto.ApiEasyLogin, otp bool) 
 
 func (h *homsaService) generateSendOTPBody(phoneNumber string) any {
 	if h.service == "homsa" {
-		return dto.HomsaOTPLogin{Mobile: phoneNumber}
+		return homsa_dto.HomsaOTPLogin{Mobile: phoneNumber}
 	}
 	return nil
 }
 
 func (h *homsaService) generateAuthResponse() interfaces.ApiResponseManager {
 	if h.service == "homsa" {
-		return &dto.HomsaAuthResponse{}
+		return &homsa_dto.HomsaAuthResponse{}
 	}
 	return nil
 }
 
 func (h *homsaService) generateOTPResponse() interfaces.ApiResponseManager {
 	if h.service == "homsa" {
-		return &dto.HomsaOTPResponse{}
+		return &homsa_dto.HomsaOTPResponse{}
 	}
 	return nil
 }
 
 func (h *homsaService) generateProfileResponse() interfaces.ApiResponseManager {
 	if h.service == "mihmansho" {
-		return &dto.MihmanshoProfileResponse{}
+		return &mihmansho_dto.MihmanshoProfileResponse{}
 	}
 	return nil
 }
 
 func (h *homsaService) generateErrResponse() interfaces.ApiResponseManager {
 	if h.service == "homsa" {
-		return &dto.HomsaErrorResponse{}
+		return &homsa_dto.HomsaErrorResponse{}
 	}
 	return nil
 }

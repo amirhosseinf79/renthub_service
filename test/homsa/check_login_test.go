@@ -1,11 +1,11 @@
-package homsa_test
+package cloner_test
 
 import (
 	"testing"
 
 	"github.com/amirhosseinf79/renthub_service/internal/Infrastructure/persistence"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
-	"github.com/amirhosseinf79/renthub_service/internal/services/homsa"
+	cloner "github.com/amirhosseinf79/renthub_service/internal/services/web_api_service"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -36,7 +36,7 @@ func TestCheckLogin(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			service := homsa.NewHomsaService(mockRepo, "homsa")
+			service := cloner.NewHomsaService(mockRepo, "homsa")
 			err := service.CheckLogin(tt.fields)
 			if tt.wantErr {
 				assert.Error(t, err)
