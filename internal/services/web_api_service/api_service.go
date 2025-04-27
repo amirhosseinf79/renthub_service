@@ -10,7 +10,10 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/domain/repository"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	homsa_dto "github.com/amirhosseinf79/renthub_service/internal/dto/homsa"
+	jajiga_dto "github.com/amirhosseinf79/renthub_service/internal/dto/jajiga"
 	mihmansho_dto "github.com/amirhosseinf79/renthub_service/internal/dto/mihmansho"
+	otaghak_dto "github.com/amirhosseinf79/renthub_service/internal/dto/otaghak"
+	"github.com/google/uuid"
 )
 
 type homsaService struct {
@@ -209,8 +212,16 @@ func (h *homsaService) getExtraHeader(token *models.ApiAuth) map[string]string {
 		return map[string]string{
 			"authorization": token.AccessToken,
 		}
+	} else if h.service == "jabama" {
+		return map[string]string{
+			"Authorization": token.AccessToken,
+			"ab-channel":    uuid.New().String(),
+		}
+	} else {
+		return map[string]string{
+			"Authorization": token.AccessToken,
+		}
 	}
-	return map[string]string{}
 }
 
 func (h *homsaService) generateEasyLoginBody(fields dto.ApiEasyLogin) any {
@@ -219,6 +230,21 @@ func (h *homsaService) generateEasyLoginBody(fields dto.ApiEasyLogin) any {
 			Mobile:   fields.Username,
 			Password: fields.Password,
 			UseOTP:   false,
+		}
+	} else if h.service == "jajiga" {
+		return jajiga_dto.JajigaAuthRequestBody{
+			Mobile:     fields.Username,
+			Password:   fields.Password,
+			ISO2:       "IR",
+			ClientID:   uuid.New().String(),
+			ClientType: "browser",
+		}
+	} else if h.service == "otaghak" {
+		return otaghak_dto.OtaghakAuthRequestBody{
+			UserName:     fields.Username,
+			Password:     fields.Password,
+			ClientId:     "Otaghak",
+			ClientSecret: "secret",
 		}
 	}
 	return nil
