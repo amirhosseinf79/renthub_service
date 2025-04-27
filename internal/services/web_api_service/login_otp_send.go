@@ -1,6 +1,8 @@
 package cloner
 
 import (
+	"errors"
+
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
@@ -35,7 +37,7 @@ func (h *homsaService) SendOtp(fields dto.RequiredFields, phoneNumber string) (l
 	ok, result := response.GetResult()
 	log.FinalResult = result
 	if !ok {
-		return log, err
+		return log, errors.New(result)
 	}
 	record := dto.ApiEasyLogin{
 		RequiredFields: fields,

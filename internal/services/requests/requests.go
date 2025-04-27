@@ -72,7 +72,6 @@ func (f *fetchS) Ok() (bool, error) {
 	if !ok {
 		result = dto.ErrInvalidRequest
 	}
-
 	if f.httpResp.StatusCode == 401 {
 		result = dto.ErrorUnauthorized
 	} else if f.httpResp.StatusCode == 403 {

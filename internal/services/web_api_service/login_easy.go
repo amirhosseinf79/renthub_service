@@ -1,6 +1,8 @@
 package cloner
 
 import (
+	"errors"
+
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
@@ -71,7 +73,7 @@ func (h *homsaService) EasyLogin(fields dto.ApiEasyLogin) (log *models.Log, err 
 	ok, result := response.GetResult()
 	log.FinalResult = result
 	if !ok {
-		return log, err
+		return log, errors.New(result)
 	}
 	err = h.updateOrCreateAuthRecord(fields, response.GetToken())
 	if err != nil {

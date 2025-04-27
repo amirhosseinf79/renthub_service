@@ -1,6 +1,8 @@
 package cloner
 
 import (
+	"errors"
+
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
@@ -25,9 +27,9 @@ func (h *homsaService) CheckLogin(fields dto.RequiredFields) (log *models.Log, e
 		log.FinalResult = err.Error()
 		return log, err
 	}
-	ok, result := request.Ok()
+	ok, err := request.Ok()
 	if !ok {
-		log.FinalResult = result.Error()
+		log.FinalResult = err.Error()
 		return log, err
 	}
 
@@ -41,7 +43,7 @@ func (h *homsaService) CheckLogin(fields dto.RequiredFields) (log *models.Log, e
 		ok, result := response.GetResult()
 		if !ok {
 			log.FinalResult = result
-			return log, err
+			return log, errors.New(result)
 		}
 	}
 	log.FinalResult = "success"

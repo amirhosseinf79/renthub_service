@@ -1,6 +1,8 @@
 package cloner
 
 import (
+	"errors"
+
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
@@ -40,7 +42,7 @@ func (h *homsaService) VerifyOtp(fields dto.RequiredFields, otp string) (log *mo
 	ok, result := response.GetResult()
 	log.FinalResult = result
 	if !ok {
-		return log, err
+		return log, errors.New(result)
 	}
 	field := dto.ApiEasyLogin{
 		RequiredFields: fields,

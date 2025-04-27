@@ -24,7 +24,7 @@ func TestOTPVerify(t *testing.T) {
 				UserID:   1,
 				ClientID: "client1",
 			},
-			otp:     "244413",
+			otp:     "780292",
 			wantErr: false,
 		},
 	}
