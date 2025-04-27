@@ -3,6 +3,7 @@ package homsa
 import (
 	"errors"
 
+	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
@@ -15,44 +16,34 @@ func (h *homsaService) validateFields(fields dto.ApiEasyLogin) error {
 	return nil
 }
 
-func (h *homsaService) performLoginRequest(fields dto.ApiEasyLogin, otp bool) (authResponse *dto.HomsaAuthResponse, err error) {
-	bodyRow := dto.HomsaLoginUserPass{
-		Mobile:   fields.Username,
-		Password: fields.Password,
-		UseOTP:   otp,
-	}
+func (h *homsaService) performLoginRequest(fields dto.ApiEasyLogin, otp bool) (authResponse interfaces.ApiResponseManager, err error) {
+	header := h.getHeader()
+	url := h.getFullURL(h.getEndpoints().LoginWithPass)
+	bodyRow := h.generateEasyLoginBody(fields, otp)
 
-	url := h.apiUrl + h.endpoints.LoginWithPass
-	request := requests.New("POST", url, h.GetHeader(), map[string]string{})
-	err = request.RequestBody(bodyRow)
+	request := requests.New("POST", url, header, map[string]string{})
+	err = request.BodyStart(bodyRow)
 	if err != nil {
 		return nil, err
 	}
-	request.PrintRequestDump()
-	err = request.CommitRequest()
-	if err != nil {
-		return nil, err
-	}
-
+	response := h.generateAuthResponse()
 	if !request.Ok() {
-		var errResponse dto.HomsaErrorResponse
-		err = request.Json(&errResponse)
+		response = h.generateErrResponse()
+	}
+	err = request.ParseInterface(response)
+	if err != nil {
+		err = request.ParseInterface(response)
 		if err != nil {
 			return nil, err
 		}
-		err = errors.New(errResponse.Code)
-		return nil, err
 	}
-
-	var response dto.HomsaAuthResponse
-	err = request.Json(&response)
-	if err != nil {
-		return nil, err
+	if response.GetResult() != "success" {
+		return nil, errors.New(response.GetResult())
 	}
-	return &response, nil
+	return response, nil
 }
 
-func (h *homsaService) updateOrCreateAuthRecord(fields dto.ApiEasyLogin, response *dto.HomsaAuthResponse) error {
+func (h *homsaService) updateOrCreateAuthRecord(fields dto.ApiEasyLogin, model *models.ApiAuth) error {
 	var err error
 	exists := h.apiAuthRepo.CheckExists(fields.UserID, fields.ClientID, h.service)
 	if exists {
@@ -60,10 +51,11 @@ func (h *homsaService) updateOrCreateAuthRecord(fields dto.ApiEasyLogin, respons
 		if err != nil {
 			return err
 		}
-		apiM.AccessToken = response.AccessToken
-		apiM.RefreshToken = response.RefreshToken
 		apiM.Username = fields.Username
 		apiM.Password = fields.Password
+		apiM.AccessToken = model.AccessToken
+		apiM.RefreshToken = model.RefreshToken
+		apiM.Ucode = model.Ucode
 		err = h.apiAuthRepo.Update(apiM)
 		if err != nil {
 			return err
@@ -75,8 +67,9 @@ func (h *homsaService) updateOrCreateAuthRecord(fields dto.ApiEasyLogin, respons
 			Service:      h.service,
 			Username:     fields.Username,
 			Password:     fields.Password,
-			AccessToken:  response.AccessToken,
-			RefreshToken: response.RefreshToken,
+			AccessToken:  model.AccessToken,
+			RefreshToken: model.RefreshToken,
+			Ucode:        model.Ucode,
 		}
 		err = h.apiAuthRepo.Create(model)
 		if err != nil {
@@ -95,7 +88,7 @@ func (h *homsaService) EasyLogin(fields dto.ApiEasyLogin) (err error) {
 	if err != nil {
 		return
 	}
-	err = h.updateOrCreateAuthRecord(fields, response)
+	err = h.updateOrCreateAuthRecord(fields, response.GetToken())
 	if err != nil {
 		return
 	}

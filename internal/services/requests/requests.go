@@ -40,13 +40,6 @@ func (f *fetchS) RequestBody(bodyRow any) error {
 	if err != nil {
 		return err
 	}
-	for k, v := range f.headers {
-		value, ok := f.extra[k]
-		if ok {
-			v = fmt.Sprintf(v, value)
-		}
-		req.Header.Set(k, v)
-	}
 	f.httpReq = req
 	return nil
 }
@@ -62,16 +55,18 @@ func (f *fetchS) RequestQuery(queryRow any) error {
 	if err != nil {
 		return err
 	}
+	f.httpReq = req
+	return nil
+}
 
+func (f *fetchS) SetHeaders() {
 	for k, v := range f.headers {
 		value, ok := f.extra[k]
 		if ok {
 			v = fmt.Sprintf(v, value)
 		}
-		req.Header.Set(k, v)
+		f.httpReq.Header.Set(k, v)
 	}
-	f.httpReq = req
-	return nil
 }
 
 func (f *fetchS) PrintRequestDump() {
@@ -100,6 +95,44 @@ func (f *fetchS) Json(v any) error {
 	fmt.Printf("Raw Response Body: %s\n", string(body))
 	err = json.Unmarshal(body, v)
 	return err
+}
+
+func (f *fetchS) BodyStart(body any) error {
+	err := f.RequestBody(body)
+	if err != nil {
+		return err
+	}
+	f.SetHeaders()
+	f.PrintRequestDump()
+	err = f.CommitRequest()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (f *fetchS) ParseBody(response, failed any) error {
+	if !f.Ok() {
+		err := f.Json(failed)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	err := f.Json(response)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (f *fetchS) ParseInterface(response interfaces.ApiResponseManager) (err error) {
+	err = f.Json(response)
+	if err != nil {
+		return
+	}
+	return
 }
 
 func (f *fetchS) Ok() bool {

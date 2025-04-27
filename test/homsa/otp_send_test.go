@@ -9,35 +9,38 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestEasyLogin(t *testing.T) {
+func TestOTPLogin(t *testing.T) {
 	mockRepo := persistence.NewMockApiAuthRepo()
 	tests := []struct {
-		name    string
-		fields  dto.ApiEasyLogin
-		wantErr bool
+		name        string
+		fields      dto.RequiredFields
+		phoneNumber string
+		wantErr     bool
 	}{
 		{
 			name: "Valid input",
-			fields: dto.ApiEasyLogin{
-				Username: "09109988333",
-				Password: "mr0520691016",
+			fields: dto.RequiredFields{
+				UserID:   1,
+				ClientID: "1",
 			},
-			wantErr: false,
+			phoneNumber: "09334429096",
+			wantErr:     false,
 		},
 		{
-			name: "incorrect user/pass",
-			fields: dto.ApiEasyLogin{
-				Username: "asdasdad",
-				Password: "password123",
+			name: "inValid input",
+			fields: dto.RequiredFields{
+				UserID:   1,
+				ClientID: "1",
 			},
-			wantErr: true,
+			phoneNumber: "0933442909",
+			wantErr:     true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			service := homsa.NewHomsaService(mockRepo, "homsa")
-			err := service.EasyLogin(tt.fields)
+			err := service.SendOtp(tt.fields, tt.phoneNumber)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

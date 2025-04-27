@@ -30,3 +30,9 @@ type ApiEndpoints struct {
 	SetMinNight     string
 	UnsetMinNight   string
 }
+
+type ApiSettings struct {
+	ApiURL    string
+	Endpoints ApiEndpoints
+	Headers   map[string]string
+}

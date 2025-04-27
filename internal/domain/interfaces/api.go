@@ -1,6 +1,7 @@
 package interfaces
 
 import (
+	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 )
 
@@ -18,4 +19,9 @@ type ApiService interface {
 	UnsetMiniNight(dto.UpdateFields) error
 	// GetRooms()
 	// GetRoomDetails()
+}
+
+type ApiResponseManager interface {
+	GetResult() string
+	GetToken() *models.ApiAuth
 }
