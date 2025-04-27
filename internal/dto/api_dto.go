@@ -17,18 +17,24 @@ type ApiEasyLogin struct {
 	Password string
 }
 
+type EndP struct {
+	Address     string
+	Method      string
+	ContentType string
+}
+
 type ApiEndpoints struct {
-	LoginFirstStep  string
-	LoginSecondStep string
-	LoginWithPass   string
-	GetProfile      string
-	OpenCalendar    string
-	CloseCalendar   string
-	EditPricePerDay string
-	AddDiscount     string
-	RemoveDiscount  string
-	SetMinNight     string
-	UnsetMinNight   string
+	LoginFirstStep  EndP
+	LoginSecondStep EndP
+	LoginWithPass   EndP
+	GetProfile      EndP
+	OpenCalendar    EndP
+	CloseCalendar   EndP
+	EditPricePerDay EndP
+	AddDiscount     EndP
+	RemoveDiscount  EndP
+	SetMinNight     EndP
+	UnsetMinNight   EndP
 }
 
 type ApiSettings struct {

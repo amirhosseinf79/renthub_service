@@ -17,15 +17,16 @@ func (h *homsaService) validateFields(fields dto.ApiEasyLogin) error {
 }
 
 func (h *homsaService) performLoginRequest(fields dto.ApiEasyLogin, otp bool) (authResponse interfaces.ApiResponseManager, err error) {
-	url, err := h.getFullURL(h.getEndpoints().LoginWithPass)
+	endpoint := h.getEndpoints().LoginWithPass
+	url, err := h.getFullURL(endpoint.Address)
 	if err != nil {
 		return
 	}
 	header := h.getHeader()
 	bodyRow := h.generateEasyLoginBody(fields, otp)
 
-	request := requests.New("POST", url, header, map[string]string{})
-	err = request.BodyStart(bodyRow)
+	request := requests.New(endpoint.Method, url, header, map[string]string{})
+	err = request.Start(bodyRow, endpoint.ContentType)
 	if err != nil {
 		return nil, err
 	}

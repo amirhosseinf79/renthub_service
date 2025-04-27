@@ -9,11 +9,12 @@ import (
 )
 
 func (h *homsaService) SendOtp(fields dto.RequiredFields, phoneNumber string) error {
+	endpoint := h.getEndpoints().LoginFirstStep
 	if phoneNumber == "" {
 		return dto.ErrEmptyPhone
 	}
 
-	url, err := h.getFullURL(h.getEndpoints().LoginFirstStep)
+	url, err := h.getFullURL(endpoint.Address)
 	if err != nil {
 		return err
 	}
@@ -21,8 +22,8 @@ func (h *homsaService) SendOtp(fields dto.RequiredFields, phoneNumber string) er
 	header := h.getHeader()
 	body := h.generateSendOTPBody(phoneNumber)
 
-	request := requests.New("POST", url, header, map[string]string{})
-	err = request.BodyStart(body)
+	request := requests.New(endpoint.Method, url, header, map[string]string{})
+	err = request.Start(body, endpoint.ContentType)
 	if err != nil {
 		return err
 	}

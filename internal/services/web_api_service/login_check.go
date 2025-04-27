@@ -8,17 +8,18 @@ import (
 )
 
 func (h *homsaService) CheckLogin(fields dto.RequiredFields) error {
+	endpoint := h.getEndpoints().GetProfile
 	model, err := h.apiAuthRepo.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
 		return err
 	}
-	url, err := h.getFullURL(h.getEndpoints().GetProfile)
+	url, err := h.getFullURL(endpoint.Address)
 	if err != nil {
 		return err
 	}
 
-	request := requests.New("GET", url, h.getHeader(), h.getExtraHeader(model))
-	err = request.BodyStart(struct{}{})
+	request := requests.New(endpoint.Method, url, h.getHeader(), h.getExtraHeader(model))
+	err = request.Start(struct{}{}, endpoint.ContentType)
 	if err != nil {
 		return err
 	}

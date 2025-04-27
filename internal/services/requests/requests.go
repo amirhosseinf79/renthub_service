@@ -97,8 +97,11 @@ func (f *fetchS) Json(v any) error {
 	return err
 }
 
-func (f *fetchS) BodyStart(body any) error {
-	err := f.RequestBody(body)
+func (f *fetchS) Start(body any, contentType string) error {
+	var err error
+	if contentType == "body" {
+		err = f.RequestBody(body)
+	}
 	if err != nil {
 		return err
 	}
