@@ -1,10 +1,14 @@
 package mihmansho_dto
 
+type MihmanshoErrorResponse struct {
+	ErrorCode        int    `json:"errorCode"`
+	ErrorDescription string `json:"errorDescription"`
+}
+
 type MihmanshoProfileResponse struct {
-	ErrorCode        int      `json:"errorCode"`
-	ErrorDescription string   `json:"errorDescription"`
-	Cities           []any    `json:"Cities"`
-	UserInfo         userInfo `json:"UserInfo"`
+	MihmanshoErrorResponse
+	Cities   []any    `json:"Cities"`
+	UserInfo userInfo `json:"UserInfo"`
 }
 
 type userInfo struct {

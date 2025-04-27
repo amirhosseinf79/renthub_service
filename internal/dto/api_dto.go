@@ -8,6 +8,7 @@ type RequiredFields struct {
 type UpdateFields struct {
 	RequiredFields
 	RoomID string
+	Dates  []string
 	Amount uint
 }
 

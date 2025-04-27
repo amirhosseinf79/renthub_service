@@ -14,7 +14,7 @@ func (h *homsaService) SendOtp(fields dto.RequiredFields, phoneNumber string) er
 		return dto.ErrEmptyPhone
 	}
 
-	url, err := h.getFullURL(endpoint.Address)
+	url, err := h.getFullURL(endpoint)
 	if err != nil {
 		return err
 	}

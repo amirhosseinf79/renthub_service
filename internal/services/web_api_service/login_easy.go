@@ -18,7 +18,7 @@ func (h *homsaService) validateFields(fields dto.ApiEasyLogin) error {
 
 func (h *homsaService) performLoginRequest(fields dto.ApiEasyLogin, otp bool) (authResponse interfaces.ApiResponseManager, err error) {
 	endpoint := h.getEndpoints().LoginWithPass
-	url, err := h.getFullURL(endpoint.Address)
+	url, err := h.getFullURL(endpoint)
 	if err != nil {
 		return
 	}

@@ -30,7 +30,8 @@ func TestOTPVerify(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			service := cloner.NewHomsaService(mockRepo, "homsa")
+			service := cloner.NewHomsaService(mockRepo)
+			service.Set("homsa")
 			err := service.VerifyOtp(tt.fields, tt.otp)
 			if tt.wantErr {
 				assert.Error(t, err)

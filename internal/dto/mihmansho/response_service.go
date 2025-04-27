@@ -12,3 +12,14 @@ func (m *MihmanshoProfileResponse) GetResult() (bool, string) {
 func (m *MihmanshoProfileResponse) GetToken() *models.ApiAuth {
 	return &models.ApiAuth{}
 }
+
+func (m *MihmanshoErrorResponse) GetResult() (bool, string) {
+	if m.ErrorCode != 0 {
+		return false, m.ErrorDescription
+	}
+	return true, "success"
+}
+
+func (m *MihmanshoErrorResponse) GetToken() *models.ApiAuth {
+	return &models.ApiAuth{}
+}

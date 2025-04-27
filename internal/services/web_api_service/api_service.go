@@ -2,6 +2,8 @@ package cloner
 
 import (
 	"errors"
+	"fmt"
+	"sort"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
@@ -17,10 +19,9 @@ type homsaService struct {
 	apiSettings map[string]dto.ApiSettings
 }
 
-func NewHomsaService(apiAuthRepo repository.ApiAuthRepository, service string) interfaces.ApiService {
+func NewHomsaService(apiAuthRepo repository.ApiAuthRepository) interfaces.ApiService {
 	return &homsaService{
 		apiAuthRepo: apiAuthRepo,
-		service:     service,
 		apiSettings: map[string]dto.ApiSettings{
 			"homsa": {
 				ApiURL: "https://www.homsa.net/api/v2",
@@ -52,21 +53,40 @@ func NewHomsaService(apiAuthRepo repository.ApiAuthRepository, service string) i
 	}
 }
 
-func (h *homsaService) getFullURL(endpoint string) (url string, err error) {
-	if endpoint == "" {
-		err = errors.New("service can not perform this action")
+func (h *homsaService) Set(service string) {
+	h.service = service
+}
+
+func (h *homsaService) getFullURL(endpoint dto.EndP, vals ...any) (url string, err error) {
+	errMsg := errors.New("service can not perform this action")
+	if endpoint.Address == "" {
+		err = errMsg
 		return
 	}
-	url = h.apiSettings[h.service].ApiURL + endpoint
+	realEndpoint := fmt.Sprintf(endpoint.Address, vals...)
+	settings, ok := h.apiSettings[h.service]
+	if !ok {
+		err = errMsg
+		return
+	}
+	url = settings.ApiURL + realEndpoint
 	return
 }
 
 func (h *homsaService) getEndpoints() dto.ApiEndpoints {
-	return h.apiSettings[h.service].Endpoints
+	settings, ok := h.apiSettings[h.service]
+	if !ok {
+		return dto.ApiEndpoints{}
+	}
+	return settings.Endpoints
 }
 
 func (h *homsaService) getHeader() map[string]string {
-	return h.apiSettings[h.service].Headers
+	settings, ok := h.apiSettings[h.service]
+	if !ok {
+		return map[string]string{}
+	}
+	return settings.Headers
 }
 
 func (h *homsaService) getExtraHeader(token *models.ApiAuth) map[string]string {
@@ -96,6 +116,19 @@ func (h *homsaService) generateSendOTPBody(phoneNumber string) any {
 	return nil
 }
 
+func (h *homsaService) generateCalendarBody(roomID string, setOpen bool, dates []string) any {
+	if h.service == "homsa" {
+		if len(dates) > 1 {
+			sort.Strings(dates)
+		}
+		return homsa_dto.HomsaCalendarBody{
+			StartDate: dates[0],
+			EndDate:   dates[len(dates)-1],
+		}
+	}
+	return nil
+}
+
 func (h *homsaService) generateAuthResponse() interfaces.ApiResponseManager {
 	if h.service == "homsa" {
 		return &homsa_dto.HomsaAuthResponse{}
@@ -120,6 +153,13 @@ func (h *homsaService) generateProfileResponse() interfaces.ApiResponseManager {
 func (h *homsaService) generateErrResponse() interfaces.ApiResponseManager {
 	if h.service == "homsa" {
 		return &homsa_dto.HomsaErrorResponse{}
+	}
+	return nil
+}
+
+func (h *homsaService) generateCalendarResponse() interfaces.ApiResponseManager {
+	if h.service == "mihmansho" {
+		return &mihmansho_dto.MihmanshoErrorResponse{}
 	}
 	return nil
 }

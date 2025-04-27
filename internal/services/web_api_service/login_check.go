@@ -13,7 +13,7 @@ func (h *homsaService) CheckLogin(fields dto.RequiredFields) error {
 	if err != nil {
 		return err
 	}
-	url, err := h.getFullURL(endpoint.Address)
+	url, err := h.getFullURL(endpoint)
 	if err != nil {
 		return err
 	}
