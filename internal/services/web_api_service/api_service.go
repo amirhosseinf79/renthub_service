@@ -53,8 +53,9 @@ func NewHomsaService(apiAuthRepo repository.ApiAuthRepository) interfaces.ApiSer
 	}
 }
 
-func (h *homsaService) Set(service string) {
+func (h *homsaService) Set(service string) interfaces.ApiService {
 	h.service = service
+	return h
 }
 
 func (h *homsaService) getFullURL(endpoint dto.EndP, vals ...any) (url string, err error) {
@@ -129,6 +130,78 @@ func (h *homsaService) generateCalendarBody(roomID string, setOpen bool, dates [
 	return nil
 }
 
+func (h *homsaService) generatePriceBody(roomID string, amount int, dates []string) any {
+	if h.service == "homsa" {
+		if len(dates) > 1 {
+			sort.Strings(dates)
+		}
+		return homsa_dto.HomsaPriceBody{
+			StartDate:    dates[0],
+			EndDate:      dates[len(dates)-1],
+			Price:        amount,
+			KeepDiscount: 0,
+		}
+	}
+	return nil
+}
+
+func (h *homsaService) generateAddDiscountBody(roomID string, amount int, dates []string) any {
+	if h.service == "homsa" {
+		if len(dates) > 1 {
+			sort.Strings(dates)
+		}
+		return homsa_dto.HomsaAddDiscountBody{
+			StartDate:    dates[0],
+			EndDate:      dates[len(dates)-1],
+			Discount:     amount,
+			KeepDiscount: 0,
+		}
+	}
+	return nil
+}
+
+func (h *homsaService) generateRemoveDiscountBody(roomID string, dates []string) any {
+	if h.service == "homsa" {
+		if len(dates) > 1 {
+			sort.Strings(dates)
+		}
+		return homsa_dto.HomsaRemoveDiscountBody{
+			StartDate:    dates[0],
+			EndDate:      dates[len(dates)-1],
+			KeepDiscount: 0,
+		}
+	}
+	return nil
+}
+
+func (h *homsaService) generateSetMinNightBody(roomID string, amount int, dates []string) any {
+	if h.service == "homsa" {
+		if len(dates) > 1 {
+			sort.Strings(dates)
+		}
+		return homsa_dto.HomsaSetMinNightBody{
+			StartDate: dates[0],
+			EndDate:   dates[len(dates)-1],
+			Min:       amount,
+			Max:       nil,
+		}
+	}
+	return nil
+}
+
+func (h *homsaService) generateUnsetMinNightBody(roomID string, dates []string) any {
+	if h.service == "homsa" {
+		if len(dates) > 1 {
+			sort.Strings(dates)
+		}
+		return homsa_dto.HomsaUnsetMinNightBody{
+			StartDate: dates[0],
+			EndDate:   dates[len(dates)-1],
+		}
+	}
+	return nil
+}
+
 func (h *homsaService) generateAuthResponse() interfaces.ApiResponseManager {
 	if h.service == "homsa" {
 		return &homsa_dto.HomsaAuthResponse{}
@@ -150,15 +223,17 @@ func (h *homsaService) generateProfileResponse() interfaces.ApiResponseManager {
 	return nil
 }
 
-func (h *homsaService) generateErrResponse() interfaces.ApiResponseManager {
-	if h.service == "homsa" {
-		return &homsa_dto.HomsaErrorResponse{}
+func (h *homsaService) generateMihmanshoErrResponse() interfaces.ApiResponseManager {
+	if h.service == "mihmansho" {
+		return &mihmansho_dto.MihmanshoErrorResponse{}
 	}
 	return nil
 }
 
-func (h *homsaService) generateCalendarResponse() interfaces.ApiResponseManager {
-	if h.service == "mihmansho" {
+func (h *homsaService) generateErrResponse() interfaces.ApiResponseManager {
+	if h.service == "homsa" {
+		return &homsa_dto.HomsaErrorResponse{}
+	} else if h.service == "mihmansho" {
 		return &mihmansho_dto.MihmanshoErrorResponse{}
 	}
 	return nil

@@ -6,7 +6,7 @@ import (
 )
 
 type ApiService interface {
-	Set(service string)
+	Set(service string) ApiService
 	EasyLogin(dto.ApiEasyLogin) error
 	SendOtp(dto.RequiredFields, string) error
 	VerifyOtp(dto.RequiredFields, string) error

@@ -24,7 +24,7 @@ func (h *homsaService) CloseCalendar(fields dto.UpdateFields) error {
 	if !request.Ok() {
 		return dto.ErrInvalidRequest
 	}
-	response := h.generateCalendarResponse()
+	response := h.generateMihmanshoErrResponse()
 	if response != nil {
 		request.ParseInterface(response)
 		ok, result := response.GetResult()

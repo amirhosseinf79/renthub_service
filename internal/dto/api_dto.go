@@ -9,7 +9,7 @@ type UpdateFields struct {
 	RequiredFields
 	RoomID string
 	Dates  []string
-	Amount uint
+	Amount int
 }
 
 type ApiEasyLogin struct {

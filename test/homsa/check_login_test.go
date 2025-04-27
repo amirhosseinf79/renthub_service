@@ -25,7 +25,7 @@ func TestCheckLogin(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "invalid request",
+			name: "unauthorized request",
 			fields: dto.RequiredFields{
 				UserID:   1,
 				ClientID: "client2",
@@ -37,8 +37,7 @@ func TestCheckLogin(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			service := cloner.NewHomsaService(mockRepo)
-			service.Set("homsa")
-			err := service.CheckLogin(tt.fields)
+			err := service.Set("homsa").CheckLogin(tt.fields)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCalendar(t *testing.T) {
+func TestDiscount(t *testing.T) {
 	mockRepo := persistence.NewMockApiAuthRepo()
 	tests := []struct {
 		name    string
@@ -24,10 +24,10 @@ func TestCalendar(t *testing.T) {
 					ClientID: "client1",
 				},
 				Dates: []string{
-					"2025-04-28",
-					"2025-04-29",
+					"2025-06-07",
 				},
 				RoomID: "104598",
+				Amount: 10,
 			},
 			wantErr: false,
 		},
@@ -40,7 +40,7 @@ func TestCalendar(t *testing.T) {
 				},
 				Dates: []string{
 					"2025-0428",
-					"2025-04-29",
+					"2025-0429",
 				},
 				RoomID: "104598",
 			},
@@ -66,7 +66,7 @@ func TestCalendar(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			service := cloner.NewHomsaService(mockRepo)
-			err := service.Set("homsa").OpenCalendar(tt.fields)
+			err := service.Set("homsa").RemoveDiscount(tt.fields)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
