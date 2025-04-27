@@ -1,27 +1,26 @@
 package cloner
 
 import (
-	"errors"
-
+	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 )
 
-func (h *homsaService) SendOtp(fields dto.RequiredFields, phoneNumber string) error {
+func (h *homsaService) SendOtp(fields dto.RequiredFields, phoneNumber string) (log *models.Log) {
+	log = h.initLog(fields.UserID, fields.ClientID)
 	endpoint := h.getEndpoints().LoginFirstStep
-	if phoneNumber == "" {
-		return dto.ErrEmptyPhone
-	}
 	url, err := h.getFullURL(endpoint)
 	if err != nil {
-		return err
+		log.FinalResult = err.Error()
+		return
 	}
 	header := h.getHeader()
 	body := h.generateSendOTPBody(phoneNumber)
-	request := requests.New(endpoint.Method, url, header, map[string]string{})
+	request := requests.New(endpoint.Method, url, header, map[string]string{}, log)
 	err = request.Start(body, endpoint.ContentType)
 	if err != nil {
-		return err
+		log.FinalResult = err.Error()
+		return
 	}
 	response := h.generateOTPResponse()
 	ok, _ := request.Ok()
@@ -30,11 +29,13 @@ func (h *homsaService) SendOtp(fields dto.RequiredFields, phoneNumber string) er
 	}
 	err = request.ParseInterface(response)
 	if err != nil {
-		return err
+		log.FinalResult = err.Error()
+		return
 	}
 	ok, result := response.GetResult()
+	log.FinalResult = result
 	if !ok {
-		return errors.New(result)
+		return
 	}
 	record := dto.ApiEasyLogin{
 		RequiredFields: fields,
@@ -42,7 +43,10 @@ func (h *homsaService) SendOtp(fields dto.RequiredFields, phoneNumber string) er
 	}
 	err = h.updateOrCreateAuthRecord(record, response.GetToken())
 	if err != nil {
-		return err
+		log.FinalResult = err.Error()
+		return
 	}
-	return nil
+	log.FinalResult = "success"
+	log.IsSucceed = true
+	return
 }

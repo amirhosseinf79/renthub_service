@@ -14,14 +14,16 @@ import (
 )
 
 type homsaService struct {
+	logRepo     repository.LogRepository
 	apiAuthRepo repository.ApiAuthRepository
 	service     string
 	apiSettings map[string]dto.ApiSettings
 }
 
-func NewHomsaService(apiAuthRepo repository.ApiAuthRepository) interfaces.ApiService {
+func NewHomsaService(apiAuthRepo repository.ApiAuthRepository, logRepo repository.LogRepository) interfaces.ApiService {
 	return &homsaService{
 		apiAuthRepo: apiAuthRepo,
+		logRepo:     logRepo,
 		apiSettings: map[string]dto.ApiSettings{
 			"homsa": {
 				ApiURL: "https://www.homsa.net/api/v2",
@@ -56,6 +58,18 @@ func NewHomsaService(apiAuthRepo repository.ApiAuthRepository) interfaces.ApiSer
 func (h *homsaService) Set(service string) interfaces.ApiService {
 	h.service = service
 	return h
+}
+
+func (h *homsaService) RecordLog(log *models.Log) error {
+	return h.logRepo.Create(log)
+}
+
+func (h *homsaService) initLog(userID uint, clientID string) *models.Log {
+	return &models.Log{
+		UserID:   userID,
+		ClientID: clientID,
+		Service:  h.service,
+	}
 }
 
 func (h *homsaService) getFullURL(endpoint dto.EndP, vals ...any) (url string, err error) {

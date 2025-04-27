@@ -43,3 +43,8 @@ type ApiSettings struct {
 	Endpoints ApiEndpoints
 	Headers   map[string]string
 }
+
+type ApiErrResponse struct {
+	Code    string
+	Message string
+}

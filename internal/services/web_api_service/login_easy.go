@@ -1,42 +1,10 @@
 package cloner
 
 import (
-	"errors"
-
-	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 )
-
-func (h *homsaService) performLoginRequest(fields dto.ApiEasyLogin, otp bool) (authResponse interfaces.ApiResponseManager, err error) {
-	endpoint := h.getEndpoints().LoginWithPass
-	url, err := h.getFullURL(endpoint)
-	if err != nil {
-		return
-	}
-	header := h.getHeader()
-	bodyRow := h.generateEasyLoginBody(fields)
-	request := requests.New(endpoint.Method, url, header, map[string]string{})
-	err = request.Start(bodyRow, endpoint.ContentType)
-	if err != nil {
-		return nil, err
-	}
-	response := h.generateAuthResponse()
-	ok, _ := request.Ok()
-	if !ok {
-		response = h.generateErrResponse()
-	}
-	err = request.ParseInterface(response)
-	if err != nil {
-		return nil, err
-	}
-	ok, result := response.GetResult()
-	if !ok {
-		return nil, errors.New(result)
-	}
-	return response, nil
-}
 
 func (h *homsaService) updateOrCreateAuthRecord(fields dto.ApiEasyLogin, model *models.ApiAuth) error {
 	var err error
@@ -74,14 +42,43 @@ func (h *homsaService) updateOrCreateAuthRecord(fields dto.ApiEasyLogin, model *
 	return nil
 }
 
-func (h *homsaService) EasyLogin(fields dto.ApiEasyLogin) (err error) {
-	response, err := h.performLoginRequest(fields, false)
+func (h *homsaService) EasyLogin(fields dto.ApiEasyLogin) (log *models.Log) {
+	log = h.initLog(fields.UserID, fields.ClientID)
+	endpoint := h.getEndpoints().LoginWithPass
+	url, err := h.getFullURL(endpoint)
 	if err != nil {
+		log.FinalResult = err.Error()
+		return
+	}
+	header := h.getHeader()
+	bodyRow := h.generateEasyLoginBody(fields)
+	request := requests.New(endpoint.Method, url, header, map[string]string{}, log)
+	err = request.Start(bodyRow, endpoint.ContentType)
+	if err != nil {
+		log.FinalResult = err.Error()
+		return
+	}
+	response := h.generateAuthResponse()
+	ok, _ := request.Ok()
+	if !ok {
+		response = h.generateErrResponse()
+	}
+	err = request.ParseInterface(response)
+	if err != nil {
+		log.FinalResult = err.Error()
+		return
+	}
+	ok, result := response.GetResult()
+	log.FinalResult = result
+	if !ok {
 		return
 	}
 	err = h.updateOrCreateAuthRecord(fields, response.GetToken())
 	if err != nil {
+		log.FinalResult = err.Error()
 		return
 	}
-	return nil
+	log.FinalResult = "success"
+	log.IsSucceed = true
+	return
 }

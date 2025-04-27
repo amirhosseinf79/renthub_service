@@ -1,43 +1,50 @@
 package cloner
 
 import (
-	"errors"
-
+	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 )
 
-func (h *homsaService) CheckLogin(fields dto.RequiredFields) error {
+func (h *homsaService) CheckLogin(fields dto.RequiredFields) (log *models.Log) {
+	log = h.initLog(fields.UserID, fields.ClientID)
 	endpoint := h.getEndpoints().GetProfile
 	model, err := h.apiAuthRepo.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
-		return err
+		log.FinalResult = err.Error()
+		return
 	}
 	url, err := h.getFullURL(endpoint)
 	if err != nil {
-		return err
+		log.FinalResult = err.Error()
+		return
 	}
-
-	request := requests.New(endpoint.Method, url, h.getHeader(), h.getExtraHeader(model))
+	request := requests.New(endpoint.Method, url, h.getHeader(), h.getExtraHeader(model), log)
 	err = request.Start(struct{}{}, endpoint.ContentType)
 	if err != nil {
-		return err
+		log.FinalResult = err.Error()
+		return
 	}
 	ok, result := request.Ok()
 	if !ok {
-		return result
+		log.FinalResult = result.Error()
+		return
 	}
 
 	response := h.generateProfileResponse()
 	if response != nil {
 		err := request.ParseInterface(response)
 		if err != nil {
-			return err
+			log.FinalResult = err.Error()
+			return
 		}
 		ok, result := response.GetResult()
 		if !ok {
-			return errors.New(result)
+			log.FinalResult = result
+			return
 		}
 	}
-	return nil
+	log.FinalResult = "success"
+	log.IsSucceed = true
+	return
 }

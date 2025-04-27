@@ -1,28 +1,31 @@
 package cloner
 
 import (
-	"errors"
-
+	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 )
 
-func (h *homsaService) VerifyOtp(fields dto.RequiredFields, otp string) (err error) {
+func (h *homsaService) VerifyOtp(fields dto.RequiredFields, otp string) (log *models.Log) {
+	log = h.initLog(fields.UserID, fields.ClientID)
 	endpoint := h.getEndpoints().LoginSecondStep
 	model, err := h.apiAuthRepo.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
+		log.FinalResult = err.Error()
 		return
 	}
 	url, err := h.getFullURL(endpoint)
 	if err != nil {
+		log.FinalResult = err.Error()
 		return
 	}
 	header := h.getHeader()
 	bodyRow := h.generateVerifyOTPBody(model.Username, otp)
-	request := requests.New(endpoint.Method, url, header, map[string]string{})
+	request := requests.New(endpoint.Method, url, header, map[string]string{}, log)
 	err = request.Start(bodyRow, endpoint.ContentType)
 	if err != nil {
-		return err
+		log.FinalResult = err.Error()
+		return
 	}
 	response := h.generateAuthResponse()
 	ok, _ := request.Ok()
@@ -31,11 +34,13 @@ func (h *homsaService) VerifyOtp(fields dto.RequiredFields, otp string) (err err
 	}
 	err = request.ParseInterface(response)
 	if err != nil {
-		return err
+		log.FinalResult = err.Error()
+		return
 	}
 	ok, result := response.GetResult()
+	log.FinalResult = result
 	if !ok {
-		return errors.New(result)
+		return
 	}
 	field := dto.ApiEasyLogin{
 		RequiredFields: fields,
@@ -44,7 +49,10 @@ func (h *homsaService) VerifyOtp(fields dto.RequiredFields, otp string) (err err
 	}
 	err = h.updateOrCreateAuthRecord(field, response.GetToken())
 	if err != nil {
+		log.FinalResult = err.Error()
 		return
 	}
-	return nil
+	log.FinalResult = "success"
+	log.IsSucceed = true
+	return
 }
