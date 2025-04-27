@@ -1,7 +1,10 @@
 package homsa
 
 import (
+	"errors"
+
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
+	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/repository"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 )
@@ -47,8 +50,13 @@ func NewHomsaService(apiAuthRepo repository.ApiAuthRepository, service string) i
 	}
 }
 
-func (h *homsaService) getFullURL(endpoint string) string {
-	return h.apiSettings[h.service].ApiURL + endpoint
+func (h *homsaService) getFullURL(endpoint string) (url string, err error) {
+	if endpoint == "" {
+		err = errors.New("service can not perform this action")
+		return
+	}
+	url = h.apiSettings[h.service].ApiURL + endpoint
+	return
 }
 
 func (h *homsaService) getEndpoints() dto.ApiEndpoints {
@@ -57,6 +65,15 @@ func (h *homsaService) getEndpoints() dto.ApiEndpoints {
 
 func (h *homsaService) getHeader() map[string]string {
 	return h.apiSettings[h.service].Headers
+}
+
+func (h *homsaService) getExtraHeader(token *models.ApiAuth) map[string]string {
+	if h.service == "homsa" {
+		return map[string]string{
+			"authorization": token.AccessToken,
+		}
+	}
+	return map[string]string{}
 }
 
 func (h *homsaService) generateEasyLoginBody(fields dto.ApiEasyLogin, otp bool) any {
@@ -87,6 +104,13 @@ func (h *homsaService) generateAuthResponse() interfaces.ApiResponseManager {
 func (h *homsaService) generateOTPResponse() interfaces.ApiResponseManager {
 	if h.service == "homsa" {
 		return &dto.HomsaOTPResponse{}
+	}
+	return nil
+}
+
+func (h *homsaService) generateProfileResponse() interfaces.ApiResponseManager {
+	if h.service == "mihmansho" {
+		return &dto.MihmanshoProfileResponse{}
 	}
 	return nil
 }

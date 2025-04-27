@@ -17,8 +17,11 @@ func (h *homsaService) validateFields(fields dto.ApiEasyLogin) error {
 }
 
 func (h *homsaService) performLoginRequest(fields dto.ApiEasyLogin, otp bool) (authResponse interfaces.ApiResponseManager, err error) {
+	url, err := h.getFullURL(h.getEndpoints().LoginWithPass)
+	if err != nil {
+		return
+	}
 	header := h.getHeader()
-	url := h.getFullURL(h.getEndpoints().LoginWithPass)
 	bodyRow := h.generateEasyLoginBody(fields, otp)
 
 	request := requests.New("POST", url, header, map[string]string{})
@@ -37,8 +40,9 @@ func (h *homsaService) performLoginRequest(fields dto.ApiEasyLogin, otp bool) (a
 			return nil, err
 		}
 	}
-	if response.GetResult() != "success" {
-		return nil, errors.New(response.GetResult())
+	ok, result := response.GetResult()
+	if !ok {
+		return nil, errors.New(result)
 	}
 	return response, nil
 }

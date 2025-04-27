@@ -9,12 +9,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestOTPVerify(t *testing.T) {
+func TestCheckLogin(t *testing.T) {
 	mockRepo := persistence.NewMockApiAuthRepo()
 	tests := []struct {
 		name    string
 		fields  dto.RequiredFields
-		otp     string
 		wantErr bool
 	}{
 		{
@@ -23,15 +22,22 @@ func TestOTPVerify(t *testing.T) {
 				UserID:   1,
 				ClientID: "client1",
 			},
-			otp:     "244413",
 			wantErr: false,
+		},
+		{
+			name: "invalid request",
+			fields: dto.RequiredFields{
+				UserID:   1,
+				ClientID: "client2",
+			},
+			wantErr: true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			service := homsa.NewHomsaService(mockRepo, "homsa")
-			err := service.VerifyOtp(tt.fields, tt.otp)
+			err := service.CheckLogin(tt.fields)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

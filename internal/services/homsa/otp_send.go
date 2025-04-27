@@ -13,12 +13,16 @@ func (h *homsaService) SendOtp(fields dto.RequiredFields, phoneNumber string) er
 		return dto.ErrEmptyPhone
 	}
 
+	url, err := h.getFullURL(h.getEndpoints().LoginFirstStep)
+	if err != nil {
+		return err
+	}
+
 	header := h.getHeader()
-	url := h.getFullURL(h.getEndpoints().LoginFirstStep)
 	body := h.generateSendOTPBody(phoneNumber)
 
 	request := requests.New("POST", url, header, map[string]string{})
-	err := request.BodyStart(body)
+	err = request.BodyStart(body)
 	if err != nil {
 		return err
 	}
@@ -35,8 +39,9 @@ func (h *homsaService) SendOtp(fields dto.RequiredFields, phoneNumber string) er
 		}
 	}
 	fmt.Println(response.GetResult())
-	if response.GetResult() != "success" {
-		return errors.New(response.GetResult())
+	ok, result := response.GetResult()
+	if !ok {
+		return errors.New(result)
 	}
 
 	record := dto.ApiEasyLogin{

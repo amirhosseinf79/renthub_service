@@ -1,17 +1,7 @@
 package dto
 
-import "github.com/amirhosseinf79/renthub_service/internal/domain/models"
-
 type HomsaOTPResponse struct {
 	Data homsaOTPData `json:"data"`
-}
-
-func (h *HomsaOTPResponse) GetResult() string {
-	return "success"
-}
-
-func (h *HomsaOTPResponse) GetToken() *models.ApiAuth {
-	return &models.ApiAuth{}
 }
 
 type HomsaAuthResponse struct {
@@ -25,27 +15,8 @@ type HomsaAuthResponse struct {
 	PhoneNumber  string `json:"phone_number"`
 }
 
-func (h *HomsaAuthResponse) GetResult() string {
-	return "success"
-}
-
-func (h *HomsaAuthResponse) GetToken() *models.ApiAuth {
-	return &models.ApiAuth{
-		AccessToken:  h.AccessToken,
-		RefreshToken: h.RefreshToken,
-	}
-}
-
 type HomsaErrorResponse struct {
 	Code    string              `json:"code"`
 	Message string              `json:"message"`
 	Errors  map[string][]string `json:"errors"`
-}
-
-func (h *HomsaErrorResponse) GetResult() string {
-	return h.Code
-}
-
-func (h *HomsaErrorResponse) GetToken() *models.ApiAuth {
-	return &models.ApiAuth{}
 }

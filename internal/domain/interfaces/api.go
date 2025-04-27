@@ -22,6 +22,6 @@ type ApiService interface {
 }
 
 type ApiResponseManager interface {
-	GetResult() string
+	GetResult() (bool, string)
 	GetToken() *models.ApiAuth
 }
