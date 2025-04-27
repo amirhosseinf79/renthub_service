@@ -11,6 +11,7 @@ import (
 
 func TestMinNight(t *testing.T) {
 	mockRepo := persistence.NewMockApiAuthRepo()
+	logRepo := persistence.NewLogRepository(nil)
 	tests := []struct {
 		name    string
 		fields  dto.UpdateFields
@@ -65,8 +66,8 @@ func TestMinNight(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			service := cloner.NewHomsaService(mockRepo)
-			err := service.Set("homsa").UnsetMiniNight(tt.fields)
+			service := cloner.NewHomsaService(mockRepo, logRepo)
+			_, err := service.Set("homsa").UnsetMiniNight(tt.fields)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

@@ -42,7 +42,7 @@ func (h *homsaService) updateOrCreateAuthRecord(fields dto.ApiEasyLogin, model *
 	return nil
 }
 
-func (h *homsaService) EasyLogin(fields dto.ApiEasyLogin) (log *models.Log) {
+func (h *homsaService) EasyLogin(fields dto.ApiEasyLogin) (log *models.Log, err error) {
 	log = h.initLog(fields.UserID, fields.ClientID)
 	endpoint := h.getEndpoints().LoginWithPass
 	url, err := h.getFullURL(endpoint)

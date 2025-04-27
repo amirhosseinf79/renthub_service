@@ -11,6 +11,7 @@ import (
 
 func TestOTPVerify(t *testing.T) {
 	mockRepo := persistence.NewMockApiAuthRepo()
+	logRepo := persistence.NewLogRepository(nil)
 	tests := []struct {
 		name    string
 		fields  dto.RequiredFields
@@ -30,8 +31,8 @@ func TestOTPVerify(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			service := cloner.NewHomsaService(mockRepo)
-			err := service.Set("homsa").VerifyOtp(tt.fields, tt.otp)
+			service := cloner.NewHomsaService(mockRepo, logRepo)
+			_, err := service.Set("homsa").VerifyOtp(tt.fields, tt.otp)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

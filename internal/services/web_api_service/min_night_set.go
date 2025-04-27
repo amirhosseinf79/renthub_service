@@ -6,7 +6,7 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 )
 
-func (h *homsaService) SetMinNight(fields dto.UpdateFields) (log *models.Log) {
+func (h *homsaService) SetMinNight(fields dto.UpdateFields) (log *models.Log, err error) {
 	log = h.initLog(fields.UserID, fields.ClientID)
 	endpoint := h.getEndpoints().SetMinNight
 	model, err := h.apiAuthRepo.GetByUnique(fields.UserID, fields.ClientID, h.service)

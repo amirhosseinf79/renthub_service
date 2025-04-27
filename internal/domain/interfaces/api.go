@@ -7,17 +7,17 @@ import (
 
 type ApiService interface {
 	Set(service string) ApiService
-	EasyLogin(dto.ApiEasyLogin) *models.Log
-	SendOtp(dto.RequiredFields, string) *models.Log
-	VerifyOtp(dto.RequiredFields, string) *models.Log
-	CheckLogin(dto.RequiredFields) *models.Log
-	OpenCalendar(dto.UpdateFields) *models.Log
-	CloseCalendar(dto.UpdateFields) *models.Log
-	EditPricePerDays(dto.UpdateFields) *models.Log
-	AddDiscount(dto.UpdateFields) *models.Log
-	RemoveDiscount(dto.UpdateFields) *models.Log
-	SetMinNight(dto.UpdateFields) *models.Log
-	UnsetMiniNight(dto.UpdateFields) *models.Log
+	EasyLogin(dto.ApiEasyLogin) (*models.Log, error)
+	SendOtp(dto.RequiredFields, string) (*models.Log, error)
+	VerifyOtp(dto.RequiredFields, string) (*models.Log, error)
+	CheckLogin(dto.RequiredFields) (*models.Log, error)
+	OpenCalendar(dto.UpdateFields) (*models.Log, error)
+	CloseCalendar(dto.UpdateFields) (*models.Log, error)
+	EditPricePerDays(dto.UpdateFields) (*models.Log, error)
+	AddDiscount(dto.UpdateFields) (*models.Log, error)
+	RemoveDiscount(dto.UpdateFields) (*models.Log, error)
+	SetMinNight(dto.UpdateFields) (*models.Log, error)
+	UnsetMiniNight(dto.UpdateFields) (*models.Log, error)
 	RecordLog(*models.Log) error
 	// GetRooms()
 	// GetRoomDetails()

@@ -6,7 +6,7 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 )
 
-func (h *homsaService) SendOtp(fields dto.RequiredFields, phoneNumber string) (log *models.Log) {
+func (h *homsaService) SendOtp(fields dto.RequiredFields, phoneNumber string) (log *models.Log, err error) {
 	log = h.initLog(fields.UserID, fields.ClientID)
 	endpoint := h.getEndpoints().LoginFirstStep
 	url, err := h.getFullURL(endpoint)

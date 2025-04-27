@@ -6,7 +6,7 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 )
 
-func (h *homsaService) CheckLogin(fields dto.RequiredFields) (log *models.Log) {
+func (h *homsaService) CheckLogin(fields dto.RequiredFields) (log *models.Log, err error) {
 	log = h.initLog(fields.UserID, fields.ClientID)
 	endpoint := h.getEndpoints().GetProfile
 	model, err := h.apiAuthRepo.GetByUnique(fields.UserID, fields.ClientID, h.service)
@@ -33,7 +33,7 @@ func (h *homsaService) CheckLogin(fields dto.RequiredFields) (log *models.Log) {
 
 	response := h.generateProfileResponse()
 	if response != nil {
-		err := request.ParseInterface(response)
+		err = request.ParseInterface(response)
 		if err != nil {
 			log.FinalResult = err.Error()
 			return
