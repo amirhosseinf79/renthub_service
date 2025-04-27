@@ -20,6 +20,7 @@ func NewMockApiAuthRepo() repository.ApiAuthRepository {
 				ClientID:    "client1",
 				Service:     "homsa",
 				AccessToken: "token1",
+				Username:    "09334429096",
 			},
 			"1:client1:jabama": {
 				UserID:      1,
