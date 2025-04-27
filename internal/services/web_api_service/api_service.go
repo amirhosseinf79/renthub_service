@@ -99,12 +99,12 @@ func (h *homsaService) getExtraHeader(token *models.ApiAuth) map[string]string {
 	return map[string]string{}
 }
 
-func (h *homsaService) generateEasyLoginBody(fields dto.ApiEasyLogin, otp bool) any {
+func (h *homsaService) generateEasyLoginBody(fields dto.ApiEasyLogin) any {
 	if h.service == "homsa" {
 		return homsa_dto.HomsaLoginUserPass{
 			Mobile:   fields.Username,
 			Password: fields.Password,
-			UseOTP:   otp,
+			UseOTP:   false,
 		}
 	}
 	return nil
@@ -113,6 +113,17 @@ func (h *homsaService) generateEasyLoginBody(fields dto.ApiEasyLogin, otp bool) 
 func (h *homsaService) generateSendOTPBody(phoneNumber string) any {
 	if h.service == "homsa" {
 		return homsa_dto.HomsaOTPLogin{Mobile: phoneNumber}
+	}
+	return nil
+}
+
+func (h *homsaService) generateVerifyOTPBody(phoneNumber string, code string) any {
+	if h.service == "homsa" {
+		return homsa_dto.HomsaLoginUserPass{
+			Mobile:   phoneNumber,
+			Password: code,
+			UseOTP:   true,
+		}
 	}
 	return nil
 }

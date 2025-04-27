@@ -9,13 +9,6 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 )
 
-func (h *homsaService) validateFields(fields dto.ApiEasyLogin) error {
-	if fields.Username == "" || fields.Password == "" {
-		return dto.ErrEmptyAuth
-	}
-	return nil
-}
-
 func (h *homsaService) performLoginRequest(fields dto.ApiEasyLogin, otp bool) (authResponse interfaces.ApiResponseManager, err error) {
 	endpoint := h.getEndpoints().LoginWithPass
 	url, err := h.getFullURL(endpoint)
@@ -23,8 +16,7 @@ func (h *homsaService) performLoginRequest(fields dto.ApiEasyLogin, otp bool) (a
 		return
 	}
 	header := h.getHeader()
-	bodyRow := h.generateEasyLoginBody(fields, otp)
-
+	bodyRow := h.generateEasyLoginBody(fields)
 	request := requests.New(endpoint.Method, url, header, map[string]string{})
 	err = request.Start(bodyRow, endpoint.ContentType)
 	if err != nil {
@@ -37,10 +29,7 @@ func (h *homsaService) performLoginRequest(fields dto.ApiEasyLogin, otp bool) (a
 	}
 	err = request.ParseInterface(response)
 	if err != nil {
-		err = request.ParseInterface(response)
-		if err != nil {
-			return nil, err
-		}
+		return nil, err
 	}
 	ok, result := response.GetResult()
 	if !ok {
@@ -86,10 +75,6 @@ func (h *homsaService) updateOrCreateAuthRecord(fields dto.ApiEasyLogin, model *
 }
 
 func (h *homsaService) EasyLogin(fields dto.ApiEasyLogin) (err error) {
-	err = h.validateFields(fields)
-	if err != nil {
-		return
-	}
 	response, err := h.performLoginRequest(fields, false)
 	if err != nil {
 		return
