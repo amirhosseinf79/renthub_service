@@ -12,39 +12,39 @@ func (h *homsaService) OpenCalendar(fields dto.UpdateFields) (log *models.Log, e
 	model, err := h.apiAuthRepo.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	url, err := h.getFullURL(endpoint, fields.RoomID)
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	request := requests.New(endpoint.Method, url, h.getHeader(), h.getExtraHeader(model), log)
 	body := h.generateCalendarBody(fields.RoomID, true, fields.Dates)
 	err = request.Start(body, endpoint.ContentType)
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	ok, result := request.Ok()
 	if !ok {
 		log.FinalResult = result.Error()
-		return
+		return log, err
 	}
 	response := h.generateMihmanshoErrResponse()
 	if response != nil {
 		err = request.ParseInterface(response)
 		if err != nil {
 			log.FinalResult = err.Error()
-			return
+			return log, err
 		}
 		ok, result := response.GetResult()
 		if !ok {
 			log.FinalResult = result
-			return
+			return log, err
 		}
 	}
 	log.FinalResult = "success"
 	log.IsSucceed = true
-	return
+	return log, nil
 }

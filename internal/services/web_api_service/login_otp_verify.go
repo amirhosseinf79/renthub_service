@@ -12,12 +12,12 @@ func (h *homsaService) VerifyOtp(fields dto.RequiredFields, otp string) (log *mo
 	model, err := h.apiAuthRepo.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	url, err := h.getFullURL(endpoint)
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	header := h.getHeader()
 	bodyRow := h.generateVerifyOTPBody(model.Username, otp)
@@ -25,7 +25,7 @@ func (h *homsaService) VerifyOtp(fields dto.RequiredFields, otp string) (log *mo
 	err = request.Start(bodyRow, endpoint.ContentType)
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	response := h.generateAuthResponse()
 	ok, _ := request.Ok()
@@ -35,12 +35,12 @@ func (h *homsaService) VerifyOtp(fields dto.RequiredFields, otp string) (log *mo
 	err = request.ParseInterface(response)
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	ok, result := response.GetResult()
 	log.FinalResult = result
 	if !ok {
-		return
+		return log, err
 	}
 	field := dto.ApiEasyLogin{
 		RequiredFields: fields,
@@ -50,9 +50,9 @@ func (h *homsaService) VerifyOtp(fields dto.RequiredFields, otp string) (log *mo
 	err = h.updateOrCreateAuthRecord(field, response.GetToken())
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	log.FinalResult = "success"
 	log.IsSucceed = true
-	return
+	return log, err
 }

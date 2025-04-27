@@ -12,7 +12,7 @@ func (h *homsaService) SendOtp(fields dto.RequiredFields, phoneNumber string) (l
 	url, err := h.getFullURL(endpoint)
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	header := h.getHeader()
 	body := h.generateSendOTPBody(phoneNumber)
@@ -20,7 +20,7 @@ func (h *homsaService) SendOtp(fields dto.RequiredFields, phoneNumber string) (l
 	err = request.Start(body, endpoint.ContentType)
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	response := h.generateOTPResponse()
 	ok, _ := request.Ok()
@@ -30,12 +30,12 @@ func (h *homsaService) SendOtp(fields dto.RequiredFields, phoneNumber string) (l
 	err = request.ParseInterface(response)
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	ok, result := response.GetResult()
 	log.FinalResult = result
 	if !ok {
-		return
+		return log, err
 	}
 	record := dto.ApiEasyLogin{
 		RequiredFields: fields,
@@ -44,9 +44,9 @@ func (h *homsaService) SendOtp(fields dto.RequiredFields, phoneNumber string) (l
 	err = h.updateOrCreateAuthRecord(record, response.GetToken())
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	log.FinalResult = "success"
 	log.IsSucceed = true
-	return
+	return log, err
 }

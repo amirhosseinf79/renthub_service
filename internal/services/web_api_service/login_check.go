@@ -12,23 +12,23 @@ func (h *homsaService) CheckLogin(fields dto.RequiredFields) (log *models.Log, e
 	model, err := h.apiAuthRepo.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	url, err := h.getFullURL(endpoint)
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	request := requests.New(endpoint.Method, url, h.getHeader(), h.getExtraHeader(model), log)
 	err = request.Start(struct{}{}, endpoint.ContentType)
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	ok, result := request.Ok()
 	if !ok {
 		log.FinalResult = result.Error()
-		return
+		return log, err
 	}
 
 	response := h.generateProfileResponse()
@@ -36,15 +36,15 @@ func (h *homsaService) CheckLogin(fields dto.RequiredFields) (log *models.Log, e
 		err = request.ParseInterface(response)
 		if err != nil {
 			log.FinalResult = err.Error()
-			return
+			return log, err
 		}
 		ok, result := response.GetResult()
 		if !ok {
 			log.FinalResult = result
-			return
+			return log, err
 		}
 	}
 	log.FinalResult = "success"
 	log.IsSucceed = true
-	return
+	return log, err
 }

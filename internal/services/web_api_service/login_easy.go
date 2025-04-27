@@ -48,7 +48,7 @@ func (h *homsaService) EasyLogin(fields dto.ApiEasyLogin) (log *models.Log, err 
 	url, err := h.getFullURL(endpoint)
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	header := h.getHeader()
 	bodyRow := h.generateEasyLoginBody(fields)
@@ -56,7 +56,7 @@ func (h *homsaService) EasyLogin(fields dto.ApiEasyLogin) (log *models.Log, err 
 	err = request.Start(bodyRow, endpoint.ContentType)
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	response := h.generateAuthResponse()
 	ok, _ := request.Ok()
@@ -66,19 +66,19 @@ func (h *homsaService) EasyLogin(fields dto.ApiEasyLogin) (log *models.Log, err 
 	err = request.ParseInterface(response)
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	ok, result := response.GetResult()
 	log.FinalResult = result
 	if !ok {
-		return
+		return log, err
 	}
 	err = h.updateOrCreateAuthRecord(fields, response.GetToken())
 	if err != nil {
 		log.FinalResult = err.Error()
-		return
+		return log, err
 	}
 	log.FinalResult = "success"
 	log.IsSucceed = true
-	return
+	return log, err
 }
