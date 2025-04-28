@@ -7,6 +7,7 @@ require (
 	github.com/gofiber/fiber/v3 v3.0.0-beta.4
 	github.com/google/uuid v1.6.0
 	github.com/stretchr/testify v1.10.0
+	github.com/yaa110/go-persian-calendar v1.2.1
 	golang.org/x/crypto v0.37.0
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/gorm v1.26.0

@@ -27,7 +27,7 @@ func TestDiscount(t *testing.T) {
 				Dates: []string{
 					"2025-06-09",
 				},
-				RoomID: "2470341",
+				RoomID: "104468",
 				Amount: 10,
 			},
 			wantErr: false,
@@ -67,7 +67,7 @@ func TestDiscount(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			service := cloner.NewHomsaService(mockRepo, logRepo)
-			_, err := service.Set("otaghak").RemoveDiscount(tt.fields)
+			_, err := service.Set("shab").RemoveDiscount(tt.fields)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

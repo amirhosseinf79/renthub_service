@@ -38,7 +38,7 @@ func TestCheckLogin(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			service := cloner.NewHomsaService(mockRepo, logRepo)
-			_, err := service.Set("otaghak").CheckLogin(tt.fields)
+			_, err := service.Set("shab").CheckLogin(tt.fields)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

@@ -28,7 +28,7 @@ func TestCalendar(t *testing.T) {
 					"2025-06-09",
 					"2025-06-10",
 				},
-				RoomID: "2470341",
+				RoomID: "104468",
 			},
 			wantErr: false,
 		},
@@ -67,7 +67,7 @@ func TestCalendar(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			service := cloner.NewHomsaService(mockRepo, logRepo)
-			_, err := service.Set("otaghak").OpenCalendar(tt.fields)
+			_, err := service.Set("shab").OpenCalendar(tt.fields)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

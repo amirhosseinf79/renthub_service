@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"sort"
+	"time"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
@@ -17,6 +18,7 @@ import (
 	otaghak_dto "github.com/amirhosseinf79/renthub_service/internal/dto/otaghak"
 	shab_dto "github.com/amirhosseinf79/renthub_service/internal/dto/shab"
 	"github.com/google/uuid"
+	ptime "github.com/yaa110/go-persian-calendar"
 )
 
 type homsaService struct {
@@ -185,7 +187,23 @@ func (h *homsaService) datesToIso(dates []string) []string {
 }
 
 func (h *homsaService) datesToJalali(dates []string) []string {
-	return dates
+	var jdates []string
+	for _, date := range dates {
+		parsedTime, err := time.Parse("2006-01-02", date)
+
+		if err != nil {
+			return nil
+		}
+
+		// Now convert to Jalali
+		ptobj := ptime.New(parsedTime)
+
+		// Format it as jYY-jMM-jDD
+		jalaliDate := ptobj.Format("yyyy-MM-dd")
+		jdates = append(jdates, jalaliDate)
+		fmt.Println(jdates)
+	}
+	return jdates
 }
 
 func (h *homsaService) getFullURL(endpoint dto.EndP, vals ...any) (url string, err error) {
