@@ -17,3 +17,14 @@ func (h *Response) GetToken() *models.ApiAuth {
 		RefreshToken: h.Result.RefreshToken,
 	}
 }
+
+func (h *UpdateErrorResponse) GetResult() (ok bool, result string) {
+	if h.Success {
+		return true, "success"
+	}
+	return false, h.Error.Message
+}
+
+func (h *UpdateErrorResponse) GetToken() *models.ApiAuth {
+	return &models.ApiAuth{}
+}

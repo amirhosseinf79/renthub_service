@@ -27,3 +27,13 @@ type authError struct {
 	Source           string            `json:"source"`
 	ValidationErrors map[string]string `json:"validationErrors"`
 }
+
+type msg struct {
+	Message string `json:"message"`
+}
+
+type UpdateErrorResponse struct {
+	Result  *[]string `json:"result"`
+	Error   msg       `json:"error"`
+	Success bool      `json:"success"`
+}

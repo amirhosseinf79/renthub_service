@@ -8,7 +8,12 @@ import (
 
 // Error Response
 func (h *HomsaErrorResponse) GetResult() (bool, string) {
-	return false, h.Code
+	for _, err := range h.Errors {
+		if len(err) > 0 {
+			return false, err[0]
+		}
+	}
+	return false, h.Message
 }
 
 func (h *HomsaErrorResponse) GetToken() *models.ApiAuth {

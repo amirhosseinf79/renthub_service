@@ -149,12 +149,11 @@ func NewHomsaService(apiAuthRepo repository.ApiAuthRepository, logRepo repositor
 					UnsetMinNight:   dto.EndP{Address: "/house/%v/calendar", Method: "POST", ContentType: "body"},
 				},
 				Headers: map[string]string{
-					"user-Agent":      "Dart/2.19 (dart:io)",
-					"accept":          "application/json",
-					"accept-Encoding": "chunked",
-					"content-type":    "application/json; charset=UTF-8",
-					"accept-charset":  "UTF-8",
-					"Authorization":   "Bearer %v",
+					"User-Agent":    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:138.0) Gecko/20100101 Firefox/138.0",
+					"Accept":        "application/json, text/plain, */*",
+					"Content-Type":  "application/json;charset=UTF-8",
+					"Connection":    "keep-alive",
+					"Authorization": "Bearer %v",
 				},
 			},
 		},
@@ -600,9 +599,19 @@ func (h *homsaService) generateProfileResponse() interfaces.ApiResponseManager {
 	return nil
 }
 
-func (h *homsaService) generateMihmanshoErrResponse() interfaces.ApiResponseManager {
+func (h *homsaService) generateUpdateErrResponse() interfaces.ApiResponseManager {
 	if h.service == "mihmansho" {
 		return &mihmansho_dto.MihmanshoErrorResponse{}
+	} else if h.service == "homsa" {
+		return &homsa_dto.HomsaErrorResponse{}
+	} else if h.service == "jabama" {
+		return &jabama_dto.UpdateErrorResponse{}
+	} else if h.service == "jajiga" {
+		return &jajiga_dto.ErrorResponse{}
+	} else if h.service == "otaghak" {
+		return &otaghak_dto.ErrorResponse{}
+	} else if h.service == "shab" {
+		return &shab_dto.ErrResponse{}
 	}
 	return nil
 }

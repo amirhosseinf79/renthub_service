@@ -32,15 +32,19 @@ func (r *AuthOTPResponse) GetToken() *models.ApiAuth {
 }
 
 func (r *ErrResponse) GetResult() (bool, string) {
-	// for _, value := range r.Meta.Messages {
-	// 	if len(value) > 0 {
-	// 		return false, value[0]
-	// 	}
-	// }
-	if r.Meta.Status >= 300 {
-		return false, fmt.Sprintf("Error %v", r.Meta.Status)
+	fmt.Println(r.Meta.Messages)
+	if msgs, ok := r.Meta.Messages.(map[string][]string); ok {
+		for _, value := range msgs {
+			if len(value) > 0 {
+				return false, value[0]
+			}
+		}
+	} else if msgs, ok := r.Meta.Messages.([]string); ok {
+		for _, value := range msgs {
+			return false, value
+		}
 	}
-	return true, "success"
+	return true, fmt.Sprintf("Error %v", r.Meta.Status)
 }
 
 func (r *ErrResponse) GetToken() *models.ApiAuth {

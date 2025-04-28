@@ -18,5 +18,6 @@ type ErrResponse struct {
 }
 
 type meta struct {
-	Status int `json:"status"`
+	Status   int `json:"status"`
+	Messages any `json:"messages"`
 }
