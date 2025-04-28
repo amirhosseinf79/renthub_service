@@ -15,6 +15,7 @@ import (
 	jajiga_dto "github.com/amirhosseinf79/renthub_service/internal/dto/jajiga"
 	mihmansho_dto "github.com/amirhosseinf79/renthub_service/internal/dto/mihmansho"
 	otaghak_dto "github.com/amirhosseinf79/renthub_service/internal/dto/otaghak"
+	shab_dto "github.com/amirhosseinf79/renthub_service/internal/dto/shab"
 	"github.com/google/uuid"
 )
 
@@ -149,10 +150,8 @@ func NewHomsaService(apiAuthRepo repository.ApiAuthRepository, logRepo repositor
 					"user-Agent":      "Dart/2.19 (dart:io)",
 					"accept":          "application/json",
 					"accept-Encoding": "chunked",
-					"Origin":          "https://www.shab.travel",
 					"content-type":    "application/json; charset=UTF-8",
 					"accept-charset":  "UTF-8",
-					"lang":            "fa",
 					"Authorization":   "Bearer %v",
 				},
 			},
@@ -183,6 +182,10 @@ func (h *homsaService) datesToIso(dates []string) []string {
 		formattedDates = append(formattedDates, fmt.Sprintf("%vT00:00:00.000Z", item))
 	}
 	return formattedDates
+}
+
+func (h *homsaService) datesToJalali(dates []string) []string {
+	return dates
 }
 
 func (h *homsaService) getFullURL(endpoint dto.EndP, vals ...any) (url string, err error) {
@@ -279,6 +282,11 @@ func (h *homsaService) generateSendOTPBody(phoneNumber string) any {
 			UserName:   phoneNumber,
 			IsShortOtp: true,
 		}
+	} else if h.service == "shab" {
+		return shab_dto.OTPBody{
+			Mobile:      phoneNumber,
+			CountryCode: "+98",
+		}
 	}
 	return nil
 }
@@ -308,6 +316,12 @@ func (h *homsaService) generateVerifyOTPBody(phoneNumber string, code string) an
 			ClientId:     "Otaghak",
 			ClientSecret: "secret",
 			ArcValues:    map[string]string{"OtpCode": code},
+		}
+	} else if h.service == "shab" {
+		return shab_dto.VerifyOTOBody{
+			Mobile:      phoneNumber,
+			CountryCode: "+98",
+			Code:        code,
 		}
 	}
 	return nil
@@ -347,6 +361,15 @@ func (h *homsaService) generateCalendarBody(roomID string, setOpen bool, dates [
 			RoomID:      roomID,
 			BlockedDays: h.datesToIso(dates),
 		}
+	} else if h.service == "shab" {
+		status := "set_disabled"
+		if setOpen {
+			status = "unset_disabled"
+		}
+		return shab_dto.CalendarBody{
+			Action: status,
+			Dates:  h.datesToJalali(dates),
+		}
 	}
 	return nil
 }
@@ -384,6 +407,12 @@ func (h *homsaService) generatePriceBody(roomID string, amount int, dates []stri
 			RoomID:       roomID,
 			PerDayPrices: formattedDays,
 		}
+	} else if h.service == "shab" {
+		return shab_dto.EditPriceBody{
+			KeepDiscount: false,
+			Price:        amount,
+			Dates:        h.datesToJalali(dates),
+		}
 	}
 	return nil
 }
@@ -411,6 +440,12 @@ func (h *homsaService) generateAddDiscountBody(roomID string, amount int, dates 
 			EffectiveDays:   h.datesToIso(dates),
 			RoomID:          roomID,
 		}
+	} else if h.service == "shab" {
+		return shab_dto.EditDiscountBody{
+			Action:        "set_daily_discount",
+			Dates:         h.datesToJalali(dates),
+			DailyDiscount: amount,
+		}
 	}
 	return nil
 }
@@ -436,6 +471,11 @@ func (h *homsaService) generateRemoveDiscountBody(roomID string, dates []string)
 			DiscountPercent: 0,
 			EffectiveDays:   h.datesToIso(dates),
 			RoomID:          roomID,
+		}
+	} else if h.service == "shab" {
+		return shab_dto.EditDiscountBody{
+			Action: "unset_daily_discount",
+			Dates:  h.datesToJalali(dates),
 		}
 	}
 	return nil
@@ -464,6 +504,12 @@ func (h *homsaService) generateSetMinNightBody(roomID string, amount int, dates 
 			EffectiveDays: h.datesToIso(dates),
 			RoomID:        roomID,
 		}
+	} else if h.service == "shab" {
+		return shab_dto.EditMinNightBody{
+			Action:  "set_min_days",
+			Dates:   h.datesToJalali(dates),
+			MinDays: amount,
+		}
 	}
 	return nil
 }
@@ -485,9 +531,15 @@ func (h *homsaService) generateUnsetMinNightBody(roomID string, dates []string) 
 		}
 	} else if h.service == "otaghak" {
 		return otaghak_dto.EditMinNightBody{
-			MinNights:     0,
+			MinNights:     1,
 			EffectiveDays: h.datesToIso(dates),
 			RoomID:        roomID,
+		}
+	} else if h.service == "shab" {
+		return shab_dto.EditMinNightBody{
+			Action:  "set_min_days",
+			Dates:   h.datesToJalali(dates),
+			MinDays: 1,
 		}
 	}
 	return nil
@@ -502,6 +554,8 @@ func (h *homsaService) generateAuthResponse() interfaces.ApiResponseManager {
 		return &jajiga_dto.AuthOkResponse{}
 	} else if h.service == "otaghak" {
 		return &otaghak_dto.AuthOkResponse{}
+	} else if h.service == "shab" {
+		return &shab_dto.AuthResponse{}
 	}
 	return nil
 }
@@ -515,6 +569,8 @@ func (h *homsaService) generateOTPResponse() interfaces.ApiResponseManager {
 		return &jajiga_dto.OTPResponse{}
 	} else if h.service == "otaghak" {
 		return &otaghak_dto.OTPResponse{}
+	} else if h.service == "shab" {
+		return &shab_dto.AuthOTPResponse{}
 	}
 	return nil
 }
@@ -544,6 +600,8 @@ func (h *homsaService) generateErrResponse() interfaces.ApiResponseManager {
 		return &jajiga_dto.ErrorResponse{}
 	} else if h.service == "otaghak" {
 		return &otaghak_dto.ErrorResponse{}
+	} else if h.service == "shab" {
+		return &shab_dto.ErrResponse{}
 	}
 	return nil
 }
