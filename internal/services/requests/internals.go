@@ -19,9 +19,22 @@ func (f *fetchS) requestBody(bodyRow any) error {
 	if err != nil {
 		return err
 	}
+	if f.method == "GET" {
+		req.ContentLength = -1
+	}
 	f.httpReq = req
 	return nil
 }
+
+// func (f *fetchS) requestBodyString() error {
+// 	payload := strings.NewReader("{\"mobile\": \"09334429096\",\"code\": \"\"}")
+// 	req, err := http.NewRequest(f.method, f.url, payload)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	f.httpReq = req
+// 	return nil
+// }
 
 // func (f *fetchS) requestQuery(queryRow any) error {
 // 	v, err := query.Values(queryRow)
@@ -40,9 +53,12 @@ func (f *fetchS) requestBody(bodyRow any) error {
 
 func (f *fetchS) setHeaders() {
 	for k, v := range f.headers {
+		hasVar := bytes.Contains([]byte(v), []byte("%v"))
 		value, ok := f.extra[k]
-		if ok {
+		if ok && hasVar {
 			v = fmt.Sprintf(v, value)
+		} else if hasVar {
+			v = fmt.Sprintf(v, "")
 		}
 		f.httpReq.Header.Set(k, v)
 	}
@@ -64,6 +80,8 @@ func (f *fetchS) commitRequest() error {
 	if err != nil {
 		return err
 	}
+	f.logger.StatusCode = resp.StatusCode
+	fmt.Println("Status:", resp.StatusCode)
 	f.httpResp = resp
 	return nil
 }

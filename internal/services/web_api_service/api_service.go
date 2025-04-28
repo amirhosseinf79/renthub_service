@@ -10,6 +10,7 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/domain/repository"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	homsa_dto "github.com/amirhosseinf79/renthub_service/internal/dto/homsa"
+	jabama_dto "github.com/amirhosseinf79/renthub_service/internal/dto/jabama"
 	jajiga_dto "github.com/amirhosseinf79/renthub_service/internal/dto/jajiga"
 	mihmansho_dto "github.com/amirhosseinf79/renthub_service/internal/dto/mihmansho"
 	otaghak_dto "github.com/amirhosseinf79/renthub_service/internal/dto/otaghak"
@@ -44,14 +45,13 @@ func NewHomsaService(apiAuthRepo repository.ApiAuthRepository, logRepo repositor
 					UnsetMinNight:   dto.EndP{Address: "/host/room/%v/calendar/delete_availability_rule", Method: "POST", ContentType: "body"},
 				},
 				Headers: map[string]string{
-					"user-Agent":      "Dart/2.19 (dart:io)",
-					"accept":          "application/json",
-					"accept-Encoding": "chunked",
-					"host":            "www.homsa.net",
-					"content-type":    "application/json; charset=UTF-8",
-					"accept-charset":  "UTF-8",
-					"lang":            "fa",
-					"authorization":   "bearer %v",
+					"user-Agent":     "Dart/2.19 (dart:io)",
+					"accept":         "application/json",
+					"host":           "www.homsa.net",
+					"content-type":   "application/json; charset=UTF-8",
+					"accept-charset": "UTF-8",
+					"lang":           "fa",
+					"authorization":  "bearer %v",
 				},
 			},
 			"jabama": {
@@ -65,14 +65,15 @@ func NewHomsaService(apiAuthRepo repository.ApiAuthRepository, logRepo repositor
 					EditPricePerDay: dto.EndP{Address: "/taraaz/v1/pricing/management/accommodation/%v", Method: "PUT", ContentType: "body"},
 				},
 				Headers: map[string]string{
-					"user-Agent":      "okhttp/4.12.0",
-					"Accept":          "application/json",
-					"accept-Encoding": "chunked",
-					"Host":            "gw.jabama.com",
-					"ab-channel":      "HostAndroid,3.6.9 - CafeBazaar,Android,%v",
-					"Content-Type":    "application/json; charset=UTF-8",
-					"Connection":      "Keep-Alive",
 					"Authorization":   "Bearer %v",
+					"Accept":          "application/json",
+					"Accept-Charset":  "UTF-8",
+					"User-Agent":      "okhttp/4.12.0",
+					"Content-Type":    "application/json; charset=UTF-8",
+					"Host":            "gw.jabama.com",
+					"Connection":      "Keep-Alive",
+					"Accept-Encoding": "gzip",
+					"ab-channel":      "HostAndroid,3.6.9 - CafeBazaar,Android,%v",
 				},
 			},
 			"jajiga": {
@@ -253,6 +254,8 @@ func (h *homsaService) generateEasyLoginBody(fields dto.ApiEasyLogin) any {
 func (h *homsaService) generateSendOTPBody(phoneNumber string) any {
 	if h.service == "homsa" {
 		return homsa_dto.HomsaOTPLogin{Mobile: phoneNumber}
+	} else if h.service == "jabama" {
+		return jabama_dto.OTPLogin{Mobile: phoneNumber}
 	}
 	return nil
 }
@@ -263,6 +266,11 @@ func (h *homsaService) generateVerifyOTPBody(phoneNumber string, code string) an
 			Mobile:   phoneNumber,
 			Password: code,
 			UseOTP:   true,
+		}
+	} else if h.service == "jabama" {
+		return jabama_dto.OTPLogin{
+			Mobile: phoneNumber,
+			Code:   code,
 		}
 	}
 	return nil
@@ -276,6 +284,10 @@ func (h *homsaService) generateCalendarBody(roomID string, setOpen bool, dates [
 		return homsa_dto.HomsaCalendarBody{
 			StartDate: dates[0],
 			EndDate:   dates[len(dates)-1],
+		}
+	} else if h.service == "jabama" {
+		return jabama_dto.OpenClosCalendar{
+			Dates: dates,
 		}
 	}
 	return nil
@@ -291,6 +303,12 @@ func (h *homsaService) generatePriceBody(roomID string, amount int, dates []stri
 			EndDate:      dates[len(dates)-1],
 			Price:        amount,
 			KeepDiscount: 0,
+		}
+	} else if h.service == "jabama" {
+		return jabama_dto.EditPricePerDay{
+			Type:  nil,
+			Days:  dates,
+			Value: amount * 10,
 		}
 	}
 	return nil
@@ -356,6 +374,8 @@ func (h *homsaService) generateUnsetMinNightBody(roomID string, dates []string) 
 func (h *homsaService) generateAuthResponse() interfaces.ApiResponseManager {
 	if h.service == "homsa" {
 		return &homsa_dto.HomsaAuthResponse{}
+	} else if h.service == "jabama" {
+		return &jabama_dto.Response{}
 	}
 	return nil
 }
@@ -363,6 +383,8 @@ func (h *homsaService) generateAuthResponse() interfaces.ApiResponseManager {
 func (h *homsaService) generateOTPResponse() interfaces.ApiResponseManager {
 	if h.service == "homsa" {
 		return &homsa_dto.HomsaOTPResponse{}
+	} else if h.service == "jabama" {
+		return &jabama_dto.Response{}
 	}
 	return nil
 }
@@ -386,6 +408,8 @@ func (h *homsaService) generateErrResponse() interfaces.ApiResponseManager {
 		return &homsa_dto.HomsaErrorResponse{}
 	} else if h.service == "mihmansho" {
 		return &mihmansho_dto.MihmanshoErrorResponse{}
+	} else if h.service == "jabama" {
+		return &jabama_dto.Response{}
 	}
 	return nil
 }

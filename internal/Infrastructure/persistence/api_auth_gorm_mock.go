@@ -24,9 +24,10 @@ func NewMockApiAuthRepo() repository.ApiAuthRepository {
 			},
 			"1:client1:jabama": {
 				UserID:      1,
-				ClientID:    "client2",
+				ClientID:    "client1",
 				Service:     "jabama",
-				AccessToken: "token2",
+				AccessToken: "eyJhbGciOiJSUzI1NiIsImtpZCI6IkE2MDk5NjE0MUU5MTJDMDhBRjQyMEFGMjUyNjI2N0Q5NkNGRjUyRjZSUzI1NiIsInR5cCI6ImF0K2p3dCIsIng1dCI6InBnbVdGQjZSTEFpdlFncnlVbUpuMld6X1V2WSJ9.eyJuYmYiOjE3NDUzOTcyNTgsImV4cCI6MTc0NjAwMjA1OCwiaXNzIjoiaHR0cDovL2lkZW50aXR5LXNlcnZpY2UudGFyYWF6IiwiYXVkIjoiYXBpMSIsImNsaWVudF9pZCI6InJvLmNsaWVudCIsInN1YiI6IjFkNTU4YTk5LTk5OTgtNGMxMy1iMTE2LWI5ZjViODBjYTZmYyIsImF1dGhfdGltZSI6MTc0NTM5NzI1OCwiaWRwIjoibG9jYWwiLCJpcCI6IiIsImFiLWNoYW5uZWwiOiIiLCJyb2xlIjoiSG9zdCIsImlzX2hvc3QiOnRydWUsInVzZXJfdW5pcXVlX251bWJlciI6IjE0MTgzNTEiLCJqdGkiOiIxNEMyRkJDNjEyNTVDMDRGQzM4QzAyQkFDNTJBOThCNyIsImlhdCI6MTc0NTM5NzI1OCwic2NvcGUiOlsiYXBpMSIsIm9wZW5pZCIsIm9mZmxpbmVfYWNjZXNzIl0sImFtciI6WyJvdHAtdG9rZW4iXX0.YfuVN2dKiSOt5z3d8oF6rbGW3bEye3DuQX1JSQrnLImI2swyNCajvU3Mq0UCxlDNYBwVlrYtrw03HDnxTGUS5NSs7L7-mepleQnovxCPykCxGQIj7P1tpdTUbE3XszV8kLCvctBnI4stTg2UWYvoJ6EscHbwL2VGC-5-tvAogGiNr1i9-R3Xx0b5bHpD0etkjBYgzOZ2AL5t2LIvqD73Yf1V4wc3wwRFRK-KUHOJdmJB72BmzfLu3fXAnaBv3nhmOY5k2B42V_c_vDbXtpM6QG7IeLeuRM7ZKFyESZfR3fTfS-y76IkVuHu9idq4o_VEnsgRknUWgscYcO1IFtP_YA",
+				Username:    "09334429096",
 			},
 			"1:client1:jajiga": {
 				UserID:      1,

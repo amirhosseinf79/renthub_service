@@ -2,6 +2,7 @@ package requests
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
@@ -20,6 +21,9 @@ type fetchS struct {
 }
 
 func New(method, url string, headers, extra map[string]string, logger *models.Log) interfaces.FetchService {
+	fmt.Println("Method:", method)
+	fmt.Println("Full URL:", url)
+
 	return &fetchS{
 		method:  method,
 		url:     url,
@@ -32,6 +36,7 @@ func New(method, url string, headers, extra map[string]string, logger *models.Lo
 func (f *fetchS) Start(body any, contentType string) error {
 	var err error
 	if contentType == "body" {
+		// err = f.requestBodyString()
 		err = f.requestBody(body)
 	}
 	if err != nil {
@@ -70,12 +75,15 @@ func (f *fetchS) Ok() (bool, error) {
 	ok := 200 <= f.httpResp.StatusCode && f.httpResp.StatusCode < 300
 	var result error
 	if !ok {
-		result = dto.ErrInvalidRequest
-	}
-	if f.httpResp.StatusCode == 401 {
-		result = dto.ErrorUnauthorized
-	} else if f.httpResp.StatusCode == 403 {
-		result = dto.ErrorPermission
+		if f.httpResp.StatusCode == 401 {
+			result = dto.ErrorUnauthorized
+		} else if f.httpResp.StatusCode == 403 {
+			result = dto.ErrorPermission
+		} else if f.httpResp.StatusCode == 404 {
+			result = dto.ErrRoomNotFound
+		} else {
+			result = dto.ErrInvalidRequest
+		}
 	}
 	return ok, result
 }
