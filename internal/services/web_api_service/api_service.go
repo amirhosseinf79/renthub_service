@@ -108,7 +108,7 @@ func NewHomsaService(apiAuthRepo repository.ApiAuthRepository, logRepo repositor
 				ApiURL: "https://core.otaghak.com",
 				Endpoints: dto.ApiEndpoints{
 					LoginFirstStep:  dto.EndP{Address: "/odata/Otaghak/Users/SendVerificationCode", Method: "POST", ContentType: "body"},
-					LoginSecondStep: dto.EndP{Address: "/odata/Otaghak/Users/CheckVerificationCode", Method: "POST", ContentType: "body"},
+					LoginSecondStep: dto.EndP{Address: "/api/v1/Identity/Login", Method: "POST", ContentType: "body"},
 					LoginWithPass:   dto.EndP{Address: "/api/v1/Identity/Login", Method: "POST", ContentType: "body"},
 					GetProfile:      dto.EndP{Address: "/odata/Otaghak/Users/UserInfo", Method: "GET", ContentType: "body"},
 					OpenCalendar:    dto.EndP{Address: "/odata/Otaghak/RoomBlockedUnblockedDays/ChangeBlockedDaysByHost", Method: "POST", ContentType: "body"},
@@ -175,6 +175,14 @@ func (h *homsaService) initLog(userID uint, clientID string) *models.Log {
 		ClientID: clientID,
 		Service:  h.service,
 	}
+}
+
+func (h *homsaService) datesToIso(dates []string) []string {
+	var formattedDates []string
+	for _, item := range dates {
+		formattedDates = append(formattedDates, fmt.Sprintf("%vT00:00:00.000Z", item))
+	}
+	return formattedDates
 }
 
 func (h *homsaService) getFullURL(endpoint dto.EndP, vals ...any) (url string, err error) {
@@ -250,6 +258,7 @@ func (h *homsaService) generateEasyLoginBody(fields dto.ApiEasyLogin) any {
 			Password:     fields.Password,
 			ClientId:     "Otaghak",
 			ClientSecret: "secret",
+			ArcValues:    map[string]string{},
 		}
 	}
 	return nil
@@ -264,6 +273,11 @@ func (h *homsaService) generateSendOTPBody(phoneNumber string) any {
 		return jajiga_dto.OTPLogin{
 			Mobile: phoneNumber,
 			ISO2:   "IR",
+		}
+	} else if h.service == "otaghak" {
+		return otaghak_dto.OTPBody{
+			UserName:   phoneNumber,
+			IsShortOtp: true,
 		}
 	}
 	return nil
@@ -287,6 +301,13 @@ func (h *homsaService) generateVerifyOTPBody(phoneNumber string, code string) an
 			Token:    &code,
 			ClientID: uuid.New().String(),
 			ISO2:     "IR",
+		}
+	} else if h.service == "otaghak" {
+		return otaghak_dto.OtaghakAuthRequestBody{
+			UserName:     phoneNumber,
+			ClientId:     "Otaghak",
+			ClientSecret: "secret",
+			ArcValues:    map[string]string{"OtpCode": code},
 		}
 	}
 	return nil
@@ -315,6 +336,17 @@ func (h *homsaService) generateCalendarBody(roomID string, setOpen bool, dates [
 			Dates:        dates,
 			DisableCount: num,
 		}
+	} else if h.service == "otaghak" {
+		if setOpen {
+			return otaghak_dto.CalendarBody{
+				RoomID:        roomID,
+				UnblockedDays: h.datesToIso(dates),
+			}
+		}
+		return otaghak_dto.CalendarBody{
+			RoomID:      roomID,
+			BlockedDays: h.datesToIso(dates),
+		}
 	}
 	return nil
 }
@@ -342,6 +374,16 @@ func (h *homsaService) generatePriceBody(roomID string, amount int, dates []stri
 			Dates:  dates,
 			Price:  amount,
 		}
+	} else if h.service == "otaghak" {
+		formattedDates := h.datesToIso(dates)
+		var formattedDays []otaghak_dto.DayPricePair
+		for _, item := range formattedDates {
+			formattedDays = append(formattedDays, otaghak_dto.DayPricePair{Day: item, Price: amount})
+		}
+		return otaghak_dto.EditPriceBody{
+			RoomID:       roomID,
+			PerDayPrices: formattedDays,
+		}
 	}
 	return nil
 }
@@ -363,6 +405,12 @@ func (h *homsaService) generateAddDiscountBody(roomID string, amount int, dates 
 			Dates:   dates,
 			Percent: amount,
 		}
+	} else if h.service == "otaghak" {
+		return otaghak_dto.EditDiscountBody{
+			DiscountPercent: amount,
+			EffectiveDays:   h.datesToIso(dates),
+			RoomID:          roomID,
+		}
 	}
 	return nil
 }
@@ -382,6 +430,12 @@ func (h *homsaService) generateRemoveDiscountBody(roomID string, dates []string)
 			RoomID:  roomID,
 			Dates:   dates,
 			Percent: 0,
+		}
+	} else if h.service == "otaghak" {
+		return otaghak_dto.EditDiscountBody{
+			DiscountPercent: 0,
+			EffectiveDays:   h.datesToIso(dates),
+			RoomID:          roomID,
 		}
 	}
 	return nil
@@ -404,6 +458,12 @@ func (h *homsaService) generateSetMinNightBody(roomID string, amount int, dates 
 			Dates:     dates,
 			MinNights: amount,
 		}
+	} else if h.service == "otaghak" {
+		return otaghak_dto.EditMinNightBody{
+			MinNights:     amount,
+			EffectiveDays: h.datesToIso(dates),
+			RoomID:        roomID,
+		}
 	}
 	return nil
 }
@@ -423,6 +483,12 @@ func (h *homsaService) generateUnsetMinNightBody(roomID string, dates []string) 
 			Dates:     dates,
 			MinNights: 1,
 		}
+	} else if h.service == "otaghak" {
+		return otaghak_dto.EditMinNightBody{
+			MinNights:     0,
+			EffectiveDays: h.datesToIso(dates),
+			RoomID:        roomID,
+		}
 	}
 	return nil
 }
@@ -434,6 +500,8 @@ func (h *homsaService) generateAuthResponse() interfaces.ApiResponseManager {
 		return &jabama_dto.Response{}
 	} else if h.service == "jajiga" {
 		return &jajiga_dto.AuthOkResponse{}
+	} else if h.service == "otaghak" {
+		return &otaghak_dto.AuthOkResponse{}
 	}
 	return nil
 }
@@ -445,6 +513,8 @@ func (h *homsaService) generateOTPResponse() interfaces.ApiResponseManager {
 		return &jabama_dto.Response{}
 	} else if h.service == "jajiga" {
 		return &jajiga_dto.OTPResponse{}
+	} else if h.service == "otaghak" {
+		return &otaghak_dto.OTPResponse{}
 	}
 	return nil
 }
@@ -472,6 +542,8 @@ func (h *homsaService) generateErrResponse() interfaces.ApiResponseManager {
 		return &jabama_dto.Response{}
 	} else if h.service == "jajiga" {
 		return &jajiga_dto.ErrorResponse{}
+	} else if h.service == "otaghak" {
+		return &otaghak_dto.ErrorResponse{}
 	}
 	return nil
 }
