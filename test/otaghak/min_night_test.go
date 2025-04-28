@@ -27,7 +27,7 @@ func TestMinNight(t *testing.T) {
 				Dates: []string{
 					"2025-06-07",
 				},
-				RoomID: "3263996",
+				RoomID: "2470341",
 				Amount: 1,
 			},
 			wantErr: false,
@@ -67,7 +67,7 @@ func TestMinNight(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			service := cloner.NewHomsaService(mockRepo, logRepo)
-			_, err := service.Set("jajiga").SetMinNight(tt.fields)
+			_, err := service.Set("otaghak").SetMinNight(tt.fields)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

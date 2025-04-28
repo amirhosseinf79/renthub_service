@@ -27,8 +27,8 @@ func TestEditPrice(t *testing.T) {
 				Dates: []string{
 					"2025-06-08",
 				},
-				RoomID: "3263996",
-				Amount: 3150000,
+				RoomID: "2470341",
+				Amount: 3900000,
 			},
 			wantErr: false,
 		},
@@ -67,7 +67,7 @@ func TestEditPrice(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			service := cloner.NewHomsaService(mockRepo, logRepo)
-			_, err := service.Set("jajiga").EditPricePerDays(tt.fields)
+			_, err := service.Set("otaghak").EditPricePerDays(tt.fields)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

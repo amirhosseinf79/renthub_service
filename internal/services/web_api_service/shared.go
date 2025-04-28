@@ -41,9 +41,12 @@ func (h *homsaService) handleUpdateResult(log *models.Log, body any, endpoint dt
 			return err
 		}
 		ok, result := response.GetResult()
-		err = errors.New(result)
+		if result == "" {
+			result = "service error"
+		}
+		log.FinalResult = result
 		if !ok {
-			log.FinalResult = result
+			err = errors.New(result)
 			return err
 		}
 		return err
