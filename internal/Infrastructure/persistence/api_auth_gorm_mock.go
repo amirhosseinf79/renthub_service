@@ -33,7 +33,8 @@ func NewMockApiAuthRepo() repository.ApiAuthRepository {
 				UserID:      1,
 				ClientID:    "client1",
 				Service:     "jajiga",
-				AccessToken: "token3",
+				AccessToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI5Mjc0OTkxNC0wYjE3LTRlNmItYjk0MC04Y2Y5ODU4MzgyN2UiLCJqdGkiOiI0NDM1OGU4MDgwY2EyNjQ0ODZiMzgxMjgwOTliMjg1OTU5Mzk1NDUyZTMyMWI2YTVhZDU1ZDgwZmE4N2U2OThkYWNlZmU5ODIwMGFiZTVjYyIsImlhdCI6MTc0NTMzNzUzMy40NDk3MTYsIm5iZiI6MTc0NTMzNzUzMy40NDk3MjEsImV4cCI6MTc3Njg3MzUzMy40Mjg5NDcsInN1YiI6IjEzOTczNDgiLCJzY29wZXMiOltdfQ.tbtzrfz1MZFqT2yg3gWiiBj6tRh-qwGLrl8hKz2ayoPQwOBl45NAa_q1vR5oFYDV25YSQyCYch6KjxWXU6I_8XwMqfPJ6iBlPf0OcmaKv0h7QNO6HC4M-9K9bpIrgnYR3FHhx63O3z8JIsEkGqcuLFL2BcyAt0GJkHFxsfbaGv9y13cdCu4bI5L5DpyQ9Ej6SKUb1qWbGHxzUHkeR4RptNALJnTeWkC3T5R2yxRcVYOfSP8Uex4uHzI56IJTFsHPuBx7oUIERYLlhSa-ecQLPAZvLx1F9b2hoJT5o8Se9Rpt9W2qlfuAF-ZU_Ua-3P8P8tmYwXfG9BaeGdKRt6_uHbvTLt0Es9cbjJE7ChrDTYchHkFIEycDI3W7Z4EHpxglId4FmWX8nyE2ZGFzuN5pTtkCGlCC4SvgM76isH25jsttcmSjKV5KvTN3F0aHnaRPABpETerxnwGquX5xQ6ThqaeMOLSP3sYlY4FOX2jMPjxAAVIeiTyrVc9-beoJsl6blm7eQ6vHD-7gJbULqctOtNu6vHAFUwLRShe0tx8zgTeevtkM-Ty-rSLnq5SqayOphYFr-qR83fEBiqQFTKhd68HPJZNLItdevJbmJu94SGiAdhFa7zwAH2bdfQnqqYbDkaK1Us1SGfIi1uXxeFj8swFzxV7V1Saku5fcWrgWxFI",
+				Username:    "09334429096",
 			},
 			"1:client1:mihmansho": {
 				UserID:      1,
