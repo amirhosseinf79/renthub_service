@@ -55,10 +55,10 @@ func TestCalendar(t *testing.T) {
 					ClientID: "client20",
 				},
 				Dates: []string{
-					"2025-0428",
+					"2025-04-28",
 					"2025-04-29",
 				},
-				RoomID: "104598",
+				RoomID: "657809886b1983001b3e9690",
 			},
 			wantErr: true,
 		},

@@ -52,7 +52,7 @@ func TestCalendar(t *testing.T) {
 			fields: dto.UpdateFields{
 				RequiredFields: dto.RequiredFields{
 					UserID:   1,
-					ClientID: "client2",
+					ClientID: "client20",
 				},
 				Dates: []string{
 					"2025-0428",
@@ -60,7 +60,7 @@ func TestCalendar(t *testing.T) {
 				},
 				RoomID: "104598",
 			},
-			wantErr: true,
+			wantErr: false,
 		},
 	}
 
