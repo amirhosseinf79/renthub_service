@@ -7,6 +7,8 @@ import (
 	"io"
 	"net/http"
 	"net/http/httputil"
+
+	"github.com/google/go-querystring/query"
 )
 
 func (f *fetchS) requestBody(bodyRow any) error {
@@ -36,20 +38,22 @@ func (f *fetchS) requestBody(bodyRow any) error {
 // 	return nil
 // }
 
-// func (f *fetchS) requestQuery(queryRow any) error {
-// 	v, err := query.Values(queryRow)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	fullURL := fmt.Sprintf("%s?%s", f.url, v.Encode())
-
-// 	req, err := http.NewRequest(f.method, fullURL, nil)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	f.httpReq = req
-// 	return nil
-// }
+func (f *fetchS) requestQuery(queryRow any) error {
+	v, err := query.Values(queryRow)
+	if err != nil {
+		return err
+	}
+	fullURL := fmt.Sprintf("%s?%s", f.url, v.Encode())
+	req, err := http.NewRequest(f.method, fullURL, nil)
+	if err != nil {
+		return err
+	}
+	if f.method == "GET" {
+		req.ContentLength = -1
+	}
+	f.httpReq = req
+	return nil
+}
 
 func (f *fetchS) setHeaders() {
 	for k, v := range f.headers {

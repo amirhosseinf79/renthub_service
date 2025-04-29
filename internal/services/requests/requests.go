@@ -38,6 +38,8 @@ func (f *fetchS) Start(body any, contentType string) error {
 	if contentType == "body" {
 		// err = f.requestBodyString()
 		err = f.requestBody(body)
+	} else if contentType == "query" {
+		err = f.requestQuery(body)
 	}
 	if err != nil {
 		return err

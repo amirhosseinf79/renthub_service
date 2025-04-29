@@ -5,8 +5,46 @@ import (
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
+	homsa_dto "github.com/amirhosseinf79/renthub_service/internal/dto/homsa"
+	jajiga_dto "github.com/amirhosseinf79/renthub_service/internal/dto/jajiga"
+	mihmansho_dto "github.com/amirhosseinf79/renthub_service/internal/dto/mihmansho"
+	otaghak_dto "github.com/amirhosseinf79/renthub_service/internal/dto/otaghak"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
+	"github.com/google/uuid"
 )
+
+func (h *homsaService) generateEasyLoginBody(fields dto.ApiEasyLogin) any {
+	switch h.service {
+	case "homsa":
+		return homsa_dto.HomsaLoginUserPass{
+			Mobile:   fields.Username,
+			Password: fields.Password,
+			UseOTP:   false,
+		}
+	case "jajiga":
+		return jajiga_dto.JajigaAuthRequestBody{
+			Mobile:     fields.Username,
+			Password:   &fields.Password,
+			ISO2:       "IR",
+			ClientID:   uuid.New().String(),
+			ClientType: "browser",
+		}
+	case "otaghak":
+		return otaghak_dto.OtaghakAuthRequestBody{
+			UserName:     fields.Username,
+			Password:     fields.Password,
+			ClientId:     "Otaghak",
+			ClientSecret: "secret",
+			ArcValues:    map[string]string{},
+		}
+	case "mihmansho":
+		return mihmansho_dto.AuthBody{
+			Username: fields.Username,
+			Password: fields.Password,
+		}
+	}
+	return nil
+}
 
 func (h *homsaService) updateOrCreateAuthRecord(fields dto.ApiEasyLogin, model *models.ApiAuth) error {
 	var err error

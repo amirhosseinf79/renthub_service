@@ -9,6 +9,6 @@ func (h *homsaService) OpenCalendar(fields dto.UpdateFields) (log *models.Log, e
 	log = h.initLog(fields.UserID, fields.ClientID)
 	endpoint := h.getEndpoints().OpenCalendar
 	body := h.generateCalendarBody(fields.RoomID, true, fields.Dates)
-	err = h.handleUpdateResult(log, body, endpoint, fields.UserID, fields.ClientID, fields.RoomID)
+	err = h.handleUpdateResult(log, body, endpoint, fields)
 	return log, err
 }

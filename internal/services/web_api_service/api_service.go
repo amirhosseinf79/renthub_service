@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"sort"
 	"time"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
@@ -105,6 +104,26 @@ func NewHomsaService(apiAuthRepo repository.ApiAuthRepository, logRepo repositor
 					"accept-charset":  "UTF-8",
 					"lang":            "fa",
 					"Authorization":   "Bearer %v",
+				},
+			},
+			"mihmansho": {
+				ApiURL: "https://www.mihmansho.com/myapi/v1",
+				Endpoints: dto.ApiEndpoints{
+					LoginFirstStep:  dto.EndP{Address: "/loginfirststep", Method: "POST", ContentType: "query"},
+					LoginSecondStep: dto.EndP{Address: "/loginwithcode", Method: "POST", ContentType: "query"},
+					LoginWithPass:   dto.EndP{Address: "/login", Method: "POST", ContentType: "query"},
+					GetProfile:      dto.EndP{Address: "/getprofile", Method: "GET", ContentType: "body"},
+					OpenCalendar:    dto.EndP{Address: "/ReserveDates", Method: "PUT", ContentType: "formData"},
+					CloseCalendar:   dto.EndP{Address: "/ReserveDates", Method: "PUT", ContentType: "formData"},
+					EditPricePerDay: dto.EndP{Address: "/EditPricesCalendar?ProductId=%v&Price=%v&AddedGuestPrice=0", Method: "PUT", ContentType: "unlencoded"},
+				},
+				Headers: map[string]string{
+					"user-agent": "okhttp/3.12.1",
+					"version":    "1.3.6",
+					"city":       "0",
+					"ucode":      "%v",
+					"token":      "%v",
+					"imei":       "%v",
 				},
 			},
 			"otaghak": {
@@ -211,7 +230,12 @@ func (h *homsaService) getFullURL(endpoint dto.EndP, vals ...any) (url string, e
 	}
 	realEndpoint := endpoint.Address
 	if bytes.Contains([]byte(endpoint.Address), []byte("%v")) {
-		realEndpoint = fmt.Sprintf(endpoint.Address, vals...)
+		count := bytes.Count([]byte(endpoint.Address), []byte("%v"))
+		if len(vals) >= count {
+			realEndpoint = fmt.Sprintf(endpoint.Address, vals[:count]...)
+		} else {
+			return
+		}
 	}
 	settings, ok := h.apiSettings[h.service]
 	if !ok {
@@ -239,394 +263,107 @@ func (h *homsaService) getHeader() map[string]string {
 }
 
 func (h *homsaService) getExtraHeader(token *models.ApiAuth) map[string]string {
-	if h.service == "homsa" {
+
+	switch h.service {
+	case "homsa":
 		return map[string]string{
 			"authorization": token.AccessToken,
 		}
-	} else if h.service == "jabama" {
+	case "jabama":
 		return map[string]string{
 			"Authorization": token.AccessToken,
 			"ab-channel":    uuid.New().String(),
 		}
-	} else {
+	case "mihmansho":
+		return map[string]string{
+			"ucode": token.Ucode,
+			"token": token.AccessToken,
+			"imei":  uuid.New().String(),
+		}
+	default:
 		return map[string]string{
 			"Authorization": token.AccessToken,
 		}
 	}
 }
 
-func (h *homsaService) generateEasyLoginBody(fields dto.ApiEasyLogin) any {
-	if h.service == "homsa" {
-		return homsa_dto.HomsaLoginUserPass{
-			Mobile:   fields.Username,
-			Password: fields.Password,
-			UseOTP:   false,
-		}
-	} else if h.service == "jajiga" {
-		return jajiga_dto.JajigaAuthRequestBody{
-			Mobile:     fields.Username,
-			Password:   &fields.Password,
-			ISO2:       "IR",
-			ClientID:   uuid.New().String(),
-			ClientType: "browser",
-		}
-	} else if h.service == "otaghak" {
-		return otaghak_dto.OtaghakAuthRequestBody{
-			UserName:     fields.Username,
-			Password:     fields.Password,
-			ClientId:     "Otaghak",
-			ClientSecret: "secret",
-			ArcValues:    map[string]string{},
-		}
-	}
-	return nil
-}
-
-func (h *homsaService) generateSendOTPBody(phoneNumber string) any {
-	if h.service == "homsa" {
-		return homsa_dto.HomsaOTPLogin{Mobile: phoneNumber}
-	} else if h.service == "jabama" {
-		return jabama_dto.OTPLogin{Mobile: phoneNumber}
-	} else if h.service == "jajiga" {
-		return jajiga_dto.OTPLogin{
-			Mobile: phoneNumber,
-			ISO2:   "IR",
-		}
-	} else if h.service == "otaghak" {
-		return otaghak_dto.OTPBody{
-			UserName:   phoneNumber,
-			IsShortOtp: true,
-		}
-	} else if h.service == "shab" {
-		return shab_dto.OTPBody{
-			Mobile:      phoneNumber,
-			CountryCode: "+98",
-		}
-	}
-	return nil
-}
-
-func (h *homsaService) generateVerifyOTPBody(phoneNumber string, code string) any {
-	if h.service == "homsa" {
-		return homsa_dto.HomsaLoginUserPass{
-			Mobile:   phoneNumber,
-			Password: code,
-			UseOTP:   true,
-		}
-	} else if h.service == "jabama" {
-		return jabama_dto.OTPLogin{
-			Mobile: phoneNumber,
-			Code:   code,
-		}
-	} else if h.service == "jajiga" {
-		return jajiga_dto.JajigaTokenAuthRequestBody{
-			Mobile:   phoneNumber,
-			Token:    &code,
-			ClientID: uuid.New().String(),
-			ISO2:     "IR",
-		}
-	} else if h.service == "otaghak" {
-		return otaghak_dto.OtaghakAuthRequestBody{
-			UserName:     phoneNumber,
-			ClientId:     "Otaghak",
-			ClientSecret: "secret",
-			ArcValues:    map[string]string{"OtpCode": code},
-		}
-	} else if h.service == "shab" {
-		return shab_dto.VerifyOTOBody{
-			Mobile:      phoneNumber,
-			CountryCode: "+98",
-			Code:        code,
-		}
-	}
-	return nil
-}
-
-func (h *homsaService) generateCalendarBody(roomID string, setOpen bool, dates []string) any {
-	if h.service == "homsa" {
-		if len(dates) > 1 {
-			sort.Strings(dates)
-		}
-		return homsa_dto.HomsaCalendarBody{
-			StartDate: dates[0],
-			EndDate:   dates[len(dates)-1],
-		}
-	} else if h.service == "jabama" {
-		return jabama_dto.OpenClosCalendar{
-			Dates: dates,
-		}
-	} else if h.service == "jajiga" {
-		var num int
-		if !setOpen {
-			num = 1
-		}
-		return jajiga_dto.CalendarBody{
-			RoomID:       roomID,
-			Dates:        dates,
-			DisableCount: num,
-		}
-	} else if h.service == "otaghak" {
-		if setOpen {
-			return otaghak_dto.CalendarBody{
-				RoomID:        roomID,
-				UnblockedDays: h.datesToIso(dates),
-			}
-		}
-		return otaghak_dto.CalendarBody{
-			RoomID:      roomID,
-			BlockedDays: h.datesToIso(dates),
-		}
-	} else if h.service == "shab" {
-		status := "set_disabled"
-		if setOpen {
-			status = "unset_disabled"
-		}
-		return shab_dto.CalendarBody{
-			Action: status,
-			Dates:  h.datesToJalali(dates),
-		}
-	}
-	return nil
-}
-
-func (h *homsaService) generatePriceBody(roomID string, amount int, dates []string) any {
-	if h.service == "homsa" {
-		if len(dates) > 1 {
-			sort.Strings(dates)
-		}
-		return homsa_dto.HomsaPriceBody{
-			StartDate:    dates[0],
-			EndDate:      dates[len(dates)-1],
-			Price:        amount,
-			KeepDiscount: 0,
-		}
-	} else if h.service == "jabama" {
-		return jabama_dto.EditPricePerDay{
-			Type:  nil,
-			Days:  dates,
-			Value: amount * 10,
-		}
-	} else if h.service == "jajiga" {
-		return jajiga_dto.PriceBody{
-			RoomID: roomID,
-			Dates:  dates,
-			Price:  amount,
-		}
-	} else if h.service == "otaghak" {
-		formattedDates := h.datesToIso(dates)
-		var formattedDays []otaghak_dto.DayPricePair
-		for _, item := range formattedDates {
-			formattedDays = append(formattedDays, otaghak_dto.DayPricePair{Day: item, Price: amount})
-		}
-		return otaghak_dto.EditPriceBody{
-			RoomID:       roomID,
-			PerDayPrices: formattedDays,
-		}
-	} else if h.service == "shab" {
-		return shab_dto.EditPriceBody{
-			KeepDiscount: false,
-			Price:        amount,
-			Dates:        h.datesToJalali(dates),
-		}
-	}
-	return nil
-}
-
-func (h *homsaService) generateAddDiscountBody(roomID string, amount int, dates []string) any {
-	if h.service == "homsa" {
-		if len(dates) > 1 {
-			sort.Strings(dates)
-		}
-		return homsa_dto.HomsaAddDiscountBody{
-			StartDate:    dates[0],
-			EndDate:      dates[len(dates)-1],
-			Discount:     amount,
-			KeepDiscount: 0,
-		}
-	} else if h.service == "jajiga" {
-		return jajiga_dto.DiscountBody{
-			RoomID:  roomID,
-			Dates:   dates,
-			Percent: amount,
-		}
-	} else if h.service == "otaghak" {
-		return otaghak_dto.EditDiscountBody{
-			DiscountPercent: amount,
-			EffectiveDays:   h.datesToIso(dates),
-			RoomID:          roomID,
-		}
-	} else if h.service == "shab" {
-		return shab_dto.EditDiscountBody{
-			Action:        "set_daily_discount",
-			Dates:         h.datesToJalali(dates),
-			DailyDiscount: amount,
-		}
-	}
-	return nil
-}
-
-func (h *homsaService) generateRemoveDiscountBody(roomID string, dates []string) any {
-	if h.service == "homsa" {
-		if len(dates) > 1 {
-			sort.Strings(dates)
-		}
-		return homsa_dto.HomsaRemoveDiscountBody{
-			StartDate:    dates[0],
-			EndDate:      dates[len(dates)-1],
-			KeepDiscount: 0,
-		}
-	} else if h.service == "jajiga" {
-		return jajiga_dto.DiscountBody{
-			RoomID:  roomID,
-			Dates:   dates,
-			Percent: 0,
-		}
-	} else if h.service == "otaghak" {
-		return otaghak_dto.EditDiscountBody{
-			DiscountPercent: 0,
-			EffectiveDays:   h.datesToIso(dates),
-			RoomID:          roomID,
-		}
-	} else if h.service == "shab" {
-		return shab_dto.EditDiscountBody{
-			Action: "unset_daily_discount",
-			Dates:  h.datesToJalali(dates),
-		}
-	}
-	return nil
-}
-
-func (h *homsaService) generateSetMinNightBody(roomID string, amount int, dates []string) any {
-	if h.service == "homsa" {
-		if len(dates) > 1 {
-			sort.Strings(dates)
-		}
-		return homsa_dto.HomsaSetMinNightBody{
-			StartDate: dates[0],
-			EndDate:   dates[len(dates)-1],
-			Min:       amount,
-			Max:       nil,
-		}
-	} else if h.service == "jajiga" {
-		return jajiga_dto.MinNightBody{
-			RoomID:    roomID,
-			Dates:     dates,
-			MinNights: amount,
-		}
-	} else if h.service == "otaghak" {
-		return otaghak_dto.EditMinNightBody{
-			MinNights:     amount,
-			EffectiveDays: h.datesToIso(dates),
-			RoomID:        roomID,
-		}
-	} else if h.service == "shab" {
-		return shab_dto.EditMinNightBody{
-			Action:  "set_min_days",
-			Dates:   h.datesToJalali(dates),
-			MinDays: amount,
-		}
-	}
-	return nil
-}
-
-func (h *homsaService) generateUnsetMinNightBody(roomID string, dates []string) any {
-	if h.service == "homsa" {
-		if len(dates) > 1 {
-			sort.Strings(dates)
-		}
-		return homsa_dto.HomsaUnsetMinNightBody{
-			StartDate: dates[0],
-			EndDate:   dates[len(dates)-1],
-		}
-	} else if h.service == "jajiga" {
-		return jajiga_dto.MinNightBody{
-			RoomID:    roomID,
-			Dates:     dates,
-			MinNights: 1,
-		}
-	} else if h.service == "otaghak" {
-		return otaghak_dto.EditMinNightBody{
-			MinNights:     1,
-			EffectiveDays: h.datesToIso(dates),
-			RoomID:        roomID,
-		}
-	} else if h.service == "shab" {
-		return shab_dto.EditMinNightBody{
-			Action:  "set_min_days",
-			Dates:   h.datesToJalali(dates),
-			MinDays: 1,
-		}
-	}
-	return nil
-}
-
 func (h *homsaService) generateAuthResponse() interfaces.ApiResponseManager {
-	if h.service == "homsa" {
+	switch h.service {
+	case "homsa":
 		return &homsa_dto.HomsaAuthResponse{}
-	} else if h.service == "jabama" {
+	case "jabama":
 		return &jabama_dto.Response{}
-	} else if h.service == "jajiga" {
+	case "jajiga":
 		return &jajiga_dto.AuthOkResponse{}
-	} else if h.service == "otaghak" {
+	case "otaghak":
 		return &otaghak_dto.AuthOkResponse{}
-	} else if h.service == "shab" {
+	case "shab":
 		return &shab_dto.AuthResponse{}
+	default:
+		return nil
 	}
-	return nil
 }
 
 func (h *homsaService) generateOTPResponse() interfaces.ApiResponseManager {
-	if h.service == "homsa" {
+	switch h.service {
+	case "homsa":
 		return &homsa_dto.HomsaOTPResponse{}
-	} else if h.service == "jabama" {
+	case "jabama":
 		return &jabama_dto.Response{}
-	} else if h.service == "jajiga" {
+	case "jajiga":
 		return &jajiga_dto.OTPResponse{}
-	} else if h.service == "otaghak" {
+	case "otaghak":
 		return &otaghak_dto.OTPResponse{}
-	} else if h.service == "shab" {
+	case "shab":
 		return &shab_dto.AuthOTPResponse{}
+	default:
+		return nil
 	}
-	return nil
 }
 
 func (h *homsaService) generateProfileResponse() interfaces.ApiResponseManager {
-	if h.service == "mihmansho" {
+	switch h.service {
+	case "mihmansho":
 		return &mihmansho_dto.MihmanshoProfileResponse{}
+	default:
+		return nil
 	}
-	return nil
 }
 
 func (h *homsaService) generateUpdateErrResponse() interfaces.ApiResponseManager {
-	if h.service == "mihmansho" {
+	switch h.service {
+	case "mihmansho":
 		return &mihmansho_dto.MihmanshoErrorResponse{}
-	} else if h.service == "homsa" {
+	case "homsa":
 		return &homsa_dto.HomsaErrorResponse{}
-	} else if h.service == "jabama" {
+	case "jabama":
 		return &jabama_dto.UpdateErrorResponse{}
-	} else if h.service == "jajiga" {
+	case "jajiga":
 		return &jajiga_dto.ErrorResponse{}
-	} else if h.service == "otaghak" {
+	case "otaghak":
 		return &otaghak_dto.ErrorResponse{}
-	} else if h.service == "shab" {
+	case "shab":
 		return &shab_dto.ErrResponse{}
+	default:
+		return nil
 	}
-	return nil
 }
 
 func (h *homsaService) generateErrResponse() interfaces.ApiResponseManager {
-	if h.service == "homsa" {
+	switch h.service {
+	case "homsa":
 		return &homsa_dto.HomsaErrorResponse{}
-	} else if h.service == "mihmansho" {
+	case "mihmansho":
 		return &mihmansho_dto.MihmanshoErrorResponse{}
-	} else if h.service == "jabama" {
+	case "jabama":
 		return &jabama_dto.Response{}
-	} else if h.service == "jajiga" {
+	case "jajiga":
 		return &jajiga_dto.ErrorResponse{}
-	} else if h.service == "otaghak" {
+	case "otaghak":
 		return &otaghak_dto.ErrorResponse{}
-	} else if h.service == "shab" {
+	case "shab":
 		return &shab_dto.ErrResponse{}
+	default:
+		return nil
 	}
-	return nil
 }
