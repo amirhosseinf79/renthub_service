@@ -1,6 +1,7 @@
 package cloner
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"sort"
@@ -10,6 +11,7 @@ import (
 	homsa_dto "github.com/amirhosseinf79/renthub_service/internal/dto/homsa"
 	jabama_dto "github.com/amirhosseinf79/renthub_service/internal/dto/jabama"
 	jajiga_dto "github.com/amirhosseinf79/renthub_service/internal/dto/jajiga"
+	mihmansho_dto "github.com/amirhosseinf79/renthub_service/internal/dto/mihmansho"
 	otaghak_dto "github.com/amirhosseinf79/renthub_service/internal/dto/otaghak"
 	shab_dto "github.com/amirhosseinf79/renthub_service/internal/dto/shab"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
@@ -58,8 +60,28 @@ func (h *homsaService) generateCalendarBody(roomID string, setOpen bool, dates [
 		}
 		return shab_dto.CalendarBody{
 			Action: status,
-			Dates:  h.datesToJalali(dates),
+			Dates:  h.datesToJalali(dates, true),
 		}
+	case "mihmansho":
+		fDate := mihmansho_dto.Calendar{
+			ProductId: roomID,
+		}
+		jdates := h.datesToJalali(dates, false)
+		for _, jdate := range jdates {
+			fDate.Dates = append(fDate.Dates, mihmansho_dto.CalendarDates{Date: jdate, IsReserve: !setOpen, RequestId: 0})
+		}
+		bdata, err := json.Marshal(fDate)
+		if err != nil {
+			return err
+		}
+		mainBody := mihmansho_dto.FormBody{
+			"Dates": string(bdata),
+		}
+		mbody, err := json.Marshal(mainBody)
+		if err != nil {
+			return err
+		}
+		return mbody
 	}
 	return nil
 }
@@ -90,6 +112,8 @@ func (h *homsaService) handleUpdateResult(log *models.Log, body any, endpoint dt
 		log.FinalResult = "success"
 		log.IsSucceed = true
 		return nil
+	} else if h.service != "mihmansho" {
+		log.FinalResult = err.Error()
 	}
 	response := h.generateUpdateErrResponse()
 	if response != nil {
@@ -98,9 +122,11 @@ func (h *homsaService) handleUpdateResult(log *models.Log, body any, endpoint dt
 			ok, result := response.GetResult()
 			if !ok && result != "" {
 				err = errors.New(result)
+				log.FinalResult = result
+			} else if result != "" {
+				log.FinalResult = result
 			}
 		}
 	}
-	log.FinalResult = err.Error()
 	return err
 }

@@ -51,7 +51,6 @@ func NewHomsaService(apiAuthRepo repository.ApiAuthRepository, logRepo repositor
 					"user-Agent":     "Dart/2.19 (dart:io)",
 					"accept":         "application/json",
 					"host":           "www.homsa.net",
-					"content-type":   "application/json; charset=UTF-8",
 					"accept-charset": "UTF-8",
 					"lang":           "fa",
 					"authorization":  "bearer %v",
@@ -72,7 +71,6 @@ func NewHomsaService(apiAuthRepo repository.ApiAuthRepository, logRepo repositor
 					"Accept":          "application/json",
 					"Accept-Charset":  "UTF-8",
 					"User-Agent":      "okhttp/4.12.0",
-					"Content-Type":    "application/json; charset=UTF-8",
 					"Host":            "gw.jabama.com",
 					"Connection":      "Keep-Alive",
 					"Accept-Encoding": "gzip",
@@ -100,7 +98,6 @@ func NewHomsaService(apiAuthRepo repository.ApiAuthRepository, logRepo repositor
 					"accept-Encoding": "chunked",
 					"host":            "api.jajiga.com",
 					"Host":            "api.jajiga.com",
-					"content-type":    "application/json; charset=UTF-8",
 					"accept-charset":  "UTF-8",
 					"lang":            "fa",
 					"Authorization":   "Bearer %v",
@@ -113,17 +110,18 @@ func NewHomsaService(apiAuthRepo repository.ApiAuthRepository, logRepo repositor
 					LoginSecondStep: dto.EndP{Address: "/loginwithcode", Method: "POST", ContentType: "query"},
 					LoginWithPass:   dto.EndP{Address: "/login", Method: "POST", ContentType: "query"},
 					GetProfile:      dto.EndP{Address: "/getprofile", Method: "GET", ContentType: "body"},
-					OpenCalendar:    dto.EndP{Address: "/ReserveDates", Method: "PUT", ContentType: "formData"},
-					CloseCalendar:   dto.EndP{Address: "/ReserveDates", Method: "PUT", ContentType: "formData"},
-					EditPricePerDay: dto.EndP{Address: "/EditPricesCalendar?ProductId=%v&Price=%v&AddedGuestPrice=0", Method: "PUT", ContentType: "unlencoded"},
+					OpenCalendar:    dto.EndP{Address: "/ReserveDates", Method: "POST", ContentType: "multipart"},
+					CloseCalendar:   dto.EndP{Address: "/ReserveDates", Method: "POST", ContentType: "multipart"},
+					EditPricePerDay: dto.EndP{Address: "/EditPricesCalendar?ProductId=%v&Price=%v&AddedGuestPrice=0", Method: "POST", ContentType: "multipart"},
 				},
 				Headers: map[string]string{
-					"user-agent": "okhttp/3.12.1",
-					"version":    "1.3.6",
-					"city":       "0",
-					"ucode":      "%v",
-					"token":      "%v",
-					"imei":       "%v",
+					"user-agent":      "okhttp/3.12.1",
+					"accept-encoding": "gzip",
+					"version":         "1.3.6",
+					"city":            "0",
+					"ucode":           "%v",
+					"token":           "%v",
+					"imei":            "%v",
 				},
 			},
 			"otaghak": {
@@ -147,7 +145,6 @@ func NewHomsaService(apiAuthRepo repository.ApiAuthRepository, logRepo repositor
 					"Accept-Encoding": "chunked",
 					"Origin":          "https://www.otaghak.com",
 					"Host":            "core.otaghak.com",
-					"Content-Type":    "application/json;charset=UTF-8",
 					"Authorization":   "Bearer %v",
 				},
 			},
@@ -168,7 +165,6 @@ func NewHomsaService(apiAuthRepo repository.ApiAuthRepository, logRepo repositor
 				Headers: map[string]string{
 					"User-Agent":    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:138.0) Gecko/20100101 Firefox/138.0",
 					"Accept":        "application/json, text/plain, */*",
-					"Content-Type":  "application/json;charset=UTF-8",
 					"Connection":    "keep-alive",
 					"Authorization": "Bearer %v",
 				},
@@ -202,11 +198,10 @@ func (h *homsaService) datesToIso(dates []string) []string {
 	return formattedDates
 }
 
-func (h *homsaService) datesToJalali(dates []string) []string {
+func (h *homsaService) datesToJalali(dates []string, dash bool) []string {
 	var jdates []string
 	for _, date := range dates {
 		parsedTime, err := time.Parse("2006-01-02", date)
-
 		if err != nil {
 			return nil
 		}
@@ -215,7 +210,12 @@ func (h *homsaService) datesToJalali(dates []string) []string {
 		ptobj := ptime.New(parsedTime)
 
 		// Format it as jYY-jMM-jDD
-		jalaliDate := ptobj.Format("yyyy-MM-dd")
+		var jalaliDate string
+		if dash {
+			jalaliDate = ptobj.Format("yyyy-MM-dd")
+		} else {
+			jalaliDate = ptobj.Format("yyyy/MM/dd")
+		}
 		jdates = append(jdates, jalaliDate)
 		fmt.Println(jdates)
 	}
@@ -278,7 +278,7 @@ func (h *homsaService) getExtraHeader(token *models.ApiAuth) map[string]string {
 		return map[string]string{
 			"ucode": token.Ucode,
 			"token": token.AccessToken,
-			"imei":  uuid.New().String(),
+			"imei":  "c00add1deb77e991",
 		}
 	default:
 		return map[string]string{
@@ -299,6 +299,8 @@ func (h *homsaService) generateAuthResponse() interfaces.ApiResponseManager {
 		return &otaghak_dto.AuthOkResponse{}
 	case "shab":
 		return &shab_dto.AuthResponse{}
+	case "mihmansho":
+		return &mihmansho_dto.AuthResponse{}
 	default:
 		return nil
 	}
@@ -316,6 +318,8 @@ func (h *homsaService) generateOTPResponse() interfaces.ApiResponseManager {
 		return &otaghak_dto.OTPResponse{}
 	case "shab":
 		return &shab_dto.AuthOTPResponse{}
+	case "mihmansho":
+		return &mihmansho_dto.MihmanshoErrorResponse{}
 	default:
 		return nil
 	}

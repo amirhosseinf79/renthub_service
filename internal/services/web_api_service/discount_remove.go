@@ -37,7 +37,7 @@ func (h *homsaService) generateRemoveDiscountBody(roomID string, dates []string)
 	case "shab":
 		return shab_dto.EditDiscountBody{
 			Action: "unset_daily_discount",
-			Dates:  h.datesToJalali(dates),
+			Dates:  h.datesToJalali(dates, true),
 		}
 	default:
 		return nil

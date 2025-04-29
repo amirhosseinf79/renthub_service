@@ -38,7 +38,7 @@ func (h *homsaService) generateSetMinNightBody(roomID string, amount int, dates 
 	case "shab":
 		return shab_dto.EditMinNightBody{
 			Action:  "set_min_days",
-			Dates:   h.datesToJalali(dates),
+			Dates:   h.datesToJalali(dates, true),
 			MinDays: amount,
 		}
 	default:

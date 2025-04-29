@@ -8,6 +8,7 @@ import (
 	homsa_dto "github.com/amirhosseinf79/renthub_service/internal/dto/homsa"
 	jabama_dto "github.com/amirhosseinf79/renthub_service/internal/dto/jabama"
 	jajiga_dto "github.com/amirhosseinf79/renthub_service/internal/dto/jajiga"
+	mihmansho_dto "github.com/amirhosseinf79/renthub_service/internal/dto/mihmansho"
 	otaghak_dto "github.com/amirhosseinf79/renthub_service/internal/dto/otaghak"
 	shab_dto "github.com/amirhosseinf79/renthub_service/internal/dto/shab"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
@@ -46,6 +47,11 @@ func (h *homsaService) generateVerifyOTPBody(phoneNumber string, code string) an
 			Mobile:      phoneNumber,
 			CountryCode: "+98",
 			Code:        code,
+		}
+	case "mihmansho":
+		return mihmansho_dto.OTPVerifyBody{
+			Mobile: phoneNumber,
+			Code:   code,
 		}
 	default:
 		return nil

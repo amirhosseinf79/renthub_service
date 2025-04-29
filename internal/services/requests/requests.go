@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -35,16 +36,27 @@ func New(method, url string, headers, extra map[string]string, logger *models.Lo
 
 func (f *fetchS) Start(body any, contentType string) error {
 	var err error
-	if contentType == "body" {
-		// err = f.requestBodyString()
-		err = f.requestBody(body)
-	} else if contentType == "query" {
+	payload := &bytes.Buffer{}
+	headerCType := ""
+	switch contentType {
+	case "body":
+		payload, err = f.requestBody(body)
+		headerCType = "application/json; charset=UTF-8"
+	case "query":
 		err = f.requestQuery(body)
+	case "multipart":
+		payload, headerCType, err = f.requestMultipart(body)
+	default:
+		err = fmt.Errorf("unsupported content type: %s", contentType)
 	}
 	if err != nil {
 		return err
 	}
-	f.setHeaders()
+	err = f.NewRequest(payload)
+	if err != nil {
+		return err
+	}
+	f.setHeaders(headerCType)
 	if f.logger != nil {
 		f.dumpRequest()
 	}

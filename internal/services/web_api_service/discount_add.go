@@ -38,7 +38,7 @@ func (h *homsaService) generateAddDiscountBody(roomID string, amount int, dates 
 	case "shab":
 		return shab_dto.EditDiscountBody{
 			Action:        "set_daily_discount",
-			Dates:         h.datesToJalali(dates),
+			Dates:         h.datesToJalali(dates, true),
 			DailyDiscount: amount,
 		}
 	}

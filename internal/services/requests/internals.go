@@ -5,37 +5,62 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/http/httputil"
 
+	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	"github.com/google/go-querystring/query"
 )
 
-func (f *fetchS) requestBody(bodyRow any) error {
+func (f *fetchS) requestBody(bodyRow any) (*bytes.Buffer, error) {
 	body, err := json.Marshal(bodyRow)
 	if err != nil {
-		return err
+		return nil, err
 	}
-
-	req, err := http.NewRequest(f.method, f.url, bytes.NewBuffer(body))
-	if err != nil {
-		return err
-	}
-	if f.method == "GET" {
-		req.ContentLength = -1
-	}
-	f.httpReq = req
-	return nil
+	payload := bytes.NewBuffer(body)
+	fmt.Println(payload.String())
+	return payload, nil
 }
 
-// func (f *fetchS) requestBodyString() error {
-// 	payload := strings.NewReader("{\"mobile\": \"09334429096\",\"code\": \"\"}")
-// 	req, err := http.NewRequest(f.method, f.url, payload)
-// 	if err != nil {
-// 		return err
+func (f *fetchS) requestMultipart(bodyRow any) (*bytes.Buffer, string, error) {
+	bodyS, ok := bodyRow.([]byte)
+	if !ok {
+		return nil, "", dto.ErrInvalidRequest
+	}
+	var mapBody map[string]string
+	err := json.Unmarshal([]byte(bodyS), &mapBody)
+	if err != nil {
+		return nil, "", dto.ErrInvalidRequest
+	}
+	payload := &bytes.Buffer{}
+	writer := multipart.NewWriter(payload)
+	for key, val := range mapBody {
+		err := writer.WriteField(key, val)
+		if err != nil {
+			return nil, "", err
+		}
+	}
+	cType := writer.FormDataContentType()
+	err = writer.Close()
+	if err != nil {
+		return nil, "", err
+	}
+
+	return payload, cType, err
+}
+
+// func (f *fetchS) requestUnlenCoded(body any) (*bytes.Buffer, error) {
+// 	mapBody, ok := body.(map[string]string)
+// 	if !ok {
+// 		return nil, dto.ErrInvalidRequest
 // 	}
-// 	f.httpReq = req
-// 	return nil
+// 	var dates []string
+// 	for key, val := range mapBody {
+// 		dates = append(dates, fmt.Sprintf("%v=%v", key, val))
+// 	}
+// 	encoded := bytes.NewBufferString(strings.Join(dates, "&"))
+// 	return encoded, nil
 // }
 
 func (f *fetchS) requestQuery(queryRow any) error {
@@ -44,7 +69,12 @@ func (f *fetchS) requestQuery(queryRow any) error {
 		return err
 	}
 	fullURL := fmt.Sprintf("%s?%s", f.url, v.Encode())
-	req, err := http.NewRequest(f.method, fullURL, nil)
+	f.url = fullURL
+	return nil
+}
+
+func (f *fetchS) NewRequest(body *bytes.Buffer) error {
+	req, err := http.NewRequest(f.method, f.url, body)
 	if err != nil {
 		return err
 	}
@@ -55,7 +85,10 @@ func (f *fetchS) requestQuery(queryRow any) error {
 	return nil
 }
 
-func (f *fetchS) setHeaders() {
+func (f *fetchS) setHeaders(contentType string) {
+	if contentType != "" {
+		f.httpReq.Header.Set("Content-Type", contentType)
+	}
 	for k, v := range f.headers {
 		hasVar := bytes.Contains([]byte(v), []byte("%v"))
 		value, ok := f.extra[k]

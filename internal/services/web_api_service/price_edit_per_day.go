@@ -1,6 +1,7 @@
 package cloner
 
 import (
+	"encoding/json"
 	"sort"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
@@ -8,6 +9,7 @@ import (
 	homsa_dto "github.com/amirhosseinf79/renthub_service/internal/dto/homsa"
 	jabama_dto "github.com/amirhosseinf79/renthub_service/internal/dto/jabama"
 	jajiga_dto "github.com/amirhosseinf79/renthub_service/internal/dto/jajiga"
+	mihmansho_dto "github.com/amirhosseinf79/renthub_service/internal/dto/mihmansho"
 	otaghak_dto "github.com/amirhosseinf79/renthub_service/internal/dto/otaghak"
 	shab_dto "github.com/amirhosseinf79/renthub_service/internal/dto/shab"
 )
@@ -50,8 +52,19 @@ func (h *homsaService) generatePriceBody(roomID string, amount int, dates []stri
 		return shab_dto.EditPriceBody{
 			KeepDiscount: false,
 			Price:        amount / 1000,
-			Dates:        h.datesToJalali(dates),
+			Dates:        h.datesToJalali(dates, true),
 		}
+	case "mihmansho":
+		pbody := mihmansho_dto.FormBody{}
+		jdates := h.datesToJalali(dates, false)
+		for _, date := range jdates {
+			pbody["Dates"] = date
+		}
+		mbody, err := json.Marshal(pbody)
+		if err != nil {
+			return err
+		}
+		return mbody
 	default:
 		return nil
 	}

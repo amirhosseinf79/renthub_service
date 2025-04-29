@@ -40,7 +40,9 @@ func NewMockApiAuthRepo() repository.ApiAuthRepository {
 				UserID:      1,
 				ClientID:    "client1",
 				Service:     "mihmansho",
-				AccessToken: "token3",
+				AccessToken: "671dd13a-993f-4a49-b68f-c3041586e479",
+				Ucode:       "9991acf2-cc72-4ac2-8511-d32cd018330e",
+				Username:    "09334429096",
 			},
 			"1:client1:otaghak": {
 				UserID:      1,
