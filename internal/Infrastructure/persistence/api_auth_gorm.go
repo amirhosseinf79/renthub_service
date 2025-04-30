@@ -23,7 +23,7 @@ func (r *apiAuthRepo) CheckExists(userID uint, clientID string, service string) 
 }
 
 func (r *apiAuthRepo) GetByUnique(userID uint, clientID string, service string) (model *models.ApiAuth, err error) {
-	err = r.db.Where("user_id = ? AND client_id = ? AND service = ?", userID, clientID, service).First(model).Error
+	err = r.db.Where("user_id = ? AND client_id = ? AND service = ?", userID, clientID, service).First(&model).Error
 	return
 }
 

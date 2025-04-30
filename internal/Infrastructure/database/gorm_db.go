@@ -23,6 +23,8 @@ func NewGormDB(connStr string, debug bool) *gorm.DB {
 	err = db.AutoMigrate(
 		&models.User{},
 		&models.Token{},
+		&models.ApiAuth{},
+		&models.Log{},
 	)
 	if err != nil {
 		log.Fatal("failed to migrate database:", err)

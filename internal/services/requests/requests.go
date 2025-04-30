@@ -24,6 +24,7 @@ type fetchS struct {
 func New(method, url string, headers, extra map[string]string, logger *models.Log) interfaces.FetchService {
 	fmt.Println("Method:", method)
 	fmt.Println("Full URL:", url)
+	logger.RequestURL = url
 
 	return &fetchS{
 		method:  method,
@@ -52,6 +53,7 @@ func (f *fetchS) Start(body any, contentType string) error {
 	if err != nil {
 		return err
 	}
+	f.logger.RequestBody = payload.String()
 	err = f.NewRequest(payload)
 	if err != nil {
 		return err

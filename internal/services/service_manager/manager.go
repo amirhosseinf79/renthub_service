@@ -14,8 +14,11 @@ type sm struct {
 	dates        []string
 }
 
-func New(apiServices map[string]interfaces.ApiService) interfaces.ServiceManager {
-	return &sm{apiServices: apiServices}
+func New(apiServices map[string]interfaces.ApiService, logger interfaces.LoggerInterface) interfaces.ServiceManager {
+	return &sm{
+		apiServices: apiServices,
+		logger:      logger,
+	}
 }
 
 func (s *sm) initServiceStatus(service string) dto.ServiceStats {

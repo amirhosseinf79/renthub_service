@@ -16,7 +16,7 @@ func NewManagerHandler(serviceManager interfaces.ServiceManager) interfaces.Mana
 
 func (h *handlerSt) UpdatePrice(ctx fiber.Ctx) error {
 	var inputBody dto.EditPriceRequest
-	ctx.Bind().Body(inputBody)
+	ctx.Bind().Body(&inputBody)
 	userID := ctx.Locals("userID").(uint)
 
 	h.serviceManager.SetConfigs(userID,
@@ -30,7 +30,7 @@ func (h *handlerSt) UpdatePrice(ctx fiber.Ctx) error {
 
 func (h *handlerSt) UpdateDiscount(ctx fiber.Ctx) error {
 	var inputBody dto.EditDiscountRequest
-	ctx.Bind().Body(inputBody)
+	ctx.Bind().Body(&inputBody)
 	userID := ctx.Locals("userID").(uint)
 
 	h.serviceManager.SetConfigs(userID,
@@ -44,7 +44,7 @@ func (h *handlerSt) UpdateDiscount(ctx fiber.Ctx) error {
 
 func (h *handlerSt) UpdateMinNight(ctx fiber.Ctx) error {
 	var inputBody dto.EditMinNightRequest
-	ctx.Bind().Body(inputBody)
+	ctx.Bind().Body(&inputBody)
 	userID := ctx.Locals("userID").(uint)
 
 	h.serviceManager.SetConfigs(userID,
@@ -58,7 +58,7 @@ func (h *handlerSt) UpdateMinNight(ctx fiber.Ctx) error {
 
 func (h *handlerSt) UpdateCalendar(ctx fiber.Ctx) error {
 	var inputBody dto.EditCalendarRequest
-	ctx.Bind().Body(inputBody)
+	ctx.Bind().Body(&inputBody)
 	userID := ctx.Locals("userID").(uint)
 
 	h.serviceManager.SetConfigs(userID,

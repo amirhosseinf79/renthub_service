@@ -23,6 +23,6 @@ func (a *authMiddleware) CheckTokenAuth(c fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(dto.ErrorResponse{Message: "Invalid token"})
 	}
-	c.Locals("userId", tokenM.UserID)
+	c.Locals("userID", tokenM.UserID)
 	return c.Next()
 }

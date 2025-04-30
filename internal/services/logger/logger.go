@@ -15,5 +15,8 @@ func NewLogger(logRepo repository.LogRepository) interfaces.LoggerInterface {
 }
 
 func (h *loggerSt) RecordLog(log *models.Log) error {
-	return h.logRepo.Create(log)
+	if log != nil {
+		return h.logRepo.Create(log)
+	}
+	return nil
 }

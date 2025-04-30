@@ -19,8 +19,8 @@ func (s *sm) CalendarUpdate(action string) dto.ManagerResponse {
 			},
 			RoomID: service.Code,
 			Dates:  s.dates,
+			Amount: 0,
 		}
-
 		selectedService, ok := s.apiServices[service.Site]
 		if !ok {
 			continue

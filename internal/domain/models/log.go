@@ -8,6 +8,7 @@ type Log struct {
 	UserID       uint
 	ClientID     string
 	IsSucceed    bool
+	RequestURL   string
 	RequestBody  string
 	StatusCode   int
 	ResponseBody string

@@ -5,6 +5,7 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/Infrastructure/persistence"
 	"github.com/amirhosseinf79/renthub_service/internal/Infrastructure/server"
 	"github.com/amirhosseinf79/renthub_service/internal/application/handler"
+	"github.com/amirhosseinf79/renthub_service/internal/application/middleware"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/homsa"
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/jabama"
@@ -13,16 +14,21 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/otaghak"
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/shab"
 	"github.com/amirhosseinf79/renthub_service/internal/services/auth"
+	"github.com/amirhosseinf79/renthub_service/internal/services/logger"
 	manager "github.com/amirhosseinf79/renthub_service/internal/services/service_manager"
 )
 
 func main() {
-	db := database.NewGormDB("host=localhost user= password= dbname= port=5432 sslmode=disable TimeZone=Asia/Tehran", true)
+	db := database.NewGormDB("host=localhost user=postgres password=Amir2001 dbname=renthub port=5432 sslmode=disable TimeZone=Asia/Tehran", true)
 
 	// User auth system
 	authUserService := auth.ImplementAuthUser(db)
 
 	apiRepo := persistence.NewApiAuthRepository(db)
+	logRepo := persistence.NewLogRepository(db)
+
+	logService := logger.NewLogger(logRepo)
+
 	homsaService := homsa.New(apiRepo)
 	jabamaService := jabama.New(apiRepo)
 	jajigaService := jajiga.New(apiRepo)
@@ -39,13 +45,15 @@ func main() {
 		"shab":      shabService,
 	}
 
-	serviceManager := manager.New(services)
+	serviceManager := manager.New(services, logService)
 
+	apiManagerValidator := middleware.NewValidator()
 	apiManagerHandler := handler.NewManagerHandler(serviceManager)
 
 	server := server.NewServer(
 		authUserService.AuthTokenMiddleware,
 		authUserService.UserHandler,
+		apiManagerValidator,
 		apiManagerHandler,
 	)
 
