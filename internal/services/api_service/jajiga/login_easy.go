@@ -8,42 +8,6 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 )
 
-func (h *service) updateOrCreateAuthRecord(fields dto.ApiEasyLogin, model *models.ApiAuth) error {
-	var err error
-	exists := h.apiAuthRepo.CheckExists(fields.UserID, fields.ClientID, h.service)
-	if exists {
-		apiM, err := h.apiAuthRepo.GetByUnique(fields.UserID, fields.ClientID, h.service)
-		if err != nil {
-			return err
-		}
-		apiM.Username = fields.Username
-		apiM.Password = fields.Password
-		apiM.AccessToken = model.AccessToken
-		apiM.RefreshToken = model.RefreshToken
-		apiM.Ucode = model.Ucode
-		err = h.apiAuthRepo.Update(apiM)
-		if err != nil {
-			return err
-		}
-	} else {
-		model := &models.ApiAuth{
-			UserID:       fields.UserID,
-			ClientID:     fields.ClientID,
-			Service:      h.service,
-			Username:     fields.Username,
-			Password:     fields.Password,
-			AccessToken:  model.AccessToken,
-			RefreshToken: model.RefreshToken,
-			Ucode:        model.Ucode,
-		}
-		err = h.apiAuthRepo.Create(model)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func (h *service) EasyLogin(fields dto.ApiEasyLogin) (log *models.Log, err error) {
 	log = h.initLog(fields.UserID, fields.ClientID)
 	endpoint := h.getEndpoints().LoginWithPass
@@ -75,7 +39,17 @@ func (h *service) EasyLogin(fields dto.ApiEasyLogin) (log *models.Log, err error
 	if !ok {
 		return log, errors.New(result)
 	}
-	err = h.updateOrCreateAuthRecord(fields, response.GetToken())
+	tokenModel := response.GetToken()
+	tokenfields := dto.ApiAuthRequest{
+		ClientID:     fields.ClientID,
+		Username:     fields.Username,
+		Password:     fields.Password,
+		Service:      h.service,
+		AccessToken:  tokenModel.AccessToken,
+		RefreshToken: tokenModel.RefreshToken,
+		Ucode:        tokenModel.Ucode,
+	}
+	err = h.apiAuthService.UpdateOrCreate(fields.UserID, tokenfields)
 	if err != nil {
 		log.FinalResult = err.Error()
 		return log, err

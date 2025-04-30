@@ -18,7 +18,7 @@ func NewApiAuthRepository(db *gorm.DB) repository.ApiAuthRepository {
 
 func (r *apiAuthRepo) CheckExists(userID uint, clientID string, service string) bool {
 	var count int64
-	r.db.Where("user_id = ? AND client_id = ? AND service = ?", userID, clientID, service).Count(&count)
+	r.db.Model(&models.ApiAuth{}).Where("user_id = ? AND client_id = ? AND service = ?", userID, clientID, service).Count(&count)
 	return count > 0
 }
 

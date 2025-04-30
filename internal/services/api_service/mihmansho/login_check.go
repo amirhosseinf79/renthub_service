@@ -11,7 +11,7 @@ import (
 func (h *service) CheckLogin(fields dto.RequiredFields) (log *models.Log, err error) {
 	log = h.initLog(fields.UserID, fields.ClientID)
 	endpoint := h.getEndpoints().GetProfile
-	model, err := h.apiAuthRepo.GetByUnique(fields.UserID, fields.ClientID, h.service)
+	model, err := h.apiAuthService.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
 		log.FinalResult = err.Error()
 		return log, err

@@ -6,22 +6,21 @@ import (
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
-	"github.com/amirhosseinf79/renthub_service/internal/domain/repository"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	jajiga_dto "github.com/amirhosseinf79/renthub_service/internal/dto/jajiga"
 	"github.com/google/uuid"
 )
 
 type service struct {
-	apiAuthRepo repository.ApiAuthRepository
-	service     string
-	apiSettings dto.ApiSettings
+	apiAuthService interfaces.ApiAuthInterface
+	service        string
+	apiSettings    dto.ApiSettings
 }
 
-func New(apiAuthRepo repository.ApiAuthRepository) interfaces.ApiService {
+func New(apiAuthService interfaces.ApiAuthInterface) interfaces.ApiService {
 	return &service{
-		service:     "jajiga",
-		apiAuthRepo: apiAuthRepo,
+		service:        "jajiga",
+		apiAuthService: apiAuthService,
 		apiSettings: dto.ApiSettings{
 			ApiURL: "https://api.jajiga.com/api",
 			Endpoints: dto.ApiEndpoints{

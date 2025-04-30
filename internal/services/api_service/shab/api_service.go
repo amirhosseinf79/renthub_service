@@ -6,7 +6,6 @@ import (
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
-	"github.com/amirhosseinf79/renthub_service/internal/domain/repository"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	homsa_dto "github.com/amirhosseinf79/renthub_service/internal/dto/homsa"
 	jajiga_dto "github.com/amirhosseinf79/renthub_service/internal/dto/jajiga"
@@ -18,15 +17,15 @@ import (
 )
 
 type service struct {
-	apiAuthRepo repository.ApiAuthRepository
-	service     string
-	apiSettings dto.ApiSettings
+	apiAuthService interfaces.ApiAuthInterface
+	service        string
+	apiSettings    dto.ApiSettings
 }
 
-func New(apiAuthRepo repository.ApiAuthRepository) interfaces.ApiService {
+func New(apiAuthService interfaces.ApiAuthInterface) interfaces.ApiService {
 	return &service{
-		service:     "shab",
-		apiAuthRepo: apiAuthRepo,
+		service:        "shab",
+		apiAuthService: apiAuthService,
 		apiSettings: dto.ApiSettings{
 			ApiURL: "https://api.shab.travel/api/fa/sandbox/v_1_4",
 			Endpoints: dto.ApiEndpoints{

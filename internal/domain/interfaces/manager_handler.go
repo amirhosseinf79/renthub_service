@@ -7,4 +7,5 @@ type ManagerHandlerInterface interface {
 	UpdateDiscount(ctx fiber.Ctx) error
 	UpdateMinNight(ctx fiber.Ctx) error
 	UpdateCalendar(ctx fiber.Ctx) error
+	TokenLogin(ctx fiber.Ctx) error
 }

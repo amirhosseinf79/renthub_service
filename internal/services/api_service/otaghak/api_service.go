@@ -6,7 +6,6 @@ import (
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
-	"github.com/amirhosseinf79/renthub_service/internal/domain/repository"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	mihmansho_dto "github.com/amirhosseinf79/renthub_service/internal/dto/mihmansho"
 	otaghak_dto "github.com/amirhosseinf79/renthub_service/internal/dto/otaghak"
@@ -14,15 +13,15 @@ import (
 )
 
 type service struct {
-	apiAuthRepo repository.ApiAuthRepository
-	service     string
-	apiSettings dto.ApiSettings
+	apiAuthService interfaces.ApiAuthInterface
+	service        string
+	apiSettings    dto.ApiSettings
 }
 
-func New(apiAuthRepo repository.ApiAuthRepository) interfaces.ApiService {
+func New(apiAuthService interfaces.ApiAuthInterface) interfaces.ApiService {
 	return &service{
-		service:     "otaghak",
-		apiAuthRepo: apiAuthRepo,
+		service:        "otaghak",
+		apiAuthService: apiAuthService,
 		apiSettings: dto.ApiSettings{
 			ApiURL: "https://core.otaghak.com",
 			Endpoints: dto.ApiEndpoints{

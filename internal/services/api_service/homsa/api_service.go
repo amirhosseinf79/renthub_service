@@ -7,21 +7,20 @@ import (
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
-	"github.com/amirhosseinf79/renthub_service/internal/domain/repository"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	homsa_dto "github.com/amirhosseinf79/renthub_service/internal/dto/homsa"
 )
 
 type service struct {
-	apiAuthRepo repository.ApiAuthRepository
-	apiSettings dto.ApiSettings
-	service     string
+	apiAuthService interfaces.ApiAuthInterface
+	apiSettings    dto.ApiSettings
+	service        string
 }
 
-func New(apiAuthRepo repository.ApiAuthRepository) interfaces.ApiService {
+func New(apiAuthService interfaces.ApiAuthInterface) interfaces.ApiService {
 	return &service{
-		service:     "homsa",
-		apiAuthRepo: apiAuthRepo,
+		service:        "homsa",
+		apiAuthService: apiAuthService,
 		apiSettings: dto.ApiSettings{
 			ApiURL: "https://www.homsa.net/api/v2",
 			Endpoints: dto.ApiEndpoints{

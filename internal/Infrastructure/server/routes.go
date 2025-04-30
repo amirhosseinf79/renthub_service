@@ -7,6 +7,7 @@ func (s server) InitRoutes() {
 
 	// s.initAuthRoutes(api)
 	s.initManagerRoutes(api)
+	s.initApiAuthRouts(api)
 }
 
 // func (s server) initAuthRoutes(api fiber.Router) {
@@ -20,4 +21,8 @@ func (s server) initManagerRoutes(api fiber.Router) {
 	update.Post("/discount", s.apiManagerHandler.UpdateDiscount, s.apiManagerValidator.DiscountUpdate)
 	update.Post("/reservation", s.apiManagerHandler.UpdateMinNight, s.apiManagerValidator.MinNightUpdate)
 	update.Post("/price", s.apiManagerHandler.UpdatePrice, s.apiManagerValidator.PriceUpdate)
+}
+
+func (s server) initApiAuthRouts(api fiber.Router) {
+	api.Post("/service/auth", s.apiManagerHandler.TokenLogin, s.tokenMiddleware.CheckTokenAuth)
 }

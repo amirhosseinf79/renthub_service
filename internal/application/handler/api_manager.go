@@ -3,15 +3,23 @@ package handler
 import (
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
+	"github.com/amirhosseinf79/renthub_service/pkg"
 	"github.com/gofiber/fiber/v3"
 )
 
 type handlerSt struct {
 	serviceManager interfaces.ServiceManager
+	ApiAuthService interfaces.ApiAuthInterface
 }
 
-func NewManagerHandler(serviceManager interfaces.ServiceManager) interfaces.ManagerHandlerInterface {
-	return &handlerSt{serviceManager: serviceManager}
+func NewManagerHandler(
+	serviceManager interfaces.ServiceManager,
+	apiAuthService interfaces.ApiAuthInterface,
+) interfaces.ManagerHandlerInterface {
+	return &handlerSt{
+		serviceManager: serviceManager,
+		ApiAuthService: apiAuthService,
+	}
 }
 
 func (h *handlerSt) UpdatePrice(ctx fiber.Ctx) error {
@@ -68,4 +76,23 @@ func (h *handlerSt) UpdateCalendar(ctx fiber.Ctx) error {
 	)
 	response := h.serviceManager.CalendarUpdate(inputBody.Action)
 	return ctx.JSON(response)
+}
+
+func (h *handlerSt) TokenLogin(ctx fiber.Ctx) error {
+	var inputBody dto.ApiAuthRequest
+	response, err := pkg.ValidateRequestBody(&inputBody, ctx)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(response)
+	}
+
+	userID := ctx.Locals("userID").(uint)
+	err = h.ApiAuthService.UpdateOrCreate(userID, inputBody)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(dto.ErrorResponse{
+			Message: err.Error(),
+		})
+	}
+	return ctx.JSON(dto.ErrorResponse{
+		Message: "ok",
+	})
 }

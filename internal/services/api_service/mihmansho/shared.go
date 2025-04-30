@@ -10,7 +10,7 @@ import (
 )
 
 func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.EndP, fields dto.UpdateFields) (err error) {
-	model, err := h.apiAuthRepo.GetByUnique(fields.UserID, fields.ClientID, h.service)
+	model, err := h.apiAuthService.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = dto.ErrorUnauthorized

@@ -11,7 +11,7 @@ import (
 func (h *service) VerifyOtp(fields dto.RequiredFields, otp string) (log *models.Log, err error) {
 	log = h.initLog(fields.UserID, fields.ClientID)
 	endpoint := h.getEndpoints().LoginSecondStep
-	model, err := h.apiAuthRepo.GetByUnique(fields.UserID, fields.ClientID, h.service)
+	model, err := h.apiAuthService.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
 		log.FinalResult = err.Error()
 		return log, err
@@ -44,12 +44,17 @@ func (h *service) VerifyOtp(fields dto.RequiredFields, otp string) (log *models.
 	if !ok {
 		return log, errors.New(result)
 	}
-	field := dto.ApiEasyLogin{
-		RequiredFields: fields,
-		Username:       model.Username,
-		Password:       otp,
+	tokenModel := response.GetToken()
+	tokenfields := dto.ApiAuthRequest{
+		ClientID:     fields.ClientID,
+		Username:     model.Username,
+		Password:     otp,
+		Service:      h.service,
+		AccessToken:  tokenModel.AccessToken,
+		RefreshToken: tokenModel.RefreshToken,
+		Ucode:        tokenModel.Ucode,
 	}
-	err = h.updateOrCreateAuthRecord(field, response.GetToken())
+	err = h.apiAuthService.UpdateOrCreate(fields.UserID, tokenfields)
 	if err != nil {
 		log.FinalResult = err.Error()
 		return log, err

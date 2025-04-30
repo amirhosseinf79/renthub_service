@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (h *service) generateCalendarBody(roomID string, setOpen bool, dates []string) any {
+func (h *service) generateCalendarBody(dates []string) any {
 	if len(dates) > 1 {
 		sort.Strings(dates)
 	}
@@ -22,7 +22,7 @@ func (h *service) generateCalendarBody(roomID string, setOpen bool, dates []stri
 }
 
 func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.EndP, fields dto.UpdateFields) (err error) {
-	model, err := h.apiAuthRepo.GetByUnique(fields.UserID, fields.ClientID, h.service)
+	model, err := h.apiAuthService.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			err = dto.ErrorUnauthorized
