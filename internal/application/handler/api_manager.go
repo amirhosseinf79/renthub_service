@@ -1,0 +1,71 @@
+package handler
+
+import (
+	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
+	"github.com/amirhosseinf79/renthub_service/internal/dto"
+	"github.com/gofiber/fiber/v3"
+)
+
+type handlerSt struct {
+	serviceManager interfaces.ServiceManager
+}
+
+func NewManagerHandler(serviceManager interfaces.ServiceManager) interfaces.ManagerHandlerInterface {
+	return &handlerSt{serviceManager: serviceManager}
+}
+
+func (h *handlerSt) UpdatePrice(ctx fiber.Ctx) error {
+	var inputBody dto.EditPriceRequest
+	ctx.Bind().Body(inputBody)
+	userID := ctx.Locals("userID").(uint)
+
+	h.serviceManager.SetConfigs(userID,
+		inputBody.ReqHeaderEntry,
+		inputBody.Prices,
+		inputBody.Dates,
+	)
+	response := h.serviceManager.PriceUpdate()
+	return ctx.JSON(response)
+}
+
+func (h *handlerSt) UpdateDiscount(ctx fiber.Ctx) error {
+	var inputBody dto.EditDiscountRequest
+	ctx.Bind().Body(inputBody)
+	userID := ctx.Locals("userID").(uint)
+
+	h.serviceManager.SetConfigs(userID,
+		inputBody.ReqHeaderEntry,
+		inputBody.Sites,
+		inputBody.Dates,
+	)
+	response := h.serviceManager.DiscountUpdate(inputBody.DiscountPercent)
+	return ctx.JSON(response)
+}
+
+func (h *handlerSt) UpdateMinNight(ctx fiber.Ctx) error {
+	var inputBody dto.EditMinNightRequest
+	ctx.Bind().Body(inputBody)
+	userID := ctx.Locals("userID").(uint)
+
+	h.serviceManager.SetConfigs(userID,
+		inputBody.ReqHeaderEntry,
+		inputBody.Sites,
+		inputBody.Dates,
+	)
+	response := h.serviceManager.MinNightUpdate(inputBody.LimitDays)
+	return ctx.JSON(response)
+}
+
+func (h *handlerSt) UpdateCalendar(ctx fiber.Ctx) error {
+	var inputBody dto.EditCalendarRequest
+	ctx.Bind().Body(inputBody)
+	userID := ctx.Locals("userID").(uint)
+
+	h.serviceManager.SetConfigs(userID,
+		inputBody.ReqHeaderEntry,
+		inputBody.Sites,
+		inputBody.Dates,
+	)
+	response := h.serviceManager.CalendarUpdate(inputBody.Action)
+	return ctx.JSON(response)
+}

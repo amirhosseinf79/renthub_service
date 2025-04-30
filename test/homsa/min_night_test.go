@@ -66,7 +66,7 @@ func TestMinNight(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			service := cloner.NewHomsaService(mockRepo, logRepo)
+			service := cloner.Newservice(mockRepo, logRepo)
 			_, err := service.Set("homsa").UnsetMiniNight(tt.fields)
 			if tt.wantErr {
 				assert.Error(t, err)

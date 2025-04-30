@@ -9,18 +9,21 @@ import (
 )
 
 type server struct {
-	app             *fiber.App
-	tokenMiddleware interfaces.TokenMiddleware
-	userHandler     interfaces.UserHandler
+	app               *fiber.App
+	tokenMiddleware   interfaces.TokenMiddleware
+	userHandler       interfaces.UserHandler
+	apiManagerHandler interfaces.ManagerHandlerInterface
 }
 
 func NewServer(
 	tokenMiddleware interfaces.TokenMiddleware,
 	userHandler interfaces.UserHandler,
+	apiManagerHandler interfaces.ManagerHandlerInterface,
 ) *server {
 	return &server{
-		tokenMiddleware: tokenMiddleware,
-		userHandler:     userHandler,
+		tokenMiddleware:   tokenMiddleware,
+		userHandler:       userHandler,
+		apiManagerHandler: apiManagerHandler,
 	}
 }
 

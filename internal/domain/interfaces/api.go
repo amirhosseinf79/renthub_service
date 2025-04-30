@@ -6,7 +6,6 @@ import (
 )
 
 type ApiService interface {
-	Set(service string) ApiService
 	EasyLogin(dto.ApiEasyLogin) (*models.Log, error)
 	SendOtp(dto.RequiredFields, string) (*models.Log, error)
 	VerifyOtp(dto.RequiredFields, string) (*models.Log, error)
@@ -18,7 +17,6 @@ type ApiService interface {
 	RemoveDiscount(dto.UpdateFields) (*models.Log, error)
 	SetMinNight(dto.UpdateFields) (*models.Log, error)
 	UnsetMiniNight(dto.UpdateFields) (*models.Log, error)
-	RecordLog(*models.Log) error
 	// GetRooms()
 	// GetRoomDetails()
 }
