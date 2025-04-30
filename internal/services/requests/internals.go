@@ -19,7 +19,6 @@ func (f *fetchS) requestBody(bodyRow any) (*bytes.Buffer, error) {
 		return nil, err
 	}
 	payload := bytes.NewBuffer(body)
-	fmt.Println(payload.String())
 	return payload, nil
 }
 
@@ -118,7 +117,6 @@ func (f *fetchS) commitRequest() error {
 		return err
 	}
 	f.logger.StatusCode = resp.StatusCode
-	fmt.Println("Status:", resp.StatusCode)
 	f.httpResp = resp
 	return nil
 }

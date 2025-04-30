@@ -2,7 +2,6 @@ package jabama
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
@@ -31,7 +30,6 @@ func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.End
 		return err
 	}
 	ok, err := request.Ok()
-	fmt.Println("Request Result:", ok, err)
 	if ok && h.service != "mihmansho" {
 		log.FinalResult = "success"
 		log.IsSucceed = true

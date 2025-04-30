@@ -34,7 +34,6 @@ func DatesToJalali(dates []string, dash bool) []string {
 			jalaliDate = ptobj.Format("yyyy/MM/dd")
 		}
 		jdates = append(jdates, jalaliDate)
-		fmt.Println(jdates)
 	}
 	return jdates
 }

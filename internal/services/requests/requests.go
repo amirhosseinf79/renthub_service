@@ -22,8 +22,6 @@ type fetchS struct {
 }
 
 func New(method, url string, headers, extra map[string]string, logger *models.Log) interfaces.FetchService {
-	fmt.Println("Method:", method)
-	fmt.Println("Full URL:", url)
 	logger.RequestURL = url
 
 	return &fetchS{
