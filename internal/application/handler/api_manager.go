@@ -34,10 +34,10 @@ func (h *handlerSt) UpdatePrice(ctx fiber.Ctx) error {
 		inputBody.Prices,
 		inputBody.Dates,
 	)
-	// response := h.serviceManager.PriceUpdate()
-	// return ctx.JSON(response)
-	go h.serviceManager.PriceUpdate()
-	return ctx.JSON(h.defaultResponse)
+	response := h.serviceManager.PriceUpdate()
+	return ctx.JSON(response)
+	// go h.serviceManager.PriceUpdate()
+	// return ctx.JSON(h.defaultResponse)
 }
 
 func (h *handlerSt) UpdateDiscount(ctx fiber.Ctx) error {
@@ -50,10 +50,10 @@ func (h *handlerSt) UpdateDiscount(ctx fiber.Ctx) error {
 		inputBody.Sites,
 		inputBody.Dates,
 	)
-	// response := h.serviceManager.DiscountUpdate(inputBody.DiscountPercent)
-	// return ctx.JSON(response)
-	go h.serviceManager.DiscountUpdate(inputBody.DiscountPercent)
-	return ctx.JSON(h.defaultResponse)
+	response := h.serviceManager.DiscountUpdate(inputBody.DiscountPercent)
+	return ctx.JSON(response)
+	// go h.serviceManager.DiscountUpdate(inputBody.DiscountPercent)
+	// return ctx.JSON(h.defaultResponse)
 }
 
 func (h *handlerSt) UpdateMinNight(ctx fiber.Ctx) error {
@@ -66,10 +66,10 @@ func (h *handlerSt) UpdateMinNight(ctx fiber.Ctx) error {
 		inputBody.Sites,
 		inputBody.Dates,
 	)
-	// response := h.serviceManager.MinNightUpdate(inputBody.LimitDays)
-	// return ctx.JSON(response)
-	go h.serviceManager.MinNightUpdate(inputBody.LimitDays)
-	return ctx.JSON(h.defaultResponse)
+	response := h.serviceManager.MinNightUpdate(inputBody.LimitDays)
+	return ctx.JSON(response)
+	// go h.serviceManager.MinNightUpdate(inputBody.LimitDays)
+	// return ctx.JSON(h.defaultResponse)
 }
 
 func (h *handlerSt) UpdateCalendar(ctx fiber.Ctx) error {
@@ -82,10 +82,29 @@ func (h *handlerSt) UpdateCalendar(ctx fiber.Ctx) error {
 		inputBody.Sites,
 		inputBody.Dates,
 	)
-	// response := h.serviceManager.CalendarUpdate(inputBody.Action)
-	// return ctx.JSON(response)
-	go h.serviceManager.CalendarUpdate(inputBody.Action)
-	return ctx.JSON(h.defaultResponse)
+	response := h.serviceManager.CalendarUpdate(inputBody.Action)
+	return ctx.JSON(response)
+	// go h.serviceManager.CalendarUpdate(inputBody.Action)
+	// return ctx.JSON(h.defaultResponse)
+}
+
+func (h *handlerSt) CheckAuth(ctx fiber.Ctx) error {
+	var inputBody dto.ReqHeaderEntry
+	errResponse, err := pkg.ValidateRequestBody(&inputBody, ctx)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errResponse)
+	}
+
+	userID := ctx.Locals("userID").(uint)
+	h.serviceManager.SetConfigs(userID,
+		inputBody,
+		[]dto.SiteEntry{},
+		[]string{},
+	)
+	response := h.serviceManager.CheckAuth()
+	return ctx.JSON(response)
+	// go h.serviceManager.CheckAuth()
+	// return ctx.JSON(h.defaultResponse)
 }
 
 func (h *handlerSt) TokenLogin(ctx fiber.Ctx) error {
@@ -105,23 +124,4 @@ func (h *handlerSt) TokenLogin(ctx fiber.Ctx) error {
 	return ctx.JSON(dto.ErrorResponse{
 		Message: "ok",
 	})
-}
-
-func (h *handlerSt) CheckAuth(ctx fiber.Ctx) error {
-	var inputBody dto.ReqHeaderEntry
-	errResponse, err := pkg.ValidateRequestBody(&inputBody, ctx)
-	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(errResponse)
-	}
-
-	userID := ctx.Locals("userID").(uint)
-	h.serviceManager.SetConfigs(userID,
-		inputBody,
-		[]dto.SiteEntry{},
-		[]string{},
-	)
-	// response := h.serviceManager.CheckAuth()
-	// return ctx.JSON(response)
-	go h.serviceManager.CheckAuth()
-	return ctx.JSON(h.defaultResponse)
 }

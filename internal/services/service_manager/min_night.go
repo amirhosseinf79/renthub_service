@@ -5,8 +5,8 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 )
 
-func (s *sm) asyncMinNight(service dto.SiteEntry, limitDays int) (serviceResult dto.ServiceStats) {
-	serviceResult = s.initServiceStatus(service.Site)
+func (s *sm) asyncMinNight(service dto.SiteEntry, limitDays int, chResult chan dto.ServiceStats) {
+	serviceResult := s.initServiceStatus(service.Site)
 	var log *models.Log
 	var err error
 
@@ -32,22 +32,29 @@ func (s *sm) asyncMinNight(service dto.SiteEntry, limitDays int) (serviceResult 
 		log, err = selectedService.SetMinNight(fields)
 	}
 	s.recordResult(&serviceResult, service.Code, log, err)
-	return
+	chResult <- serviceResult
 }
 
 func (s *sm) MinNightUpdate(limitDays int) dto.ManagerResponse {
+	chResult := make(chan dto.ServiceStats)
 	var results []dto.ServiceStats
+
 	for _, service := range s.services {
-		// go s.asyncMinNight(service, limitDays)
-		result := s.asyncMinNight(service, limitDays)
-		results = append(results, result)
+		go s.asyncMinNight(service, limitDays, chResult)
+
 	}
+
+	for range len(s.services) {
+		results = append(results, <-chResult)
+	}
+	close(chResult)
 
 	result := dto.ManagerResponse{
 		ReqHeaderEntry: s.responseHead,
 		OveralStatus:   "operating",
 		Results:        results,
 	}
+	result.SetOveralStatus()
 	s.tryWebHook(result)
 	return result
 }

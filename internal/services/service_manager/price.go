@@ -5,8 +5,8 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 )
 
-func (s *sm) asyncPrice(service dto.SiteEntry) (serviceResult dto.ServiceStats) {
-	serviceResult = s.initServiceStatus(service.Site)
+func (s *sm) asyncPrice(service dto.SiteEntry, chResult chan dto.ServiceStats) {
+	serviceResult := s.initServiceStatus(service.Site)
 	var log *models.Log
 	var err error
 
@@ -27,22 +27,28 @@ func (s *sm) asyncPrice(service dto.SiteEntry) (serviceResult dto.ServiceStats) 
 
 	log, err = selectedService.EditPricePerDays(fields)
 	s.recordResult(&serviceResult, service.Code, log, err)
-	return
+	chResult <- serviceResult
 }
 
 func (s *sm) PriceUpdate() dto.ManagerResponse {
+	chResult := make(chan dto.ServiceStats)
 	var results []dto.ServiceStats
+
 	for _, service := range s.services {
-		// go s.asyncPrice(service)
-		result := s.asyncPrice(service)
-		results = append(results, result)
+		go s.asyncPrice(service, chResult)
 	}
+
+	for range len(s.services) {
+		results = append(results, <-chResult)
+	}
+	close(chResult)
 
 	result := dto.ManagerResponse{
 		ReqHeaderEntry: s.responseHead,
 		OveralStatus:   "operating",
 		Results:        results,
 	}
+	result.SetOveralStatus()
 	s.tryWebHook(result)
 	return result
 }

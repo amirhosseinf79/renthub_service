@@ -5,8 +5,8 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 )
 
-func (s *sm) asyncCheckAuth(service dto.SiteEntry) (serviceResult dto.ServiceStats) {
-	serviceResult = s.initServiceStatus(service.Site)
+func (s *sm) asyncCheckAuth(service dto.SiteEntry, chResult chan dto.ServiceStats) {
+	serviceResult := s.initServiceStatus(service.Site)
 	var log *models.Log
 	var err error
 
@@ -20,27 +20,33 @@ func (s *sm) asyncCheckAuth(service dto.SiteEntry) (serviceResult dto.ServiceSta
 	}
 	log, err = selectedService.CheckLogin(fields)
 	s.recordResult(&serviceResult, service.Code, log, err)
-	return
+	chResult <- serviceResult
 }
 
 func (s *sm) CheckAuth() dto.ManagerResponse {
+	chResult := make(chan dto.ServiceStats)
 	var results []dto.ServiceStats
+
 	authList := s.apiAuthService.GetClientAll(s.userID, s.responseHead.ClientID)
 	var sites []dto.SiteEntry
 	for _, auth := range authList {
 		sites = append(sites, dto.SiteEntry{Site: auth.Service})
 	}
 	for _, service := range sites {
-		// go s.asyncCheckAuth(service)
-		result := s.asyncCheckAuth(service)
-		results = append(results, result)
+		go s.asyncCheckAuth(service, chResult)
 	}
+
+	for range len(sites) {
+		results = append(results, <-chResult)
+	}
+	close(chResult)
 
 	result := dto.ManagerResponse{
 		ReqHeaderEntry: s.responseHead,
 		OveralStatus:   "operating",
 		Results:        results,
 	}
+	result.SetOveralStatus()
 	s.tryWebHook(result)
 	return result
 }
