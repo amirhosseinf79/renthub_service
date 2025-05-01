@@ -27,8 +27,8 @@ func (r *apiAuthRepo) GetByUnique(userID uint, clientID string, service string) 
 	return
 }
 
-func (r *apiAuthRepo) GetAll(userID uint, clientID string) (list []*models.ApiAuth, err error) {
-	err = r.db.Where("user_id = ? AND client_id = ?", userID, clientID).Find(&list).Error
+func (r *apiAuthRepo) GetAll(userID uint, clientID string) (list []*models.ApiAuth) {
+	r.db.Where("user_id = ? AND client_id = ?", userID, clientID).Find(&list)
 	return
 }
 

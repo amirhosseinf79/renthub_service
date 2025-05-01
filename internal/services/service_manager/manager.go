@@ -1,6 +1,9 @@
 package manager
 
 import (
+	"errors"
+	"net"
+	"net/url"
 	"time"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
@@ -10,18 +13,24 @@ import (
 )
 
 type sm struct {
-	logger       interfaces.LoggerInterface
-	apiServices  map[string]interfaces.ApiService
-	responseHead dto.ReqHeaderEntry
-	userID       uint
-	services     []dto.SiteEntry
-	dates        []string
+	apiAuthService interfaces.ApiAuthInterface
+	logger         interfaces.LoggerInterface
+	apiServices    map[string]interfaces.ApiService
+	responseHead   dto.ReqHeaderEntry
+	userID         uint
+	services       []dto.SiteEntry
+	dates          []string
 }
 
-func New(apiServices map[string]interfaces.ApiService, logger interfaces.LoggerInterface) interfaces.ServiceManager {
+func New(
+	apiServices map[string]interfaces.ApiService,
+	apiAuthService interfaces.ApiAuthInterface,
+	logger interfaces.LoggerInterface,
+) interfaces.ServiceManager {
 	return &sm{
-		apiServices: apiServices,
-		logger:      logger,
+		apiAuthService: apiAuthService,
+		apiServices:    apiServices,
+		logger:         logger,
 	}
 }
 
@@ -52,11 +61,22 @@ func (s *sm) sendWebhook(response dto.ManagerResponse) (log *models.Log, err err
 		Service:  "webhook",
 	}
 
+	_, err = url.ParseRequestURI(response.CallbackUrl)
+	if err != nil {
+		log.FinalResult = "ignored/invalid url"
+		return log, nil
+	}
+
 	header := map[string]string{}
 	extraH := map[string]string{}
 	request := requests.New("POST", response.CallbackUrl, header, extraH, log)
 	err = request.Start(response, "body")
 	if err != nil {
+		var dnsErr *net.DNSError
+		if has := errors.As(err, &dnsErr); has {
+			log.FinalResult = "ignored/invalid url"
+			return log, nil
+		}
 		log.FinalResult = err.Error()
 		return log, err
 	}

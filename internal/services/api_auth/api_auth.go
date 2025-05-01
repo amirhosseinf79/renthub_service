@@ -54,3 +54,8 @@ func (h *apiAuthService) UpdateOrCreate(userID uint, fields dto.ApiAuthRequest) 
 	}
 	return nil
 }
+
+func (h *apiAuthService) GetClientAll(userID uint, clientID string) (list []*models.ApiAuth) {
+	list = h.apiAuthRepo.GetAll(userID, clientID)
+	return
+}

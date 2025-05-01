@@ -8,4 +8,5 @@ type ServiceManager interface {
 	MinNightUpdate(limitDays int) dto.ManagerResponse
 	DiscountUpdate(discountPercent int) dto.ManagerResponse
 	PriceUpdate() dto.ManagerResponse
+	CheckAuth() dto.ManagerResponse
 }

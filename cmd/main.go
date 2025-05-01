@@ -47,7 +47,7 @@ func main() {
 		"shab":      shabService,
 	}
 
-	serviceManager := manager.New(services, logService)
+	serviceManager := manager.New(services, apiAuthService, logService)
 
 	apiManagerValidator := middleware.NewValidator()
 	apiManagerHandler := handler.NewManagerHandler(serviceManager, apiAuthService)

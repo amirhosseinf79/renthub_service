@@ -7,5 +7,6 @@ import (
 
 type ApiAuthInterface interface {
 	GetByUnique(userID uint, clientID string, service string) (*models.ApiAuth, error)
+	GetClientAll(userID uint, clientID string) []*models.ApiAuth
 	UpdateOrCreate(userID uint, fields dto.ApiAuthRequest) error
 }
