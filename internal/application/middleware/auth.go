@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"fmt"
+
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	"github.com/gofiber/fiber/v3"
@@ -23,7 +25,8 @@ func (a *authMiddleware) CheckTokenAuth(c fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(dto.ErrorResponse{Message: "Invalid token"})
 	}
-	userIP := c.IP()
+	userIP := c.Host()
+	fmt.Println(userIP)
 	if tokenM.AccessIP != userIP {
 		return c.Status(fiber.StatusUnauthorized).JSON(dto.ErrorResponse{Message: "Invalid token"})
 	}
