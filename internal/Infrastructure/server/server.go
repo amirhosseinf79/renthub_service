@@ -37,7 +37,7 @@ func (s *server) InitServer() {
 }
 
 func (s *server) Start() {
-	err := s.app.Listen(":3000")
+	err := s.app.Listen("127.0.0.1:3000")
 	if err != nil {
 		log.Fatal("Error starting server: ", err)
 	}

@@ -29,14 +29,7 @@ func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.End
 		log.FinalResult = err.Error()
 		return err
 	}
-	ok, err := request.Ok()
-	if ok && h.service != "mihmansho" {
-		log.FinalResult = "success"
-		log.IsSucceed = true
-		return nil
-	} else if h.service != "mihmansho" {
-		log.FinalResult = err.Error()
-	}
+	_, err = request.Ok()
 	response := h.generateUpdateErrResponse()
 	if response != nil {
 		err2 := request.ParseInterface(response)
@@ -47,6 +40,9 @@ func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.End
 				log.FinalResult = result
 			} else if result != "" {
 				log.FinalResult = result
+			}
+			if ok {
+				log.IsSucceed = true
 			}
 		}
 	}

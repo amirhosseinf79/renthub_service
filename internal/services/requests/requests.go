@@ -57,9 +57,7 @@ func (f *fetchS) Start(body any, contentType string) error {
 		return err
 	}
 	f.setHeaders(headerCType)
-	if f.logger != nil {
-		f.dumpRequest()
-	}
+	// f.dumpRequest()
 	err = f.commitRequest()
 	if err != nil {
 		return err

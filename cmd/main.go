@@ -20,7 +20,7 @@ import (
 )
 
 func main() {
-	db := database.NewGormDB("host=cdn.parsian.smart-vip.ir user=rooot password=Amir2001 dbname=renthub port=5432 sslmode=disable TimeZone=Asia/Tehran", true)
+	db := database.NewGormDB("host=cdn.parsian.smart-vip.ir user=rooot password=Amir2001 dbname=renthub port=5432 sslmode=disable TimeZone=Asia/Tehran", false)
 
 	// User auth system
 	authUserService := auth.ImplementAuthUser(db)

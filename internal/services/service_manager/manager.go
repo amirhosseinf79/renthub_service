@@ -67,6 +67,7 @@ func (s *sm) sendWebhook(response dto.ManagerResponse) (log *models.Log, err err
 		return log, err
 	}
 	log.FinalResult = "success"
+	log.IsSucceed = true
 	return log, nil
 }
 
@@ -76,7 +77,7 @@ func (s *sm) tryWebHook(result dto.ManagerResponse) {
 		log, err := s.sendWebhook(result)
 		s.logger.RecordLog(log)
 		if err != nil {
-			fmt.Printf("%v\nTrying in 5s...\n", err)
+			// fmt.Printf("%v\nTrying in 5s...\n", err)
 			time.Sleep(5 * time.Second)
 			continue
 		}
