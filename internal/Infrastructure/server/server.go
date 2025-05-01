@@ -32,7 +32,9 @@ func NewServer(
 }
 
 func (s *server) InitServer() {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		TrustProxy: true,
+	})
 	app.Use(logger.New(logger.Config{}))
 	s.app = app
 }
