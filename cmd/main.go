@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/amirhosseinf79/renthub_service/internal/Infrastructure/database"
 	"github.com/amirhosseinf79/renthub_service/internal/Infrastructure/persistence"
 	"github.com/amirhosseinf79/renthub_service/internal/Infrastructure/server"
@@ -20,7 +22,8 @@ import (
 )
 
 func main() {
-	db := database.NewGormDB("host=cdn.parsian.smart-vip.ir user=rooot password=Amir2001 dbname=renthub port=5432 sslmode=disable TimeZone=Asia/Tehran", false)
+	dbConfig := os.Getenv("DB")
+	db := database.NewGormDB(dbConfig, false)
 
 	// User auth system
 	authUserService := auth.ImplementAuthUser(db)

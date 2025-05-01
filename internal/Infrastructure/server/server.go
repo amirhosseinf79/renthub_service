@@ -2,6 +2,7 @@ package server
 
 import (
 	"log"
+	"os"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/gofiber/fiber/v3"
@@ -37,7 +38,8 @@ func (s *server) InitServer() {
 }
 
 func (s *server) Start() {
-	err := s.app.Listen("127.0.0.1:3000")
+	envPort := os.Getenv("PORT")
+	err := s.app.Listen("127.0.0.1:" + envPort)
 	if err != nil {
 		log.Fatal("Error starting server: ", err)
 	}
