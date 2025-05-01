@@ -42,5 +42,6 @@ func (s *sm) PriceUpdate() dto.ManagerResponse {
 		Results:        results,
 	}
 	result.SetOveralStatus()
+	s.tryWebHook(result)
 	return result
 }

@@ -48,5 +48,6 @@ func (s *sm) MinNightUpdate(limitDays int) dto.ManagerResponse {
 		Results:        results,
 	}
 	result.SetOveralStatus()
+	s.tryWebHook(result)
 	return result
 }

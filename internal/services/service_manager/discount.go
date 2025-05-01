@@ -48,5 +48,6 @@ func (s *sm) DiscountUpdate(discountPercent int) dto.ManagerResponse {
 		Results:        results,
 	}
 	result.SetOveralStatus()
+	s.tryWebHook(result)
 	return result
 }
