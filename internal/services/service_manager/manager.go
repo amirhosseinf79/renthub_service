@@ -103,3 +103,18 @@ func (s *sm) tryWebHook(result dto.ManagerResponse) {
 		break
 	}
 }
+
+func (s *sm) recordResult(serviceResult *dto.ServiceStats, statusCode string, log *models.Log, err error) {
+	serviceResult.Code = statusCode
+	s.logger.RecordLog(log)
+	if err != nil {
+		serviceResult.Status = "failed"
+		serviceResult.ErrorMessage = err.Error()
+	}
+	// result := dto.ManagerResponse{
+	// 	ReqHeaderEntry: s.responseHead,
+	// 	Results:        []dto.ServiceStats{*serviceResult},
+	// }
+	// result.SetOveralStatus()
+	// s.tryWebHook(result)
+}

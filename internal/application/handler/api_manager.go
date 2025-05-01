@@ -8,8 +8,9 @@ import (
 )
 
 type handlerSt struct {
-	serviceManager interfaces.ServiceManager
-	ApiAuthService interfaces.ApiAuthInterface
+	serviceManager  interfaces.ServiceManager
+	ApiAuthService  interfaces.ApiAuthInterface
+	defaultResponse dto.ErrorResponse
 }
 
 func NewManagerHandler(
@@ -17,8 +18,9 @@ func NewManagerHandler(
 	apiAuthService interfaces.ApiAuthInterface,
 ) interfaces.ManagerHandlerInterface {
 	return &handlerSt{
-		serviceManager: serviceManager,
-		ApiAuthService: apiAuthService,
+		serviceManager:  serviceManager,
+		ApiAuthService:  apiAuthService,
+		defaultResponse: dto.ErrorResponse{Message: "ok"},
 	}
 }
 
@@ -32,8 +34,10 @@ func (h *handlerSt) UpdatePrice(ctx fiber.Ctx) error {
 		inputBody.Prices,
 		inputBody.Dates,
 	)
-	response := h.serviceManager.PriceUpdate()
-	return ctx.JSON(response)
+	// response := h.serviceManager.PriceUpdate()
+	// return ctx.JSON(response)
+	go h.serviceManager.PriceUpdate()
+	return ctx.JSON(h.defaultResponse)
 }
 
 func (h *handlerSt) UpdateDiscount(ctx fiber.Ctx) error {
@@ -46,8 +50,10 @@ func (h *handlerSt) UpdateDiscount(ctx fiber.Ctx) error {
 		inputBody.Sites,
 		inputBody.Dates,
 	)
-	response := h.serviceManager.DiscountUpdate(inputBody.DiscountPercent)
-	return ctx.JSON(response)
+	// response := h.serviceManager.DiscountUpdate(inputBody.DiscountPercent)
+	// return ctx.JSON(response)
+	go h.serviceManager.DiscountUpdate(inputBody.DiscountPercent)
+	return ctx.JSON(h.defaultResponse)
 }
 
 func (h *handlerSt) UpdateMinNight(ctx fiber.Ctx) error {
@@ -60,8 +66,10 @@ func (h *handlerSt) UpdateMinNight(ctx fiber.Ctx) error {
 		inputBody.Sites,
 		inputBody.Dates,
 	)
-	response := h.serviceManager.MinNightUpdate(inputBody.LimitDays)
-	return ctx.JSON(response)
+	// response := h.serviceManager.MinNightUpdate(inputBody.LimitDays)
+	// return ctx.JSON(response)
+	go h.serviceManager.MinNightUpdate(inputBody.LimitDays)
+	return ctx.JSON(h.defaultResponse)
 }
 
 func (h *handlerSt) UpdateCalendar(ctx fiber.Ctx) error {
@@ -74,8 +82,10 @@ func (h *handlerSt) UpdateCalendar(ctx fiber.Ctx) error {
 		inputBody.Sites,
 		inputBody.Dates,
 	)
-	response := h.serviceManager.CalendarUpdate(inputBody.Action)
-	return ctx.JSON(response)
+	// response := h.serviceManager.CalendarUpdate(inputBody.Action)
+	// return ctx.JSON(response)
+	go h.serviceManager.CalendarUpdate(inputBody.Action)
+	return ctx.JSON(h.defaultResponse)
 }
 
 func (h *handlerSt) TokenLogin(ctx fiber.Ctx) error {
@@ -110,6 +120,8 @@ func (h *handlerSt) CheckAuth(ctx fiber.Ctx) error {
 		[]dto.SiteEntry{},
 		[]string{},
 	)
-	response := h.serviceManager.CheckAuth()
-	return ctx.JSON(response)
+	// response := h.serviceManager.CheckAuth()
+	// return ctx.JSON(response)
+	go h.serviceManager.CheckAuth()
+	return ctx.JSON(h.defaultResponse)
 }

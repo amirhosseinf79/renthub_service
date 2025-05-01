@@ -5,9 +5,8 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 )
 
-func (s *sm) asyncDiscount(service dto.SiteEntry, discountPercent int) {
-	var results []dto.ServiceStats
-	serviceResult := s.initServiceStatus(service.Site)
+func (s *sm) asyncDiscount(service dto.SiteEntry, discountPercent int) (serviceResult dto.ServiceStats) {
+	serviceResult = s.initServiceStatus(service.Site)
 	var log *models.Log
 	var err error
 
@@ -32,30 +31,23 @@ func (s *sm) asyncDiscount(service dto.SiteEntry, discountPercent int) {
 	default:
 		log, err = selectedService.AddDiscount(fields)
 	}
-
-	serviceResult.Code = service.Code
-	s.logger.RecordLog(log)
-	if err != nil {
-		serviceResult.Status = "failed"
-		serviceResult.ErrorMessage = err.Error()
-	}
-	results = append(results, serviceResult)
-	result := dto.ManagerResponse{
-		ReqHeaderEntry: s.responseHead,
-		Results:        results,
-	}
-	result.SetOveralStatus()
-	s.tryWebHook(result)
+	s.recordResult(&serviceResult, service.Code, log, err)
+	return
 }
 
 func (s *sm) DiscountUpdate(discountPercent int) dto.ManagerResponse {
+	var results []dto.ServiceStats
 	for _, service := range s.services {
-		go s.asyncDiscount(service, discountPercent)
+		// go s.asyncDiscount(service, discountPercent)
+		result := s.asyncDiscount(service, discountPercent)
+		results = append(results, result)
 	}
 
 	result := dto.ManagerResponse{
 		ReqHeaderEntry: s.responseHead,
 		OveralStatus:   "operating",
+		Results:        results,
 	}
+	s.tryWebHook(result)
 	return result
 }
