@@ -34,6 +34,11 @@ func NewServer(
 func (s *server) InitServer() {
 	app := fiber.New(fiber.Config{
 		TrustProxy: true,
+		TrustProxyConfig: fiber.TrustProxyConfig{
+			Proxies: []string{
+				"127.0.0.1",
+			},
+		},
 	})
 	app.Use(logger.New(logger.Config{}))
 	s.app = app
