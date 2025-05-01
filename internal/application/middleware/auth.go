@@ -24,7 +24,7 @@ func (a *authMiddleware) CheckTokenAuth(c fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).JSON(dto.ErrorResponse{Message: "Invalid token"})
 	}
 	userIP := c.Host()
-	if tokenM.AccessIP != userIP {
+	if tokenM.AccessIP != "" && tokenM.AccessIP != userIP {
 		return c.Status(fiber.StatusUnauthorized).JSON(dto.ErrorResponse{Message: "Invalid token"})
 	}
 	c.Locals("userID", tokenM.UserID)
