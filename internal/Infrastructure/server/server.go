@@ -46,7 +46,7 @@ func (s *server) InitServer() {
 
 func (s *server) Start() {
 	envPort := os.Getenv("PORT")
-	err := s.app.Listen("127.0.0.1:" + envPort)
+	err := s.app.Listen("127.0.0.1:"+envPort, fiber.ListenConfig{EnablePrefork: true})
 	if err != nil {
 		log.Fatal("Error starting server: ", err)
 	}
