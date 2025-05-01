@@ -51,7 +51,6 @@ func (s *sm) MinNightUpdate(limitDays int) dto.ManagerResponse {
 
 	result := dto.ManagerResponse{
 		ReqHeaderEntry: s.responseHead,
-		OveralStatus:   "operating",
 		Results:        results,
 	}
 	result.SetOveralStatus()

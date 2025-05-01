@@ -20,12 +20,17 @@ func (m *ManagerResponse) SetOveralStatus() {
 			counter += 1
 		}
 	}
-	switch counter {
-	case 0:
-		m.OveralStatus = "failed"
-	case len(m.Results):
-		m.OveralStatus = "success"
-	default:
-		m.OveralStatus = "partial_success"
+	if len(m.Results) > 0 {
+		switch counter {
+		case 0:
+			m.OveralStatus = "failed"
+		case len(m.Results):
+			m.OveralStatus = "success"
+		default:
+			m.OveralStatus = "partial_success"
+		}
+	} else {
+		m.OveralStatus = "operating"
 	}
+
 }

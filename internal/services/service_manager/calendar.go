@@ -51,7 +51,6 @@ func (s *sm) CalendarUpdate(action string) dto.ManagerResponse {
 
 	result := dto.ManagerResponse{
 		ReqHeaderEntry: s.responseHead,
-		OveralStatus:   "operating",
 		Results:        results,
 	}
 	result.SetOveralStatus()

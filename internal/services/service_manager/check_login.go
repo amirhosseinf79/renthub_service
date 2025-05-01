@@ -43,7 +43,6 @@ func (s *sm) CheckAuth() dto.ManagerResponse {
 
 	result := dto.ManagerResponse{
 		ReqHeaderEntry: s.responseHead,
-		OveralStatus:   "operating",
 		Results:        results,
 	}
 	result.SetOveralStatus()

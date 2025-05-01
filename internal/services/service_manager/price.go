@@ -45,7 +45,6 @@ func (s *sm) PriceUpdate() dto.ManagerResponse {
 
 	result := dto.ManagerResponse{
 		ReqHeaderEntry: s.responseHead,
-		OveralStatus:   "operating",
 		Results:        results,
 	}
 	result.SetOveralStatus()
