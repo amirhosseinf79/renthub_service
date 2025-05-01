@@ -1,7 +1,6 @@
 package manager
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
@@ -72,8 +71,8 @@ func (s *sm) sendWebhook(response dto.ManagerResponse) (log *models.Log, err err
 }
 
 func (s *sm) tryWebHook(result dto.ManagerResponse) {
-	for try := range 5 {
-		fmt.Println("Try:", try+1)
+	for range 3 {
+		// fmt.Println("Try:", try+1)
 		log, err := s.sendWebhook(result)
 		s.logger.RecordLog(log)
 		if err != nil {
