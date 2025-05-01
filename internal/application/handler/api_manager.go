@@ -99,9 +99,12 @@ func (h *handlerSt) TokenLogin(ctx fiber.Ctx) error {
 
 func (h *handlerSt) CheckAuth(ctx fiber.Ctx) error {
 	var inputBody dto.ReqHeaderEntry
-	ctx.Bind().Body(&inputBody)
-	userID := ctx.Locals("userID").(uint)
+	errResponse, err := pkg.ValidateRequestBody(&inputBody, ctx)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(errResponse)
+	}
 
+	userID := ctx.Locals("userID").(uint)
 	h.serviceManager.SetConfigs(userID,
 		inputBody,
 		[]dto.SiteEntry{},
