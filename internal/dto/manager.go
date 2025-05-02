@@ -1,5 +1,9 @@
 package dto
 
+type ManagerConfig struct {
+	SendWebHookSeperately bool
+}
+
 type ServiceStats struct {
 	Site         string `json:"site"`
 	Code         string `json:"code"`

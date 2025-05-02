@@ -20,17 +20,20 @@ type sm struct {
 	userID         uint
 	services       []dto.SiteEntry
 	dates          []string
+	config         dto.ManagerConfig
 }
 
 func New(
 	apiServices map[string]interfaces.ApiService,
 	apiAuthService interfaces.ApiAuthInterface,
 	logger interfaces.LoggerInterface,
+	config dto.ManagerConfig,
 ) interfaces.ServiceManager {
 	return &sm{
 		apiAuthService: apiAuthService,
 		apiServices:    apiServices,
 		logger:         logger,
+		config:         config,
 	}
 }
 
@@ -111,10 +114,12 @@ func (s *sm) recordResult(serviceResult *dto.ServiceStats, statusCode string, lo
 		serviceResult.Status = "failed"
 		serviceResult.ErrorMessage = err.Error()
 	}
-	// result := dto.ManagerResponse{
-	// 	ReqHeaderEntry: s.responseHead,
-	// 	Results:        []dto.ServiceStats{*serviceResult},
-	// }
-	// result.SetOveralStatus()
-	// s.tryWebHook(result)
+	if s.config.SendWebHookSeperately {
+		result := dto.ManagerResponse{
+			ReqHeaderEntry: s.responseHead,
+			Results:        []dto.ServiceStats{*serviceResult},
+		}
+		result.SetOveralStatus()
+		s.tryWebHook(result)
+	}
 }

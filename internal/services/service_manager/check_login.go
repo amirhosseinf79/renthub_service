@@ -46,6 +46,8 @@ func (s *sm) CheckAuth() dto.ManagerResponse {
 		Results:        results,
 	}
 	result.SetOveralStatus()
-	s.tryWebHook(result)
+	if !s.config.SendWebHookSeperately {
+		go s.tryWebHook(result)
+	}
 	return result
 }

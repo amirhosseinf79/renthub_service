@@ -9,6 +9,7 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/application/handler"
 	"github.com/amirhosseinf79/renthub_service/internal/application/middleware"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
+	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	apiauth "github.com/amirhosseinf79/renthub_service/internal/services/api_auth"
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/homsa"
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/jabama"
@@ -50,7 +51,13 @@ func main() {
 		"shab":      shabService,
 	}
 
-	serviceManager := manager.New(services, apiAuthService, logService)
+	serviceManager := manager.New(
+		services,
+		apiAuthService,
+		logService,
+		dto.ManagerConfig{
+			SendWebHookSeperately: false,
+		})
 
 	apiManagerValidator := middleware.NewValidator()
 	apiTokenMiddleware := middleware.NewApiTokenMiddleware(apiAuthService)
