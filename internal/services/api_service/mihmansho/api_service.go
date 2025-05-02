@@ -100,9 +100,9 @@ func (h *service) generateOTPResponse() interfaces.ApiResponseManager {
 	return &mihmansho_dto.MihmanshoErrorResponse{}
 }
 
-func (h *service) generateProfileResponse() interfaces.ApiResponseManager {
-	return &mihmansho_dto.MihmanshoProfileResponse{}
-}
+// func (h *service) generateProfileResponse() interfaces.ApiResponseManager {
+// 	return &mihmansho_dto.MihmanshoProfileResponse{}
+// }
 
 func (h *service) generateUpdateErrResponse() interfaces.ApiResponseManager {
 	return &mihmansho_dto.MihmanshoErrorResponse{}

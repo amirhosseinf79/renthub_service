@@ -102,10 +102,6 @@ func (h *service) generateOTPResponse() interfaces.ApiResponseManager {
 	return &jajiga_dto.OTPResponse{}
 }
 
-func (h *service) generateProfileResponse() interfaces.ApiResponseManager {
-	return nil
-}
-
 func (h *service) generateUpdateErrResponse() interfaces.ApiResponseManager {
 	return &jajiga_dto.ErrorResponse{}
 }

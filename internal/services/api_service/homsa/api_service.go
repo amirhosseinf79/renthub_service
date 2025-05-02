@@ -100,10 +100,6 @@ func (h *service) generateOTPResponse() interfaces.ApiResponseManager {
 	return &homsa_dto.HomsaOTPResponse{}
 }
 
-func (h *service) generateProfileResponse() interfaces.ApiResponseManager {
-	return nil
-}
-
 func (h *service) generateUpdateErrResponse() interfaces.ApiResponseManager {
 	return &homsa_dto.HomsaErrorResponse{}
 }

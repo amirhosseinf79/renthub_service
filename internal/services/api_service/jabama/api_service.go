@@ -99,10 +99,6 @@ func (h *service) generateOTPResponse() interfaces.ApiResponseManager {
 	return &jabama_dto.Response{}
 }
 
-func (h *service) generateProfileResponse() interfaces.ApiResponseManager {
-	return nil
-}
-
 func (h *service) generateUpdateErrResponse() interfaces.ApiResponseManager {
 	return &jabama_dto.UpdateErrorResponse{}
 }

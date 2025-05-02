@@ -102,15 +102,6 @@ func (h *service) generateOTPResponse() interfaces.ApiResponseManager {
 	return &shab_dto.AuthOTPResponse{}
 }
 
-func (h *service) generateProfileResponse() interfaces.ApiResponseManager {
-	switch h.service {
-	case "mihmansho":
-		return &mihmansho_dto.MihmanshoProfileResponse{}
-	default:
-		return nil
-	}
-}
-
 func (h *service) generateUpdateErrResponse() interfaces.ApiResponseManager {
 	return &shab_dto.ErrResponse{}
 }

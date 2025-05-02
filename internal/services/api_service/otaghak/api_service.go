@@ -7,7 +7,6 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
-	mihmansho_dto "github.com/amirhosseinf79/renthub_service/internal/dto/mihmansho"
 	otaghak_dto "github.com/amirhosseinf79/renthub_service/internal/dto/otaghak"
 	"github.com/amirhosseinf79/renthub_service/pkg"
 )
@@ -99,15 +98,6 @@ func (h *service) generateAuthResponse() interfaces.ApiResponseManager {
 
 func (h *service) generateOTPResponse() interfaces.ApiResponseManager {
 	return &otaghak_dto.OTPResponse{}
-}
-
-func (h *service) generateProfileResponse() interfaces.ApiResponseManager {
-	switch h.service {
-	case "mihmansho":
-		return &mihmansho_dto.MihmanshoProfileResponse{}
-	default:
-		return nil
-	}
 }
 
 func (h *service) generateUpdateErrResponse() interfaces.ApiResponseManager {
