@@ -53,11 +53,13 @@ func main() {
 	serviceManager := manager.New(services, apiAuthService, logService)
 
 	apiManagerValidator := middleware.NewValidator()
+	apiTokenMiddleware := middleware.NewApiTokenMiddleware(apiAuthService)
 	apiManagerHandler := handler.NewManagerHandler(serviceManager, apiAuthService)
 
 	server := server.NewServer(
 		authUserService.AuthTokenMiddleware,
 		authUserService.UserHandler,
+		apiTokenMiddleware,
 		apiManagerValidator,
 		apiManagerHandler,
 	)

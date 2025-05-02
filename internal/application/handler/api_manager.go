@@ -90,11 +90,7 @@ func (h *handlerSt) UpdateCalendar(ctx fiber.Ctx) error {
 
 func (h *handlerSt) CheckAuth(ctx fiber.Ctx) error {
 	var inputBody dto.ReqHeaderEntry
-	errResponse, err := pkg.ValidateRequestBody(&inputBody, ctx)
-	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(errResponse)
-	}
-
+	ctx.Bind().Body(inputBody)
 	userID := ctx.Locals("userID").(uint)
 	h.serviceManager.SetConfigs(userID,
 		inputBody,

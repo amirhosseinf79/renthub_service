@@ -14,12 +14,14 @@ type server struct {
 	tokenMiddleware     interfaces.TokenMiddleware
 	userHandler         interfaces.UserHandler
 	apiManagerValidator interfaces.ValidatorInterface
+	apiTokenMiddleware  interfaces.ApiAuthMiddleware
 	apiManagerHandler   interfaces.ManagerHandlerInterface
 }
 
 func NewServer(
 	tokenMiddleware interfaces.TokenMiddleware,
 	userHandler interfaces.UserHandler,
+	apiTokenMiddleware interfaces.ApiAuthMiddleware,
 	apiManagerValidator interfaces.ValidatorInterface,
 	apiManagerHandler interfaces.ManagerHandlerInterface,
 ) *server {
@@ -27,6 +29,7 @@ func NewServer(
 		tokenMiddleware:     tokenMiddleware,
 		userHandler:         userHandler,
 		apiManagerValidator: apiManagerValidator,
+		apiTokenMiddleware:  apiTokenMiddleware,
 		apiManagerHandler:   apiManagerHandler,
 	}
 }
