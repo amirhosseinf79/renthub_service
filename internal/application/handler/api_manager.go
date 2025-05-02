@@ -90,7 +90,7 @@ func (h *handlerSt) UpdateCalendar(ctx fiber.Ctx) error {
 
 func (h *handlerSt) CheckAuth(ctx fiber.Ctx) error {
 	var inputBody dto.ReqHeaderEntry
-	ctx.Bind().Body(inputBody)
+	ctx.Bind().Body(&inputBody)
 	userID := ctx.Locals("userID").(uint)
 	h.serviceManager.SetConfigs(userID,
 		inputBody,
