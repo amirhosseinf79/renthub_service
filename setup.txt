@@ -1,0 +1,17 @@
+[Unit]
+Description=RentHub Service 
+After=network.target
+
+[Service]
+ExecStart=/var/www/renthub/renthub_server
+WorkingDirectory=/var/www/renthub 
+Restart=always
+User=root
+Environment=PORT=8080
+Environment="DB=host=localhost user=rooot password=Amir2001 dbname=renthub port=5432 sslmode=disable TimeZone=Asia/Tehran"
+
+
+[Install]
+WantedBy=multi-user.target
+
+$env:DB="host=cdn.parsian.smart-vip.ir user=rooot password=Amir2001 dbname=renthub port=5432 sslmode=disable TimeZone=Asia/Tehran"
