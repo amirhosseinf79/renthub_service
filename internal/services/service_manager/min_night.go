@@ -54,8 +54,5 @@ func (s *sm) MinNightUpdate(limitDays int) dto.ManagerResponse {
 		Results:        results,
 	}
 	result.SetOveralStatus()
-	if !s.config.SendWebHookSeperately {
-		go s.tryWebHook(result)
-	}
 	return result
 }

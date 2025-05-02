@@ -54,8 +54,5 @@ func (s *sm) CalendarUpdate(action string) dto.ManagerResponse {
 		Results:        results,
 	}
 	result.SetOveralStatus()
-	if !s.config.SendWebHookSeperately {
-		go s.tryWebHook(result)
-	}
 	return result
 }

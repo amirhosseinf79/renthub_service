@@ -1,15 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
+	"github.com/amirhosseinf79/renthub_service/internal/Infrastructure/broker"
 	"github.com/amirhosseinf79/renthub_service/internal/Infrastructure/database"
 	"github.com/amirhosseinf79/renthub_service/internal/Infrastructure/persistence"
-	"github.com/amirhosseinf79/renthub_service/internal/Infrastructure/server"
-	"github.com/amirhosseinf79/renthub_service/internal/application/handler"
-	"github.com/amirhosseinf79/renthub_service/internal/application/middleware"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
-	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	apiauth "github.com/amirhosseinf79/renthub_service/internal/services/api_auth"
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/homsa"
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/jabama"
@@ -17,7 +15,6 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/mihmansho"
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/otaghak"
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/shab"
-	"github.com/amirhosseinf79/renthub_service/internal/services/auth"
 	"github.com/amirhosseinf79/renthub_service/internal/services/logger"
 	manager "github.com/amirhosseinf79/renthub_service/internal/services/service_manager"
 )
@@ -25,15 +22,13 @@ import (
 func main() {
 	dbConfig := os.Getenv("DB")
 	db := database.NewGormDB(dbConfig, false)
-
-	// User auth system
-	authUserService := auth.ImplementAuthUser(db)
+	clientServiceManager := broker.NewClient("tirich-mir.liara.cloud:32327", "wF30WArFekbGDp7336E5HNE6")
 
 	apiRepo := persistence.NewApiAuthRepository(db)
-	logRepo := persistence.NewLogRepository(db)
-
-	logService := logger.NewLogger(logRepo)
 	apiAuthService := apiauth.NewApiAuthService(apiRepo)
+
+	logRepo := persistence.NewLogRepository(db)
+	logService := logger.NewLogger(logRepo)
 
 	homsaService := homsa.New(apiAuthService)
 	jabamaService := jabama.New(apiAuthService)
@@ -55,23 +50,15 @@ func main() {
 		services,
 		apiAuthService,
 		logService,
-		dto.ManagerConfig{
-			SendWebHookSeperately: false,
-		})
-
-	apiManagerValidator := middleware.NewValidator()
-	apiTokenMiddleware := middleware.NewApiTokenMiddleware(apiAuthService)
-	apiManagerHandler := handler.NewManagerHandler(serviceManager, apiAuthService)
-
-	server := server.NewServer(
-		authUserService.AuthTokenMiddleware,
-		authUserService.UserHandler,
-		apiTokenMiddleware,
-		apiManagerValidator,
-		apiManagerHandler,
 	)
 
-	server.InitServer()
-	server.InitRoutes()
-	server.Start()
+	fmt.Println("Connecting to worker...")
+	broker := broker.NewWorker(
+		"tirich-mir.liara.cloud:32327",
+		"wF30WArFekbGDp7336E5HNE6",
+		clientServiceManager,
+		serviceManager,
+		logService,
+	)
+	broker.StartWorker()
 }

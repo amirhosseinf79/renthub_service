@@ -8,17 +8,17 @@ import (
 )
 
 type handlerSt struct {
-	serviceManager  interfaces.ServiceManager
+	serviceManagerC interfaces.BrokerClientInterface
 	ApiAuthService  interfaces.ApiAuthInterface
 	defaultResponse dto.ErrorResponse
 }
 
 func NewManagerHandler(
-	serviceManager interfaces.ServiceManager,
+	serviceManagerC interfaces.BrokerClientInterface,
 	apiAuthService interfaces.ApiAuthInterface,
 ) interfaces.ManagerHandlerInterface {
 	return &handlerSt{
-		serviceManager:  serviceManager,
+		serviceManagerC: serviceManagerC,
 		ApiAuthService:  apiAuthService,
 		defaultResponse: dto.ErrorResponse{Message: "ok"},
 	}
@@ -29,15 +29,15 @@ func (h *handlerSt) UpdatePrice(ctx fiber.Ctx) error {
 	ctx.Bind().Body(&inputBody)
 	userID := ctx.Locals("userID").(uint)
 
-	h.serviceManager.SetConfigs(userID,
-		inputBody.ReqHeaderEntry,
-		inputBody.Prices,
-		inputBody.Dates,
-	)
-	response := h.serviceManager.PriceUpdate()
-	return ctx.JSON(response)
-	// go h.serviceManager.PriceUpdate()
-	// return ctx.JSON(h.defaultResponse)
+	taskBody := dto.ClientUpdateBody{
+		UserID:   userID,
+		Header:   inputBody.ReqHeaderEntry,
+		Services: inputBody.Prices,
+		Dates:    inputBody.Dates,
+	}
+
+	h.serviceManagerC.AsyncUpdate("price", taskBody)
+	return ctx.JSON(h.defaultResponse)
 }
 
 func (h *handlerSt) UpdateDiscount(ctx fiber.Ctx) error {
@@ -45,15 +45,16 @@ func (h *handlerSt) UpdateDiscount(ctx fiber.Ctx) error {
 	ctx.Bind().Body(&inputBody)
 	userID := ctx.Locals("userID").(uint)
 
-	h.serviceManager.SetConfigs(userID,
-		inputBody.ReqHeaderEntry,
-		inputBody.Sites,
-		inputBody.Dates,
-	)
-	response := h.serviceManager.DiscountUpdate(inputBody.DiscountPercent)
-	return ctx.JSON(response)
-	// go h.serviceManager.DiscountUpdate(inputBody.DiscountPercent)
-	// return ctx.JSON(h.defaultResponse)
+	taskBody := dto.ClientUpdateBody{
+		UserID:          userID,
+		Header:          inputBody.ReqHeaderEntry,
+		Services:        inputBody.Sites,
+		Dates:           inputBody.Dates,
+		DiscountPercent: inputBody.DiscountPercent,
+	}
+
+	h.serviceManagerC.AsyncUpdate("discount", taskBody)
+	return ctx.JSON(h.defaultResponse)
 }
 
 func (h *handlerSt) UpdateMinNight(ctx fiber.Ctx) error {
@@ -61,15 +62,16 @@ func (h *handlerSt) UpdateMinNight(ctx fiber.Ctx) error {
 	ctx.Bind().Body(&inputBody)
 	userID := ctx.Locals("userID").(uint)
 
-	h.serviceManager.SetConfigs(userID,
-		inputBody.ReqHeaderEntry,
-		inputBody.Sites,
-		inputBody.Dates,
-	)
-	response := h.serviceManager.MinNightUpdate(inputBody.LimitDays)
-	return ctx.JSON(response)
-	// go h.serviceManager.MinNightUpdate(inputBody.LimitDays)
-	// return ctx.JSON(h.defaultResponse)
+	taskBody := dto.ClientUpdateBody{
+		UserID:    userID,
+		Header:    inputBody.ReqHeaderEntry,
+		Services:  inputBody.Sites,
+		Dates:     inputBody.Dates,
+		LimitDays: inputBody.LimitDays,
+	}
+
+	h.serviceManagerC.AsyncUpdate("minNight", taskBody)
+	return ctx.JSON(h.defaultResponse)
 }
 
 func (h *handlerSt) UpdateCalendar(ctx fiber.Ctx) error {
@@ -77,30 +79,32 @@ func (h *handlerSt) UpdateCalendar(ctx fiber.Ctx) error {
 	ctx.Bind().Body(&inputBody)
 	userID := ctx.Locals("userID").(uint)
 
-	h.serviceManager.SetConfigs(userID,
-		inputBody.ReqHeaderEntry,
-		inputBody.Sites,
-		inputBody.Dates,
-	)
-	response := h.serviceManager.CalendarUpdate(inputBody.Action)
-	return ctx.JSON(response)
-	// go h.serviceManager.CalendarUpdate(inputBody.Action)
-	// return ctx.JSON(h.defaultResponse)
+	taskBody := dto.ClientUpdateBody{
+		UserID:   userID,
+		Header:   inputBody.ReqHeaderEntry,
+		Services: inputBody.Sites,
+		Dates:    inputBody.Dates,
+		Action:   inputBody.Action,
+	}
+
+	h.serviceManagerC.AsyncUpdate("calendar", taskBody)
+	return ctx.JSON(h.defaultResponse)
 }
 
 func (h *handlerSt) CheckAuth(ctx fiber.Ctx) error {
 	var inputBody dto.ReqHeaderEntry
 	ctx.Bind().Body(&inputBody)
 	userID := ctx.Locals("userID").(uint)
-	h.serviceManager.SetConfigs(userID,
-		inputBody,
-		[]dto.SiteEntry{},
-		[]string{},
-	)
-	response := h.serviceManager.CheckAuth()
-	return ctx.JSON(response)
-	// go h.serviceManager.CheckAuth()
-	// return ctx.JSON(h.defaultResponse)
+
+	taskBody := dto.ClientUpdateBody{
+		UserID:   userID,
+		Header:   inputBody,
+		Services: []dto.SiteEntry{},
+		Dates:    []string{},
+	}
+
+	h.serviceManagerC.AsyncUpdate("checkAuth", taskBody)
+	return ctx.JSON(h.defaultResponse)
 }
 
 func (h *handlerSt) TokenLogin(ctx fiber.Ctx) error {
