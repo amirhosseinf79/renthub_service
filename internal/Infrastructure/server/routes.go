@@ -31,5 +31,6 @@ func (s server) initManagerRoutes(api fiber.Router) {
 func (s server) initApiAuthRouts(api fiber.Router) {
 	auth := api.Group("/service/auth", s.tokenMiddleware.CheckTokenAuth)
 	auth.Post("/check", s.apiManagerHandler.CheckAuth, s.apiTokenMiddleware.ApiAuthValidator)
+	auth.Post("/refresh", s.apiManagerHandler.RefreshToken, s.apiManagerValidator.RefReshTokenCheck)
 	auth.Post("/", s.apiManagerHandler.TokenLogin)
 }

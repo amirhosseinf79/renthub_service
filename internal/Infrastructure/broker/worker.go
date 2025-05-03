@@ -40,6 +40,8 @@ func (s *serverS) updateHandler(ctx context.Context, t *asynq.Task) error {
 		result = serviceManager.PriceUpdate()
 	case "update:checkAuth":
 		result = serviceManager.CheckAuth()
+	case "update:token":
+		result = serviceManager.ManageAutoLogin()
 	default:
 		return fmt.Errorf("unexpected task type: %s %w", t.Type(), asynq.SkipRetry)
 	}

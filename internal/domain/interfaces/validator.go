@@ -8,4 +8,5 @@ type ValidatorInterface interface {
 	CalendarUpdate(c fiber.Ctx) error
 	DiscountUpdate(c fiber.Ctx) error
 	MinNightUpdate(c fiber.Ctx) error
+	RefReshTokenCheck(c fiber.Ctx) error
 }

@@ -91,6 +91,21 @@ func (h *handlerSt) UpdateCalendar(ctx fiber.Ctx) error {
 	return ctx.JSON(h.defaultResponse)
 }
 
+func (h *handlerSt) RefreshToken(ctx fiber.Ctx) error {
+	var inputBody dto.RefreshTokenRequest
+	ctx.Bind().Body(&inputBody)
+	userID := ctx.Locals("userID").(uint)
+
+	taskBody := dto.ClientUpdateBody{
+		UserID:   userID,
+		Header:   inputBody.ReqHeaderEntry,
+		Services: inputBody.Sites,
+	}
+
+	h.serviceManagerC.AsyncUpdate("token", taskBody)
+	return ctx.JSON(h.defaultResponse)
+}
+
 func (h *handlerSt) CheckAuth(ctx fiber.Ctx) error {
 	return ctx.JSON(h.defaultResponse)
 }

@@ -42,3 +42,8 @@ type EditCalendarRequest struct {
 	Action string      `json:"action" validate:"oneof=block unblock"`
 	Sites  []SiteEntry `json:"sites" validate:"required"`
 }
+
+type RefreshTokenRequest struct {
+	ReqHeaderEntry
+	Sites []SiteEntry `json:"sites" validate:"required"`
+}

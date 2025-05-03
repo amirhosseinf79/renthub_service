@@ -37,15 +37,15 @@ func (s serviceToken) ApiAuthValidator(c fiber.Ctx) error {
 		})
 	}
 
-	taskBody := dto.ClientUpdateBody{
-		UserID: userID,
-		Header: dto.ReqHeaderEntry{
-			CallbackUrl: "ahttp://test/authorization",
-			ClientID:    inputBody.ClientID,
-		},
-		Services: []dto.SiteEntry{},
-		Dates:    []string{},
-	}
-	s.client.AsyncUpdate("checkAuth", taskBody)
+	// taskBody := dto.ClientUpdateBody{
+	// 	UserID: userID,
+	// 	Header: dto.ReqHeaderEntry{
+	// 		CallbackUrl: "ahttp://test/authorization",
+	// 		ClientID:    inputBody.ClientID,
+	// 	},
+	// 	Services: []dto.SiteEntry{},
+	// 	Dates:    []string{},
+	// }
+	// s.client.AsyncUpdate("checkAuth", taskBody)
 	return c.Next()
 }
