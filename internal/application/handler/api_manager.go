@@ -92,18 +92,6 @@ func (h *handlerSt) UpdateCalendar(ctx fiber.Ctx) error {
 }
 
 func (h *handlerSt) CheckAuth(ctx fiber.Ctx) error {
-	var inputBody dto.ReqHeaderEntry
-	ctx.Bind().Body(&inputBody)
-	userID := ctx.Locals("userID").(uint)
-
-	taskBody := dto.ClientUpdateBody{
-		UserID:   userID,
-		Header:   inputBody,
-		Services: []dto.SiteEntry{},
-		Dates:    []string{},
-	}
-
-	h.serviceManagerC.AsyncUpdate("checkAuth", taskBody)
 	return ctx.JSON(h.defaultResponse)
 }
 
