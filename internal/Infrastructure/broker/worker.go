@@ -43,6 +43,9 @@ func (s *serverS) updateHandler(ctx context.Context, t *asynq.Task) error {
 		return fmt.Errorf("unexpected task type: %s %w", t.Type(), asynq.SkipRetry)
 	}
 	p.FinalResult = result
+	if len(result.Results) == 0 {
+		return nil
+	}
 	fmt.Println("Done")
 	s.client.AsyncUpdate("webhook", p)
 	return nil

@@ -37,7 +37,10 @@ func (s *sm) CheckAuth() dto.ManagerResponse {
 	}
 
 	for range len(sites) {
-		results = append(results, <-chResult)
+		eachResult := <-chResult
+		if eachResult.Status != "success" {
+			results = append(results, eachResult)
+		}
 	}
 	close(chResult)
 

@@ -23,7 +23,7 @@ func main() {
 	apiAuthService := apiauth.NewApiAuthService(apiRepo)
 
 	apiManagerValidator := middleware.NewValidator()
-	apiTokenMiddleware := middleware.NewApiTokenMiddleware(apiAuthService)
+	apiTokenMiddleware := middleware.NewApiTokenMiddleware(clientServiceManager, apiAuthService)
 	apiManagerHandler := handler.NewManagerHandler(clientServiceManager, apiAuthService)
 
 	server := server.NewServer(

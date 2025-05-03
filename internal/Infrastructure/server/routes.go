@@ -16,7 +16,12 @@ func (s server) InitRoutes() {
 // }
 
 func (s server) initManagerRoutes(api fiber.Router) {
-	update := api.Group("/service/update", s.tokenMiddleware.CheckTokenAuth, s.apiManagerValidator.DateCheck)
+	update := api.Group(
+		"/service/update",
+		s.tokenMiddleware.CheckTokenAuth,
+		s.apiTokenMiddleware.ApiAuthValidator,
+		s.apiManagerValidator.DateCheck,
+	)
 	update.Post("/calendar", s.apiManagerHandler.UpdateCalendar, s.apiManagerValidator.CalendarUpdate)
 	update.Post("/discount", s.apiManagerHandler.UpdateDiscount, s.apiManagerValidator.DiscountUpdate)
 	update.Post("/reservation", s.apiManagerHandler.UpdateMinNight, s.apiManagerValidator.MinNightUpdate)
@@ -25,6 +30,6 @@ func (s server) initManagerRoutes(api fiber.Router) {
 
 func (s server) initApiAuthRouts(api fiber.Router) {
 	auth := api.Group("/service/auth", s.tokenMiddleware.CheckTokenAuth)
-	auth.Post("/", s.apiManagerHandler.TokenLogin, s.tokenMiddleware.CheckTokenAuth)
-	auth.Post("/check", s.apiManagerHandler.CheckAuth, s.apiTokenMiddleware.ApiAuthValidator)
+	// auth.Post("/check", s.apiManagerHandler.CheckAuth, s.apiTokenMiddleware.ApiAuthValidator)
+	auth.Post("/", s.apiManagerHandler.TokenLogin)
 }
