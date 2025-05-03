@@ -9,9 +9,15 @@ Restart=always
 User=root
 Environment=PORT=8080
 Environment="DB=host=localhost user=rooot password=Amir2001 dbname=renthub port=5432 sslmode=disable TimeZone=Asia/Tehran"
+Environment="RedisServer=tirich-mir.liara.cloud:32327"
+Environment="RedisPass=wF30WArFekbGDp7336E5HNE6"
 
 
 [Install]
 WantedBy=multi-user.target
 
+-------ENV---------
 $env:DB="host=cdn.parsian.smart-vip.ir user=rooot password=Amir2001 dbname=renthub port=5432 sslmode=disable TimeZone=Asia/Tehran"
+$env:RedisServer="tirich-mir.liara.cloud:32327"
+$env:RedisPass="wF30WArFekbGDp7336E5HNE6"
+$env:PORT="8080"

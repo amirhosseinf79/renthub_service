@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
@@ -14,11 +15,13 @@ type client struct {
 	client *asynq.Client
 }
 
-func NewClient(server, password string) interfaces.BrokerClientInterface {
+func NewClient() interfaces.BrokerClientInterface {
+	redisServer := os.Getenv("RedisServer")
+	redisPass := os.Getenv("RedisPass")
 	return &client{
 		client: asynq.NewClient(asynq.RedisClientOpt{
-			Addr:     server,
-			Password: password,
+			Addr:     redisServer,
+			Password: redisPass,
 		}),
 	}
 }

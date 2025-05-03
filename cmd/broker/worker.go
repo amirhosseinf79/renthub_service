@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/amirhosseinf79/renthub_service/internal/Infrastructure/broker"
 	"github.com/amirhosseinf79/renthub_service/internal/Infrastructure/database"
@@ -20,9 +19,8 @@ import (
 )
 
 func main() {
-	dbConfig := os.Getenv("DB")
-	db := database.NewGormDB(dbConfig, false)
-	clientServiceManager := broker.NewClient("tirich-mir.liara.cloud:32327", "wF30WArFekbGDp7336E5HNE6")
+	db := database.NewGormDB(false)
+	clientServiceManager := broker.NewClient()
 
 	apiRepo := persistence.NewApiAuthRepository(db)
 	apiAuthService := apiauth.NewApiAuthService(apiRepo)
