@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
@@ -68,18 +69,18 @@ func (s *serverS) sendWebhook(ctx context.Context, t *asynq.Task) error {
 }
 
 func NewWorker(
-	server,
-	password string,
 	client interfaces.BrokerClientInterface,
 	sericeManager interfaces.ServiceManager,
 	logger interfaces.LoggerInterface,
 ) interfaces.BrokerServerInterface {
+	redisServer := os.Getenv("RedisServer")
+	redisPass := os.Getenv("RedisPass")
 	return &serverS{
 		serviceManager: sericeManager,
 		client:         client,
 		logger:         logger,
 		server: asynq.NewServer(
-			asynq.RedisClientOpt{Addr: server, Password: password},
+			asynq.RedisClientOpt{Addr: redisServer, Password: redisPass},
 			asynq.Config{
 				Concurrency: 10,
 				RetryDelayFunc: func(n int, e error, t *asynq.Task) time.Duration {

@@ -22,6 +22,7 @@ func main() {
 	apiRepo := persistence.NewApiAuthRepository(db)
 	apiAuthService := apiauth.NewApiAuthService(apiRepo)
 
+	// manager middlewares & handler
 	apiManagerValidator := middleware.NewValidator()
 	apiTokenMiddleware := middleware.NewApiTokenMiddleware(clientServiceManager, apiAuthService)
 	apiManagerHandler := handler.NewManagerHandler(clientServiceManager, apiAuthService)

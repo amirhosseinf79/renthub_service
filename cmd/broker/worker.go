@@ -52,8 +52,6 @@ func main() {
 
 	fmt.Println("Connecting to worker...")
 	broker := broker.NewWorker(
-		"tirich-mir.liara.cloud:32327",
-		"wF30WArFekbGDp7336E5HNE6",
 		clientServiceManager,
 		serviceManager,
 		logService,
