@@ -2,6 +2,7 @@ package database
 
 import (
 	"log"
+	"os"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"gorm.io/driver/postgres"
@@ -9,7 +10,9 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-func NewGormDB(connStr string, debug bool) *gorm.DB {
+func NewGormDB(debug bool) *gorm.DB {
+	connStr := os.Getenv("DB")
+
 	gormConfig := &gorm.Config{}
 	if debug {
 		gormConfig.Logger = logger.Default.LogMode(logger.Info)

@@ -11,6 +11,7 @@ type SiteEntry struct {
 	Code  string `json:"code" validate:"required"`
 	Price int    `json:"price"`
 }
+
 type DateEntry struct {
 	Dates []string `json:"dates" validate:"required"`
 }
@@ -41,4 +42,9 @@ type EditCalendarRequest struct {
 	DateEntry
 	Action string      `json:"action" validate:"oneof=block unblock"`
 	Sites  []SiteEntry `json:"sites" validate:"required"`
+}
+
+type RefreshTokenRequest struct {
+	ReqHeaderEntry
+	Sites []SiteEntry `json:"sites" validate:"required"`
 }

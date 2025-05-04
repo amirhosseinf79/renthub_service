@@ -51,6 +51,15 @@ func (v *validator) PriceUpdate(c fiber.Ctx) error {
 	return c.Next()
 }
 
+func (v *validator) RefReshTokenCheck(c fiber.Ctx) error {
+	var inputBody dto.RefreshTokenRequest
+	response, err := pkg.ValidateRequestBody(&inputBody, c)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+	return c.Next()
+}
+
 func (v *validator) DiscountUpdate(c fiber.Ctx) error {
 	var inputBody dto.EditDiscountRequest
 	response, err := pkg.ValidateRequestBody(&inputBody, c)

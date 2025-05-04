@@ -8,11 +8,16 @@ import (
 )
 
 type serviceToken struct {
+	client         interfaces.BrokerClientInterface
 	apiAuthService interfaces.ApiAuthInterface
 }
 
-func NewApiTokenMiddleware(apiAuthService interfaces.ApiAuthInterface) interfaces.ApiAuthMiddleware {
+func NewApiTokenMiddleware(
+	client interfaces.BrokerClientInterface,
+	apiAuthService interfaces.ApiAuthInterface,
+) interfaces.ApiAuthMiddleware {
 	return &serviceToken{
+		client:         client,
 		apiAuthService: apiAuthService,
 	}
 }
@@ -32,5 +37,15 @@ func (s serviceToken) ApiAuthValidator(c fiber.Ctx) error {
 		})
 	}
 
+	// taskBody := dto.ClientUpdateBody{
+	// 	UserID: userID,
+	// 	Header: dto.ReqHeaderEntry{
+	// 		CallbackUrl: "ahttp://test/authorization",
+	// 		ClientID:    inputBody.ClientID,
+	// 	},
+	// 	Services: []dto.SiteEntry{},
+	// 	Dates:    []string{},
+	// }
+	// s.client.AsyncUpdate("checkAuth", taskBody)
 	return c.Next()
 }

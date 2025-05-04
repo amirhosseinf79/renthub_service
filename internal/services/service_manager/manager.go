@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net"
 	"net/url"
-	"time"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
@@ -20,20 +19,17 @@ type sm struct {
 	userID         uint
 	services       []dto.SiteEntry
 	dates          []string
-	config         dto.ManagerConfig
 }
 
 func New(
 	apiServices map[string]interfaces.ApiService,
 	apiAuthService interfaces.ApiAuthInterface,
 	logger interfaces.LoggerInterface,
-	config dto.ManagerConfig,
 ) interfaces.ServiceManager {
 	return &sm{
 		apiAuthService: apiAuthService,
 		apiServices:    apiServices,
 		logger:         logger,
-		config:         config,
 	}
 }
 
@@ -50,14 +46,18 @@ func (s *sm) SetConfigs(
 	services []dto.SiteEntry,
 	dates []string,
 ) interfaces.ServiceManager {
-	s.responseHead = header
-	s.services = services
-	s.userID = userID
-	s.dates = dates
-	return s
+	return &sm{
+		apiAuthService: s.apiAuthService,
+		apiServices:    s.apiServices,
+		logger:         s.logger,
+		responseHead:   header,
+		services:       services,
+		userID:         userID,
+		dates:          dates,
+	}
 }
 
-func (s *sm) sendWebhook(response dto.ManagerResponse) (log *models.Log, err error) {
+func (s *sm) SendWebhook(response dto.ManagerResponse) (log *models.Log, err error) {
 	log = &models.Log{
 		UserID:   s.userID,
 		ClientID: response.ClientID,
@@ -81,30 +81,16 @@ func (s *sm) sendWebhook(response dto.ManagerResponse) (log *models.Log, err err
 			return log, nil
 		}
 		log.FinalResult = err.Error()
-		return log, err
+		return
 	}
 	ok, err := request.Ok()
 	if !ok {
 		log.FinalResult = err.Error()
-		return log, err
+		return
 	}
 	log.FinalResult = "success"
 	log.IsSucceed = true
 	return log, nil
-}
-
-func (s *sm) tryWebHook(result dto.ManagerResponse) {
-	for range 3 {
-		// fmt.Println("Try:", try+1)
-		log, err := s.sendWebhook(result)
-		s.logger.RecordLog(log)
-		if err != nil {
-			// fmt.Printf("%v\nTrying in 5s...\n", err)
-			time.Sleep(5 * time.Second)
-			continue
-		}
-		break
-	}
 }
 
 func (s *sm) recordResult(serviceResult *dto.ServiceStats, statusCode string, log *models.Log, err error) {
@@ -113,13 +99,5 @@ func (s *sm) recordResult(serviceResult *dto.ServiceStats, statusCode string, lo
 	if err != nil {
 		serviceResult.Status = "failed"
 		serviceResult.ErrorMessage = err.Error()
-	}
-	if s.config.SendWebHookSeperately {
-		result := dto.ManagerResponse{
-			ReqHeaderEntry: s.responseHead,
-			Results:        []dto.ServiceStats{*serviceResult},
-		}
-		result.SetOveralStatus()
-		s.tryWebHook(result)
 	}
 }

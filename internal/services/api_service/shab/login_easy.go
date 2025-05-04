@@ -8,16 +8,26 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 )
 
-func (h *service) EasyLogin(fields dto.ApiEasyLogin) (log *models.Log, err error) {
+func (h *service) AutoLogin(fields dto.RequiredFields) (log *models.Log, err error) {
 	log = h.initLog(fields.UserID, fields.ClientID)
 	endpoint := h.getEndpoints().LoginWithPass
+	model, err := h.apiAuthService.GetByUnique(fields.UserID, fields.ClientID, h.service)
+	if err != nil {
+		log.FinalResult = err.Error()
+		return log, err
+	}
+	if model.Username == "" || model.Password == "" {
+		err = dto.ErrInvalidCredentials
+		log.FinalResult = err.Error()
+		return log, err
+	}
 	url, err := h.getFullURL(endpoint)
 	if err != nil {
 		log.FinalResult = err.Error()
 		return log, err
 	}
 	header := h.getHeader()
-	bodyRow := h.generateEasyLoginBody(fields)
+	bodyRow := h.generateEasyLoginBody()
 	request := requests.New(endpoint.Method, url, header, map[string]string{}, log)
 	err = request.Start(bodyRow, endpoint.ContentType)
 	if err != nil {
@@ -42,8 +52,8 @@ func (h *service) EasyLogin(fields dto.ApiEasyLogin) (log *models.Log, err error
 	tokenModel := response.GetToken()
 	tokenfields := dto.ApiAuthRequest{
 		ClientID:     fields.ClientID,
-		Username:     fields.Username,
-		Password:     fields.Password,
+		Username:     model.Username,
+		Password:     model.Password,
 		Service:      h.service,
 		AccessToken:  tokenModel.AccessToken,
 		RefreshToken: tokenModel.RefreshToken,

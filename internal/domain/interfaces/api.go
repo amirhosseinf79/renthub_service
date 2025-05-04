@@ -6,9 +6,9 @@ import (
 )
 
 type ApiService interface {
-	EasyLogin(dto.ApiEasyLogin) (*models.Log, error)
-	SendOtp(dto.RequiredFields, string) (*models.Log, error)
-	VerifyOtp(dto.RequiredFields, string) (*models.Log, error)
+	AutoLogin(dto.RequiredFields) (*models.Log, error)
+	// SendOtp(dto.RequiredFields, string) (*models.Log, error)
+	// VerifyOtp(dto.RequiredFields, string) (*models.Log, error)
 	CheckLogin(dto.RequiredFields) (*models.Log, error)
 	OpenCalendar(dto.UpdateFields) (*models.Log, error)
 	CloseCalendar(dto.UpdateFields) (*models.Log, error)
