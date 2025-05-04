@@ -11,6 +11,7 @@ type SiteEntry struct {
 	Code  string `json:"code" validate:"required"`
 	Price int    `json:"price"`
 }
+
 type DateEntry struct {
 	Dates []string `json:"dates" validate:"required"`
 }
