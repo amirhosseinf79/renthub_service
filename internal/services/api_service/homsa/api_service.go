@@ -109,7 +109,7 @@ func (h *service) generateErrResponse() interfaces.ApiResponseManager {
 }
 
 // Body
-func (h *service) generateEasyLoginBody(fields dto.ApiEasyLogin) any {
+func (h *service) generateEasyLoginBody(fields dto.ApiEasyLogin) homsa_dto.HomsaLoginUserPass {
 	return homsa_dto.HomsaLoginUserPass{
 		Mobile:   fields.Username,
 		Password: fields.Password,
@@ -117,13 +117,13 @@ func (h *service) generateEasyLoginBody(fields dto.ApiEasyLogin) any {
 	}
 }
 
-func (h *service) generateSendOTPBody(phoneNumber string) any {
+func (h *service) generateSendOTPBody(phoneNumber string) homsa_dto.HomsaOTPLogin {
 	return homsa_dto.HomsaOTPLogin{
 		Mobile: phoneNumber,
 	}
 }
 
-func (h *service) generateVerifyOTPBody(phoneNumber string, code string) any {
+func (h *service) generateVerifyOTPBody(phoneNumber string, code string) homsa_dto.HomsaLoginUserPass {
 	return homsa_dto.HomsaLoginUserPass{
 		Mobile:   phoneNumber,
 		Password: code,
@@ -131,7 +131,7 @@ func (h *service) generateVerifyOTPBody(phoneNumber string, code string) any {
 	}
 }
 
-func (h *service) generateSetMinNightBody(amount int, dates []string) any {
+func (h *service) generateSetMinNightBody(amount int, dates []string) homsa_dto.HomsaSetMinNightBody {
 	if len(dates) > 1 {
 		sort.Strings(dates)
 	}
@@ -143,7 +143,7 @@ func (h *service) generateSetMinNightBody(amount int, dates []string) any {
 	}
 }
 
-func (h *service) generateUnsetMinNightBody(dates []string) any {
+func (h *service) generateUnsetMinNightBody(dates []string) homsa_dto.HomsaUnsetMinNightBody {
 	if len(dates) > 1 {
 		sort.Strings(dates)
 	}
@@ -153,7 +153,7 @@ func (h *service) generateUnsetMinNightBody(dates []string) any {
 	}
 }
 
-func (h *service) generatePriceBody(amount int, dates []string) any {
+func (h *service) generatePriceBody(amount int, dates []string) homsa_dto.HomsaPriceBody {
 	if len(dates) > 1 {
 		sort.Strings(dates)
 	}
@@ -165,7 +165,7 @@ func (h *service) generatePriceBody(amount int, dates []string) any {
 	}
 }
 
-func (h *service) generateAddDiscountBody(amount int, dates []string) any {
+func (h *service) generateAddDiscountBody(amount int, dates []string) homsa_dto.HomsaAddDiscountBody {
 	if len(dates) > 1 {
 		sort.Strings(dates)
 	}
@@ -177,7 +177,7 @@ func (h *service) generateAddDiscountBody(amount int, dates []string) any {
 	}
 }
 
-func (h *service) generateRemoveDiscountBody(dates []string) any {
+func (h *service) generateRemoveDiscountBody(dates []string) homsa_dto.HomsaRemoveDiscountBody {
 	if len(dates) > 1 {
 		sort.Strings(dates)
 	}

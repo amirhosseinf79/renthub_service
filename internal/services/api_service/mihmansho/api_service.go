@@ -113,7 +113,7 @@ func (h *service) generateErrResponse() interfaces.ApiResponseManager {
 }
 
 // Body
-func (h *service) generateCalendarBody(roomID string, setOpen bool, dates []string) any {
+func (h *service) generateCalendarBody(roomID string, setOpen bool, dates []string) []byte {
 	fDate := mihmansho_dto.Calendar{
 		ProductId: roomID,
 	}
@@ -123,56 +123,40 @@ func (h *service) generateCalendarBody(roomID string, setOpen bool, dates []stri
 	}
 	bdata, err := json.Marshal(fDate)
 	if err != nil {
-		return err
+		return nil
 	}
 	mainBody := mihmansho_dto.FormBody{
 		"Dates": string(bdata),
 	}
 	mbody, err := json.Marshal(mainBody)
 	if err != nil {
-		return err
+		return nil
 	}
 	return mbody
 }
 
-func (h *service) generateAddDiscountBody() any {
-	return nil
-}
-
-func (h *service) generateRemoveDiscountBody() any {
-	return nil
-}
-
-func (h *service) generateEasyLoginBody(fields dto.ApiEasyLogin) any {
+func (h *service) generateEasyLoginBody(fields dto.ApiEasyLogin) mihmansho_dto.AuthBody {
 	return mihmansho_dto.AuthBody{
 		Username: fields.Username,
 		Password: fields.Password,
 	}
 }
 
-func (h *service) generateSendOTPBody(phoneNumber string) any {
+func (h *service) generateSendOTPBody(phoneNumber string) mihmansho_dto.OTPBody {
 	return mihmansho_dto.OTPBody{
 		Mobile: phoneNumber,
 		IsCode: true,
 	}
 }
 
-func (h *service) generateVerifyOTPBody(phoneNumber string, code string) any {
+func (h *service) generateVerifyOTPBody(phoneNumber string, code string) mihmansho_dto.OTPVerifyBody {
 	return mihmansho_dto.OTPVerifyBody{
 		Mobile: phoneNumber,
 		Code:   code,
 	}
 }
 
-func (h *service) generateSetMinNightBody() any {
-	return nil
-}
-
-func (h *service) generateUnsetMinNightBody() any {
-	return nil
-}
-
-func (h *service) generatePriceBody(dates []string) any {
+func (h *service) generatePriceBody(dates []string) []byte {
 	pbody := mihmansho_dto.FormBody{}
 	jdates := pkg.DatesToJalali(dates, false)
 	for _, date := range jdates {
@@ -180,7 +164,7 @@ func (h *service) generatePriceBody(dates []string) any {
 	}
 	mbody, err := json.Marshal(pbody)
 	if err != nil {
-		return err
+		return nil
 	}
 	return mbody
 }

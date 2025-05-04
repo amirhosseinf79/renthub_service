@@ -108,46 +108,26 @@ func (h *service) generateErrResponse() interfaces.ApiResponseManager {
 }
 
 // Body
-func (h *service) generateCalendarBody(dates []string) any {
+func (h *service) generateCalendarBody(dates []string) jabama_dto.OpenClosCalendar {
 	return jabama_dto.OpenClosCalendar{
 		Dates: dates,
 	}
 }
 
-func (h *service) generateAddDiscountBody() any {
-	return nil
-}
-
-func (h *service) generateRemoveDiscountBody() any {
-	return nil
-}
-
-func (h *service) generateEasyLoginBody() any {
-	return nil
-}
-
-func (h *service) generateSendOTPBody(phoneNumber string) any {
+func (h *service) generateSendOTPBody(phoneNumber string) jabama_dto.OTPLogin {
 	return jabama_dto.OTPLogin{
 		Mobile: phoneNumber,
 	}
 }
 
-func (h *service) generateVerifyOTPBody(phoneNumber string, code string) any {
+func (h *service) generateVerifyOTPBody(phoneNumber string, code string) jabama_dto.OTPLogin {
 	return jabama_dto.OTPLogin{
 		Mobile: phoneNumber,
 		Code:   code,
 	}
 }
 
-func (h *service) generateSetMinNightBody() any {
-	return nil
-}
-
-func (h *service) generateUnsetMinNightBody() any {
-	return nil
-}
-
-func (h *service) generatePriceBody(amount int, dates []string) any {
+func (h *service) generatePriceBody(amount int, dates []string) jabama_dto.EditPricePerDay {
 	return jabama_dto.EditPricePerDay{
 		Type:  nil,
 		Days:  dates,
