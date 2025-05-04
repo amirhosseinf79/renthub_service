@@ -109,7 +109,7 @@ func (h *service) generateErrResponse() interfaces.ApiResponseManager {
 }
 
 // Body
-func (h *service) generateCalendarBody(roomID string, setOpen bool, dates []string) any {
+func (h *service) generateCalendarBody(roomID string, setOpen bool, dates []string) otaghak_dto.CalendarBody {
 	if setOpen {
 		return otaghak_dto.CalendarBody{
 			RoomID:        roomID,
@@ -122,7 +122,7 @@ func (h *service) generateCalendarBody(roomID string, setOpen bool, dates []stri
 	}
 }
 
-func (h *service) generateAddDiscountBody(roomID string, amount int, dates []string) any {
+func (h *service) generateAddDiscountBody(roomID string, amount int, dates []string) otaghak_dto.EditDiscountBody {
 	return otaghak_dto.EditDiscountBody{
 		DiscountPercent: amount,
 		EffectiveDays:   pkg.DatesToIso(dates),
@@ -130,7 +130,7 @@ func (h *service) generateAddDiscountBody(roomID string, amount int, dates []str
 	}
 }
 
-func (h *service) generateRemoveDiscountBody(roomID string, dates []string) any {
+func (h *service) generateRemoveDiscountBody(roomID string, dates []string) otaghak_dto.EditDiscountBody {
 	return otaghak_dto.EditDiscountBody{
 		DiscountPercent: 0,
 		EffectiveDays:   pkg.DatesToIso(dates),
@@ -138,7 +138,7 @@ func (h *service) generateRemoveDiscountBody(roomID string, dates []string) any 
 	}
 }
 
-func (h *service) generateEasyLoginBody(fields dto.ApiEasyLogin) any {
+func (h *service) generateEasyLoginBody(fields dto.ApiEasyLogin) otaghak_dto.OtaghakAuthRequestBody {
 	return otaghak_dto.OtaghakAuthRequestBody{
 		UserName:     fields.Username,
 		Password:     fields.Password,
@@ -148,14 +148,14 @@ func (h *service) generateEasyLoginBody(fields dto.ApiEasyLogin) any {
 	}
 }
 
-func (h *service) generateSendOTPBody(phoneNumber string) any {
+func (h *service) generateSendOTPBody(phoneNumber string) otaghak_dto.OTPBody {
 	return otaghak_dto.OTPBody{
 		UserName:   phoneNumber,
 		IsShortOtp: true,
 	}
 }
 
-func (h *service) generateVerifyOTPBody(phoneNumber string, code string) any {
+func (h *service) generateVerifyOTPBody(phoneNumber string, code string) otaghak_dto.OtaghakAuthRequestBody {
 	return otaghak_dto.OtaghakAuthRequestBody{
 		UserName:     phoneNumber,
 		ClientId:     "Otaghak",
@@ -164,7 +164,7 @@ func (h *service) generateVerifyOTPBody(phoneNumber string, code string) any {
 	}
 }
 
-func (h *service) generateSetMinNightBody(roomID string, amount int, dates []string) any {
+func (h *service) generateSetMinNightBody(roomID string, amount int, dates []string) otaghak_dto.EditMinNightBody {
 	return otaghak_dto.EditMinNightBody{
 		MinNights:     amount,
 		EffectiveDays: pkg.DatesToIso(dates),
@@ -172,7 +172,7 @@ func (h *service) generateSetMinNightBody(roomID string, amount int, dates []str
 	}
 }
 
-func (h *service) generateUnsetMinNightBody(roomID string, dates []string) any {
+func (h *service) generateUnsetMinNightBody(roomID string, dates []string) otaghak_dto.EditMinNightBody {
 	return otaghak_dto.EditMinNightBody{
 		MinNights:     1,
 		EffectiveDays: pkg.DatesToIso(dates),
@@ -180,7 +180,7 @@ func (h *service) generateUnsetMinNightBody(roomID string, dates []string) any {
 	}
 }
 
-func (h *service) generatePriceBody(roomID string, amount int, dates []string) any {
+func (h *service) generatePriceBody(roomID string, amount int, dates []string) otaghak_dto.EditPriceBody {
 	formattedDates := pkg.DatesToIso(dates)
 	var formattedDays []otaghak_dto.DayPricePair
 	for _, item := range formattedDates {

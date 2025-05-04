@@ -106,7 +106,7 @@ func (h *service) generateErrResponse() interfaces.ApiResponseManager {
 }
 
 // Body
-func (h *service) generateCalendarBody(setOpen bool, dates []string) any {
+func (h *service) generateCalendarBody(setOpen bool, dates []string) shab_dto.CalendarBody {
 	status := "set_disabled"
 	if setOpen {
 		status = "unset_disabled"
@@ -117,7 +117,7 @@ func (h *service) generateCalendarBody(setOpen bool, dates []string) any {
 	}
 }
 
-func (h *service) generateAddDiscountBody(amount int, dates []string) any {
+func (h *service) generateAddDiscountBody(amount int, dates []string) shab_dto.EditDiscountBody {
 	return shab_dto.EditDiscountBody{
 		Action:        "set_daily_discount",
 		Dates:         pkg.DatesToJalali(dates, true),
@@ -125,25 +125,21 @@ func (h *service) generateAddDiscountBody(amount int, dates []string) any {
 	}
 }
 
-func (h *service) generateRemoveDiscountBody(dates []string) any {
+func (h *service) generateRemoveDiscountBody(dates []string) shab_dto.EditDiscountBody {
 	return shab_dto.EditDiscountBody{
 		Action: "unset_daily_discount",
 		Dates:  pkg.DatesToJalali(dates, true),
 	}
 }
 
-func (h *service) generateEasyLoginBody() any {
-	return nil
-}
-
-func (h *service) generateSendOTPBody(phoneNumber string) any {
+func (h *service) generateSendOTPBody(phoneNumber string) shab_dto.OTPBody {
 	return shab_dto.OTPBody{
 		Mobile:      phoneNumber,
 		CountryCode: "+98",
 	}
 }
 
-func (h *service) generateVerifyOTPBody(phoneNumber string, code string) any {
+func (h *service) generateVerifyOTPBody(phoneNumber string, code string) shab_dto.VerifyOTOBody {
 	return shab_dto.VerifyOTOBody{
 		Mobile:      phoneNumber,
 		CountryCode: "+98",
@@ -151,7 +147,7 @@ func (h *service) generateVerifyOTPBody(phoneNumber string, code string) any {
 	}
 }
 
-func (h *service) generateSetMinNightBody(amount int, dates []string) any {
+func (h *service) generateSetMinNightBody(amount int, dates []string) shab_dto.EditMinNightBody {
 	return shab_dto.EditMinNightBody{
 		Action:  "set_min_days",
 		Dates:   pkg.DatesToJalali(dates, true),
@@ -159,7 +155,7 @@ func (h *service) generateSetMinNightBody(amount int, dates []string) any {
 	}
 }
 
-func (h *service) generateUnsetMinNightBody(dates []string) any {
+func (h *service) generateUnsetMinNightBody(dates []string) shab_dto.EditMinNightBody {
 	return shab_dto.EditMinNightBody{
 		Action:  "set_min_days",
 		Dates:   pkg.DatesToJalali(dates, true),
@@ -167,7 +163,7 @@ func (h *service) generateUnsetMinNightBody(dates []string) any {
 	}
 }
 
-func (h *service) generatePriceBody(amount int, dates []string) any {
+func (h *service) generatePriceBody(amount int, dates []string) shab_dto.EditPriceBody {
 	return shab_dto.EditPriceBody{
 		KeepDiscount: false,
 		Price:        amount / 1000,

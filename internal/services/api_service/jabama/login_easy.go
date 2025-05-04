@@ -27,9 +27,8 @@ func (h *service) AutoLogin(fields dto.RequiredFields) (log *models.Log, err err
 		return log, err
 	}
 	header := h.getHeader()
-	bodyRow := h.generateEasyLoginBody()
 	request := requests.New(endpoint.Method, url, header, map[string]string{}, log)
-	err = request.Start(bodyRow, endpoint.ContentType)
+	err = request.Start(nil, endpoint.ContentType)
 	if err != nil {
 		log.FinalResult = err.Error()
 		return log, err
