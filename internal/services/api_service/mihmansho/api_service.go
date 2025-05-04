@@ -123,7 +123,7 @@ func (h *service) generateCalendarBody(roomID string, setOpen bool, dates []stri
 	}
 	bdata, err := json.Marshal(fDate)
 	if err != nil {
-		return []byte(err.Error())
+		return nil
 	}
 	mainBody := mihmansho_dto.FormBody{
 		"Dates": string(bdata),
