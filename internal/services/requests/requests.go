@@ -65,7 +65,7 @@ func (f *fetchS) Start(body any, contentType string) error {
 	return nil
 }
 
-func (f *fetchS) ParseInterface(response interfaces.ApiResponseManager) (err error) {
+func (f *fetchS) ParseInterface(response any) (err error) {
 	if f.logger != nil {
 		err := f.parseBodyResponse()
 		if err != nil {

@@ -5,6 +5,12 @@ type RequiredFields struct {
 	ClientID string
 }
 
+type GetDetail struct {
+	RequiredFields
+	RoomID string
+	Page   int
+}
+
 type UpdateFields struct {
 	RequiredFields
 	RoomID string
@@ -36,6 +42,7 @@ type ApiEndpoints struct {
 	RemoveDiscount  EndP
 	SetMinNight     EndP
 	UnsetMinNight   EndP
+	GETRooms        EndP
 }
 
 type ApiSettings struct {
