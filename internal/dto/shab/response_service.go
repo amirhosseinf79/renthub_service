@@ -8,7 +8,7 @@ import (
 )
 
 func (r *AuthResponse) GetResult() (bool, string) {
-	if r.Meta.Status > 300 {
+	if r.Meta.Status >= 300 {
 		return false, dto.ErrInvalidRequest.Error()
 	}
 	return true, "success"
