@@ -9,7 +9,7 @@ import (
 )
 
 func (h *service) EditPricePerDays(fields dto.UpdateFields) (log *models.Log, err error) {
-	var result jabama_dto.RoomListResponse
+	result := jabama_dto.RoomListResponse{}
 	getFields := dto.GetDetail{
 		RequiredFields: fields.RequiredFields,
 	}
