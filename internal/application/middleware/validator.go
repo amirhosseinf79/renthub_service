@@ -40,6 +40,19 @@ func (v *validator) SendOTPCheck(c fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
+	regex, err := regexp.Compile("^09[0-9]{9}$")
+	if err != nil {
+		response := dto.ErrorResponse{
+			Message: "Invalid regex pattern",
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(response)
+	}
+	if !regex.Match([]byte(inputBody.PhoneNumebr)) {
+		response := dto.ErrorResponse{
+			Message: dto.ErrInvalidPhoneNumber.Error(),
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(response)
+	}
 	return c.Next()
 }
 
@@ -49,12 +62,6 @@ func (v *validator) VerifyOTPCheck(c fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
-	return c.Next()
-}
-
-func (v *validator) PhoneCheck(c fiber.Ctx) error {
-	var inputBody dto.OTPSendRequest
-	c.Bind().Body(inputBody)
 	regex, err := regexp.Compile("^09[0-9]{9}$")
 	if err != nil {
 		response := dto.ErrorResponse{
