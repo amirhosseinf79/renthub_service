@@ -4,6 +4,7 @@ import "errors"
 
 var ErrEmailExists = errors.New("ایمیل وارد شده وجود دارد")
 var ErrInvalidCredentials = errors.New("نام کاربری یا رمز عبور نامعتبر است")
+var ErrInvalidCode = errors.New("کد تایید نامعتبر است")
 var ErrUserNotFound = errors.New("کاربر مورد نظر یافت نشد")
 var ErrorUnauthorized = errors.New("توکن یافت نشد")
 var ErrorPermission = errors.New("دسترسی غیر مجاز")

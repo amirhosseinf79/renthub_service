@@ -8,16 +8,19 @@ import (
 )
 
 type handlerSt struct {
+	services        map[string]interfaces.ApiService
 	serviceManagerC interfaces.BrokerClientInterface
 	ApiAuthService  interfaces.ApiAuthInterface
 	defaultResponse dto.ErrorResponse
 }
 
 func NewManagerHandler(
+	services map[string]interfaces.ApiService,
 	serviceManagerC interfaces.BrokerClientInterface,
 	apiAuthService interfaces.ApiAuthInterface,
 ) interfaces.ManagerHandlerInterface {
 	return &handlerSt{
+		services:        services,
 		serviceManagerC: serviceManagerC,
 		ApiAuthService:  apiAuthService,
 		defaultResponse: dto.ErrorResponse{Message: "ok"},
@@ -130,13 +133,22 @@ func (h *handlerSt) VerifyServiceOTP(ctx fiber.Ctx) error {
 	var inputBody dto.OTPVerifyRequest
 	ctx.Bind().Body(&inputBody)
 	userID := ctx.Locals("userID").(uint)
-	h.serviceManagerC.AsyncOTP("verify", dto.OTPBody{
-		UserID:      userID,
-		ClientID:    inputBody.ClientID,
-		Service:     inputBody.Service,
-		PhoneNumebr: inputBody.PhoneNumebr,
-		Code:        inputBody.Code,
-	})
+	selectedService, ok := h.services[inputBody.Service]
+
+	if !ok {
+		return ctx.Status(fiber.StatusBadRequest).JSON(dto.ErrorResponse{
+			Message: dto.ErrInvalidRequest.Error(),
+		})
+	}
+	model, _ := selectedService.VerifyOtp(dto.RequiredFields{
+		UserID:   userID,
+		ClientID: inputBody.ClientID,
+	}, inputBody.Code)
+	if !model.IsSucceed {
+		return ctx.Status(fiber.StatusBadRequest).JSON(dto.ErrorResponse{
+			Message: dto.ErrInvalidCode.Error(),
+		})
+	}
 	return ctx.JSON(h.defaultResponse)
 }
 
