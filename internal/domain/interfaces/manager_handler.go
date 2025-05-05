@@ -10,4 +10,6 @@ type ManagerHandlerInterface interface {
 	UpdateCalendar(ctx fiber.Ctx) error
 	TokenLogin(ctx fiber.Ctx) error
 	CheckAuth(ctx fiber.Ctx) error
+	SendServiceOTP(ctx fiber.Ctx) error
+	VerifyServiceOTP(ctx fiber.Ctx) error
 }

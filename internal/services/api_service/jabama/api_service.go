@@ -31,6 +31,7 @@ func New(apiAuthService interfaces.ApiAuthInterface) interfaces.ApiService {
 				CloseCalendar:   dto.EndP{Address: "/v1/accommodations/host/Price/%v/price/calendar/disable", Method: "PUT", ContentType: "body"},
 				EditPricePerDay: dto.EndP{Address: "/taraaz/v1/pricing/management/accommodation/%v", Method: "PUT", ContentType: "body"},
 				GETRooms:        dto.EndP{Address: "/v2/accommodation/host/accommodation", Method: "GET", ContentType: "query"},
+				// GETRoomDetails:  dto.EndP{Address: "/v2/accommodation/host/accommodation", Method: "GET", ContentType: "query"},
 			},
 			Headers: map[string]string{
 				"Authorization":   "Bearer %v",

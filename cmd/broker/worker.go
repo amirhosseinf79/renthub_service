@@ -55,6 +55,7 @@ func main() {
 		clientServiceManager,
 		serviceManager,
 		logService,
+		services,
 	)
 	broker.StartWorker()
 }

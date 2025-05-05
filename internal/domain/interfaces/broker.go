@@ -4,6 +4,7 @@ import "github.com/amirhosseinf79/renthub_service/internal/dto"
 
 type BrokerClientInterface interface {
 	AsyncUpdate(task string, body dto.ClientUpdateBody)
+	AsyncOTP(task string, body dto.OTPBody)
 }
 
 type BrokerServerInterface interface {

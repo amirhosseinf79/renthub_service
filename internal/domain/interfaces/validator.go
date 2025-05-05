@@ -9,4 +9,6 @@ type ValidatorInterface interface {
 	DiscountUpdate(c fiber.Ctx) error
 	MinNightUpdate(c fiber.Ctx) error
 	RefReshTokenCheck(c fiber.Ctx) error
+	SendOTPCheck(c fiber.Ctx) error
+	VerifyOTPCheck(c fiber.Ctx) error
 }
