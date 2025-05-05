@@ -30,10 +30,12 @@ func (h *service) VerifyOtp(fields dto.RequiredFields, otp string) (log *models.
 		return log, err
 	}
 	response := h.generateAuthResponse()
-	ok, _ := request.Ok()
+	ok, err := request.Ok()
 	if !ok {
-		response = h.generateErrResponse()
+		log.FinalResult = err.Error()
+		return log, err
 	}
+
 	err = request.ParseInterface(response)
 	if err != nil {
 		log.FinalResult = err.Error()

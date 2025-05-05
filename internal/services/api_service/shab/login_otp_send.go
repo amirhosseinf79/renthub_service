@@ -1,8 +1,6 @@
 package shab
 
 import (
-	"errors"
-
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
@@ -25,19 +23,10 @@ func (h *service) SendOtp(fields dto.RequiredFields, phoneNumber string) (log *m
 		return log, err
 	}
 	response := h.generateOTPResponse()
-	ok, _ := request.Ok()
+	ok, result := request.Ok()
 	if !ok {
-		response = h.generateErrResponse()
-	}
-	err = request.ParseInterface(response)
-	if err != nil {
-		log.FinalResult = err.Error()
-		return log, err
-	}
-	ok, result := response.GetResult()
-	log.FinalResult = result
-	if !ok {
-		return log, errors.New(result)
+		log.FinalResult = result.Error()
+		return log, result
 	}
 	tokenModel := response.GetToken()
 	tokenfields := dto.ApiAuthRequest{
