@@ -7,7 +7,14 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/Infrastructure/server"
 	"github.com/amirhosseinf79/renthub_service/internal/application/handler"
 	"github.com/amirhosseinf79/renthub_service/internal/application/middleware"
+	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	apiauth "github.com/amirhosseinf79/renthub_service/internal/services/api_auth"
+	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/homsa"
+	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/jabama"
+	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/jajiga"
+	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/mihmansho"
+	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/otaghak"
+	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/shab"
 	"github.com/amirhosseinf79/renthub_service/internal/services/auth"
 )
 
@@ -22,10 +29,26 @@ func main() {
 	apiRepo := persistence.NewApiAuthRepository(db)
 	apiAuthService := apiauth.NewApiAuthService(apiRepo)
 
+	homsaService := homsa.New(apiAuthService)
+	jabamaService := jabama.New(apiAuthService)
+	jajigaService := jajiga.New(apiAuthService)
+	mihmanshoService := mihmansho.New(apiAuthService)
+	otaghakService := otaghak.New(apiAuthService)
+	shabService := shab.New(apiAuthService)
+
+	services := map[string]interfaces.ApiService{
+		"homsa":     homsaService,
+		"jabama":    jabamaService,
+		"jajiga":    jajigaService,
+		"mihmansho": mihmanshoService,
+		"otaghak":   otaghakService,
+		"shab":      shabService,
+	}
+
 	// manager middlewares & handler
 	apiManagerValidator := middleware.NewValidator()
 	apiTokenMiddleware := middleware.NewApiTokenMiddleware(clientServiceManager, apiAuthService)
-	apiManagerHandler := handler.NewManagerHandler(clientServiceManager, apiAuthService)
+	apiManagerHandler := handler.NewManagerHandler(services, clientServiceManager, apiAuthService)
 
 	server := server.NewServer(
 		authUserService.AuthTokenMiddleware,
