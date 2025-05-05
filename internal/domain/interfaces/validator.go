@@ -11,5 +11,4 @@ type ValidatorInterface interface {
 	RefReshTokenCheck(c fiber.Ctx) error
 	SendOTPCheck(c fiber.Ctx) error
 	VerifyOTPCheck(c fiber.Ctx) error
-	PhoneCheck(c fiber.Ctx) error
 }
