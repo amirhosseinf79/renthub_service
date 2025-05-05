@@ -17,5 +17,6 @@ type UserRegister struct {
 }
 
 type ErrorResponse struct {
-	Message string
+	Message        string
+	ServiceMessage string
 }
