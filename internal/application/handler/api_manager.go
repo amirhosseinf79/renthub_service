@@ -146,7 +146,8 @@ func (h *handlerSt) VerifyServiceOTP(ctx fiber.Ctx) error {
 	}, inputBody.Code)
 	if !model.IsSucceed {
 		return ctx.Status(fiber.StatusBadRequest).JSON(dto.ErrorResponse{
-			Message: dto.ErrInvalidCode.Error(),
+			Message:        dto.ErrInvalidCode.Error(),
+			ServiceMessage: model.ResponseBody,
 		})
 	}
 	return ctx.JSON(h.defaultResponse)
