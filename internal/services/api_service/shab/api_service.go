@@ -125,8 +125,8 @@ func (h *service) generateAddDiscountBody(amount int, dates []string) shab_dto.E
 	}
 }
 
-func (h *service) generateRemoveDiscountBody(dates []string) shab_dto.EditDiscountBody {
-	return shab_dto.EditDiscountBody{
+func (h *service) generateRemoveDiscountBody(dates []string) shab_dto.UnsetDiscountBody {
+	return shab_dto.UnsetDiscountBody{
 		Action: "unset_daily_discount",
 		Dates:  pkg.DatesToJalali(dates, true),
 	}

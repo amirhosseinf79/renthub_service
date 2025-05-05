@@ -22,6 +22,11 @@ type EditDiscountBody struct {
 	DailyDiscount int      `json:"daily_discount"`
 }
 
+type UnsetDiscountBody struct {
+	Dates  []string `json:"dates"`
+	Action string   `json:"action"`
+}
+
 type EditMinNightBody struct {
 	Dates   []string `json:"dates"`
 	MinDays int      `json:"minimum_days"`
