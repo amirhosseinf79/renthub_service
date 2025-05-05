@@ -48,3 +48,16 @@ type RefreshTokenRequest struct {
 	ReqHeaderEntry
 	Sites []SiteEntry `json:"sites" validate:"required"`
 }
+
+type OTPSendRequest struct {
+	ClientID    string `json:"clientId" validate:"required"`
+	Service     string `json:"service"`
+	PhoneNumebr string `json:"phoneNumber"`
+}
+
+type OTPVerifyRequest struct {
+	ClientID    string `json:"clientId" validate:"required"`
+	Service     string `json:"service" validate:"required"`
+	PhoneNumebr string `json:"phoneNumber" validate:"required"`
+	Code        string `json:"code" validate:"required"`
+}

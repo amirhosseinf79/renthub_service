@@ -10,3 +10,11 @@ type ClientUpdateBody struct {
 	DiscountPercent int
 	FinalResult     ManagerResponse
 }
+
+type OTPBody struct {
+	UserID      uint
+	ClientID    string
+	Service     string
+	PhoneNumebr string
+	Code        string
+}

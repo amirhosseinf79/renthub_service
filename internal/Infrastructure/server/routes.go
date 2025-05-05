@@ -32,5 +32,7 @@ func (s server) initApiAuthRouts(api fiber.Router) {
 	auth := api.Group("/service/auth", s.tokenMiddleware.CheckTokenAuth)
 	auth.Post("/check", s.apiManagerHandler.CheckAuth, s.apiTokenMiddleware.ApiAuthValidator)
 	auth.Post("/refresh", s.apiManagerHandler.RefreshToken, s.apiManagerValidator.RefReshTokenCheck)
-	auth.Post("/", s.apiManagerHandler.TokenLogin)
+	auth.Post("/send-otp", s.apiManagerHandler.SendServiceOTP, s.apiManagerValidator.SendOTPCheck)
+	auth.Post("/verify-otp", s.apiManagerHandler.VerifyServiceOTP, s.apiManagerValidator.VerifyOTPCheck)
+	// auth.Post("/", s.apiManagerHandler.TokenLogin)
 }

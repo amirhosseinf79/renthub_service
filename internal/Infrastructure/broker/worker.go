@@ -16,8 +16,46 @@ import (
 type serverS struct {
 	client         interfaces.BrokerClientInterface
 	server         *asynq.Server
+	serices        map[string]interfaces.ApiService
 	serviceManager interfaces.ServiceManager
 	logger         interfaces.LoggerInterface
+}
+
+func NewWorker(
+	client interfaces.BrokerClientInterface,
+	sericeManager interfaces.ServiceManager,
+	logger interfaces.LoggerInterface,
+	serices map[string]interfaces.ApiService,
+) interfaces.BrokerServerInterface {
+	redisServer := os.Getenv("RedisServer")
+	redisPass := os.Getenv("RedisPass")
+	return &serverS{
+		serices:        serices,
+		serviceManager: sericeManager,
+		client:         client,
+		logger:         logger,
+		server: asynq.NewServer(
+			asynq.RedisClientOpt{Addr: redisServer, Password: redisPass},
+			asynq.Config{
+				Concurrency: 10,
+				RetryDelayFunc: func(n int, e error, t *asynq.Task) time.Duration {
+					return 5 * time.Second
+				},
+			},
+		),
+	}
+}
+
+func (s *serverS) StartWorker() {
+	mux := asynq.NewServeMux()
+	mux.HandleFunc("otp:send", s.otpSendHandler)
+	mux.HandleFunc("otp:verify", s.otpVerifyHandler)
+	mux.HandleFunc("update:webhook", s.sendWebhook)
+	mux.HandleFunc("update:", s.updateHandler)
+
+	if err := s.server.Run(mux); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func (s *serverS) updateHandler(ctx context.Context, t *asynq.Task) error {
@@ -54,6 +92,36 @@ func (s *serverS) updateHandler(ctx context.Context, t *asynq.Task) error {
 	return nil
 }
 
+func (s *serverS) otpSendHandler(ctx context.Context, t *asynq.Task) error {
+	fmt.Println(t.Type())
+	var p dto.OTPBody
+	if err := json.Unmarshal(t.Payload(), &p); err != nil {
+		return fmt.Errorf("%v: %w", err, asynq.SkipRetry)
+	}
+	selectedService, ok := s.serices[p.Service]
+	if !ok {
+		return nil
+	}
+	log, _ := selectedService.SendOtp(dto.RequiredFields{UserID: p.UserID, ClientID: p.ClientID}, p.PhoneNumebr)
+	s.logger.RecordLog(log)
+	return nil
+}
+
+func (s *serverS) otpVerifyHandler(ctx context.Context, t *asynq.Task) error {
+	fmt.Println(t.Type())
+	var p dto.OTPBody
+	if err := json.Unmarshal(t.Payload(), &p); err != nil {
+		return fmt.Errorf("%v: %w", err, asynq.SkipRetry)
+	}
+	selectedService, ok := s.serices[p.Service]
+	if !ok {
+		return nil
+	}
+	log, _ := selectedService.VerifyOtp(dto.RequiredFields{UserID: p.UserID, ClientID: p.ClientID}, p.Code)
+	s.logger.RecordLog(log)
+	return nil
+}
+
 func (s *serverS) sendWebhook(ctx context.Context, t *asynq.Task) error {
 	fmt.Println("update:webhook")
 	var p dto.ClientUpdateBody
@@ -68,37 +136,4 @@ func (s *serverS) sendWebhook(ctx context.Context, t *asynq.Task) error {
 		return err
 	}
 	return nil
-}
-
-func NewWorker(
-	client interfaces.BrokerClientInterface,
-	sericeManager interfaces.ServiceManager,
-	logger interfaces.LoggerInterface,
-) interfaces.BrokerServerInterface {
-	redisServer := os.Getenv("RedisServer")
-	redisPass := os.Getenv("RedisPass")
-	return &serverS{
-		serviceManager: sericeManager,
-		client:         client,
-		logger:         logger,
-		server: asynq.NewServer(
-			asynq.RedisClientOpt{Addr: redisServer, Password: redisPass},
-			asynq.Config{
-				Concurrency: 10,
-				RetryDelayFunc: func(n int, e error, t *asynq.Task) time.Duration {
-					return 5 * time.Second
-				},
-			},
-		),
-	}
-}
-
-func (s *serverS) StartWorker() {
-	mux := asynq.NewServeMux()
-	mux.HandleFunc("update:webhook", s.sendWebhook)
-	mux.HandleFunc("update:", s.updateHandler)
-
-	if err := s.server.Run(mux); err != nil {
-		log.Fatal(err)
-	}
 }

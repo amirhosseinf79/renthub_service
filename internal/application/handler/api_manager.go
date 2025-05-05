@@ -107,6 +107,36 @@ func (h *handlerSt) RefreshToken(ctx fiber.Ctx) error {
 }
 
 func (h *handlerSt) CheckAuth(ctx fiber.Ctx) error {
+	var inputBody dto.ReqHeaderEntry
+	ctx.Bind().Body(&inputBody)
+	h.serviceManagerC.AsyncUpdate("checkAuth", dto.ClientUpdateBody{Header: inputBody})
+	return ctx.JSON(h.defaultResponse)
+}
+
+func (h *handlerSt) SendServiceOTP(ctx fiber.Ctx) error {
+	var inputBody dto.OTPSendRequest
+	ctx.Bind().Body(&inputBody)
+	userID := ctx.Locals("userID").(uint)
+	h.serviceManagerC.AsyncOTP("send", dto.OTPBody{
+		UserID:      userID,
+		ClientID:    inputBody.ClientID,
+		Service:     inputBody.Service,
+		PhoneNumebr: inputBody.PhoneNumebr,
+	})
+	return ctx.JSON(h.defaultResponse)
+}
+
+func (h *handlerSt) VerifyServiceOTP(ctx fiber.Ctx) error {
+	var inputBody dto.OTPVerifyRequest
+	ctx.Bind().Body(&inputBody)
+	userID := ctx.Locals("userID").(uint)
+	h.serviceManagerC.AsyncOTP("verify", dto.OTPBody{
+		UserID:      userID,
+		ClientID:    inputBody.ClientID,
+		Service:     inputBody.Service,
+		PhoneNumebr: inputBody.PhoneNumebr,
+		Code:        inputBody.Code,
+	})
 	return ctx.JSON(h.defaultResponse)
 }
 

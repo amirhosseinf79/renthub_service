@@ -33,6 +33,24 @@ func (v *validator) DateCheck(c fiber.Ctx) error {
 	return c.Next()
 }
 
+func (v *validator) SendOTPCheck(c fiber.Ctx) error {
+	var inputBody dto.OTPSendRequest
+	response, err := pkg.ValidateRequestBody(&inputBody, c)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+	return c.Next()
+}
+
+func (v *validator) VerifyOTPCheck(c fiber.Ctx) error {
+	var inputBody dto.OTPSendRequest
+	response, err := pkg.ValidateRequestBody(&inputBody, c)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+	return c.Next()
+}
+
 func (v *validator) PriceUpdate(c fiber.Ctx) error {
 	var inputBody dto.EditPriceRequest
 	response, err := pkg.ValidateRequestBody(&inputBody, c)
