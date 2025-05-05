@@ -51,8 +51,8 @@ type RefreshTokenRequest struct {
 
 type OTPSendRequest struct {
 	ClientID    string `json:"clientId" validate:"required"`
-	Service     string `json:"service"`
-	PhoneNumebr string `json:"phoneNumber"`
+	Service     string `json:"service" validate:"required"`
+	PhoneNumebr string `json:"phoneNumber" validate:"required"`
 }
 
 type OTPVerifyRequest struct {
