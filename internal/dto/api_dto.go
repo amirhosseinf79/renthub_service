@@ -43,6 +43,7 @@ type ApiEndpoints struct {
 	SetMinNight     EndP
 	UnsetMinNight   EndP
 	GETRooms        EndP
+	GETRoomDetails  EndP
 }
 
 type ApiSettings struct {
