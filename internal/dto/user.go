@@ -19,3 +19,8 @@ type UserRegister struct {
 type ErrorResponse struct {
 	Message string `json:"message"`
 }
+
+type OTPErrorResponse struct {
+	Message        string `json:"message"`
+	ServiceMessage string `json:"serviceMessage"`
+}
