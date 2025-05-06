@@ -131,8 +131,8 @@ func (h *handlerSt) SendServiceOTP(ctx fiber.Ctx) error {
 		ClientID: inputBody.ClientID,
 	}, inputBody.PhoneNumebr)
 	if !model.IsSucceed {
-		return ctx.Status(fiber.StatusUnauthorized).JSON(dto.OTPErrorResponse{
-			Message:        dto.ErrInvalidCode.Error(),
+		return ctx.Status(fiber.StatusBadRequest).JSON(dto.OTPErrorResponse{
+			Message:        dto.ErrInvalidRequest.Error(),
 			ServiceMessage: model.FinalResult,
 		})
 	}
