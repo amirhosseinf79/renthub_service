@@ -120,13 +120,31 @@ func (h *handlerSt) SendServiceOTP(ctx fiber.Ctx) error {
 	var inputBody dto.OTPSendRequest
 	ctx.Bind().Body(&inputBody)
 	userID := ctx.Locals("userID").(uint)
-	h.serviceManagerC.AsyncOTP("send", dto.OTPBody{
-		UserID:      userID,
-		ClientID:    inputBody.ClientID,
-		Service:     inputBody.Service,
-		PhoneNumebr: inputBody.PhoneNumebr,
-	})
+	selectedService, ok := h.services[inputBody.Service]
+	if !ok {
+		return ctx.Status(fiber.StatusBadRequest).JSON(dto.ErrorResponse{
+			Message: dto.ErrInvalidRequest.Error(),
+		})
+	}
+	model, _ := selectedService.SendOtp(dto.RequiredFields{
+		UserID:   userID,
+		ClientID: inputBody.ClientID,
+	}, inputBody.PhoneNumebr)
+	if !model.IsSucceed {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(dto.OTPErrorResponse{
+			Message:        dto.ErrInvalidCode.Error(),
+			ServiceMessage: model.FinalResult,
+		})
+	}
 	return ctx.JSON(h.defaultResponse)
+
+	// h.serviceManagerC.AsyncOTP("send", dto.OTPBody{
+	// 	UserID:      userID,
+	// 	ClientID:    inputBody.ClientID,
+	// 	Service:     inputBody.Service,
+	// 	PhoneNumebr: inputBody.PhoneNumebr,
+	// })
+	// return ctx.JSON(h.defaultResponse)
 }
 
 func (h *handlerSt) VerifyServiceOTP(ctx fiber.Ctx) error {
@@ -134,7 +152,6 @@ func (h *handlerSt) VerifyServiceOTP(ctx fiber.Ctx) error {
 	ctx.Bind().Body(&inputBody)
 	userID := ctx.Locals("userID").(uint)
 	selectedService, ok := h.services[inputBody.Service]
-
 	if !ok {
 		return ctx.Status(fiber.StatusBadRequest).JSON(dto.ErrorResponse{
 			Message: dto.ErrInvalidRequest.Error(),
@@ -145,8 +162,9 @@ func (h *handlerSt) VerifyServiceOTP(ctx fiber.Ctx) error {
 		ClientID: inputBody.ClientID,
 	}, inputBody.Code)
 	if !model.IsSucceed {
-		return ctx.Status(fiber.StatusUnauthorized).JSON(dto.ErrorResponse{
-			Message: dto.ErrInvalidCode.Error(),
+		return ctx.Status(fiber.StatusUnauthorized).JSON(dto.OTPErrorResponse{
+			Message:        dto.ErrInvalidCode.Error(),
+			ServiceMessage: model.FinalResult,
 		})
 	}
 	return ctx.JSON(h.defaultResponse)
