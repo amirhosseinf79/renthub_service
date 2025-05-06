@@ -160,7 +160,10 @@ func (h *handlerSt) VerifyServiceOTP(ctx fiber.Ctx) error {
 	model, _ := selectedService.VerifyOtp(dto.RequiredFields{
 		UserID:   userID,
 		ClientID: inputBody.ClientID,
-	}, inputBody.Code)
+	}, dto.OTPCreds{
+		PhoneNumber: inputBody.PhoneNumebr,
+		OTPCode:     inputBody.Code,
+	})
 	if !model.IsSucceed {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(dto.OTPErrorResponse{
 			Message:        dto.ErrInvalidCode.Error(),

@@ -9,3 +9,8 @@ type ApiAuthRequest struct {
 	RefreshToken string `json:"refreshToken"`
 	Ucode        string `json:"ucode"`
 }
+
+type OTPCreds struct {
+	PhoneNumber string
+	OTPCode     string
+}

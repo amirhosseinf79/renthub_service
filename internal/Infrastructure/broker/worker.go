@@ -117,7 +117,14 @@ func (s *serverS) otpVerifyHandler(ctx context.Context, t *asynq.Task) error {
 	if !ok {
 		return nil
 	}
-	log, _ := selectedService.VerifyOtp(dto.RequiredFields{UserID: p.UserID, ClientID: p.ClientID}, p.Code)
+	log, _ := selectedService.VerifyOtp(dto.RequiredFields{
+		UserID:   p.UserID,
+		ClientID: p.ClientID,
+	},
+		dto.OTPCreds{
+			PhoneNumber: p.PhoneNumebr,
+			OTPCode:     p.Code,
+		})
 	s.logger.RecordLog(log)
 	return nil
 }

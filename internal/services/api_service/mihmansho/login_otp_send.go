@@ -39,20 +39,6 @@ func (h *service) SendOtp(fields dto.RequiredFields, phoneNumber string) (log *m
 	if !ok {
 		return log, errors.New(result)
 	}
-	tokenModel := response.GetToken()
-	tokenfields := dto.ApiAuthRequest{
-		ClientID:     fields.ClientID,
-		Username:     phoneNumber,
-		Service:      h.service,
-		AccessToken:  tokenModel.AccessToken,
-		RefreshToken: tokenModel.RefreshToken,
-		Ucode:        tokenModel.Ucode,
-	}
-	err = h.apiAuthService.UpdateOrCreate(fields.UserID, tokenfields)
-	if err != nil {
-		log.FinalResult = err.Error()
-		return log, err
-	}
 	log.FinalResult = "success"
 	log.IsSucceed = true
 	return log, err

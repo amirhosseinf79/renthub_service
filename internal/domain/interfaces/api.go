@@ -8,7 +8,7 @@ import (
 type ApiService interface {
 	AutoLogin(dto.RequiredFields) (*models.Log, error)
 	SendOtp(dto.RequiredFields, string) (*models.Log, error)
-	VerifyOtp(dto.RequiredFields, string) (*models.Log, error)
+	VerifyOtp(dto.RequiredFields, dto.OTPCreds) (*models.Log, error)
 	CheckLogin(dto.RequiredFields) (*models.Log, error)
 	OpenCalendar(dto.UpdateFields) (*models.Log, error)
 	CloseCalendar(dto.UpdateFields) (*models.Log, error)
