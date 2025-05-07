@@ -1,8 +1,6 @@
 package manager
 
 import (
-	"fmt"
-
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 )
@@ -21,7 +19,6 @@ func (s *sm) asyncCheckAuth(service dto.SiteEntry, chResult chan dto.ServiceStat
 		ClientID: s.responseHead.ClientID,
 	}
 	log, err = selectedService.CheckLogin(fields)
-	fmt.Println(service, err)
 	s.recordResult(&serviceResult, service.Code, log, err)
 	chResult <- serviceResult
 }

@@ -1,6 +1,8 @@
 package persistence
 
 import (
+	"fmt"
+
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/repository"
 	"gorm.io/gorm"
@@ -28,7 +30,8 @@ func (r *apiAuthRepo) GetByUnique(userID uint, clientID string, service string) 
 }
 
 func (r *apiAuthRepo) GetAll(userID uint, clientID string) (list []*models.ApiAuth) {
-	r.db.Where("user_id = ? AND client_id = ?", userID, clientID).Find(&list)
+	err := r.db.Where("user_id = ? AND client_id = ?", userID, clientID).Find(&list).Error
+	fmt.Println("user_id = ? AND client_id = ?", userID, clientID, err)
 	return
 }
 
