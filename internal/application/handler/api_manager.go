@@ -112,7 +112,8 @@ func (h *handlerSt) RefreshToken(ctx fiber.Ctx) error {
 func (h *handlerSt) CheckAuth(ctx fiber.Ctx) error {
 	var inputBody dto.ReqHeaderEntry
 	ctx.Bind().Body(&inputBody)
-	h.serviceManagerC.AsyncUpdate("checkAuth", dto.ClientUpdateBody{Header: inputBody})
+	userId := ctx.Locals("userID").(uint)
+	h.serviceManagerC.AsyncUpdate("checkAuth", dto.ClientUpdateBody{Header: inputBody, UserID: userId})
 	return ctx.JSON(h.defaultResponse)
 }
 
