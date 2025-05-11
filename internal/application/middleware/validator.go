@@ -19,7 +19,7 @@ func NewValidator() interfaces.ValidatorInterface {
 func (v *validator) DateCheck(c fiber.Ctx) error {
 	var inputBody dto.DateEntry
 	response := dto.ErrorResponse{
-		Message: dto.ErrInvalidRequest.Error(),
+		Message: dto.ErrInvalidDate.Error(),
 	}
 
 	err := c.Bind().Body(&inputBody)
@@ -27,7 +27,12 @@ func (v *validator) DateCheck(c fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 	for _, date := range inputBody.Dates {
-		if _, err := time.Parse("2006-01-02", date); err != nil {
+		date, err := time.Parse("2006-01-02", date)
+		oldDate := date.Before(time.Now())
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(response)
+		}
+		if oldDate {
 			return c.Status(fiber.StatusBadRequest).JSON(response)
 		}
 	}
