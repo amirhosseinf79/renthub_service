@@ -27,14 +27,14 @@ func (v *validator) DateCheck(c fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 	for _, date := range inputBody.Dates {
-		date, err := time.Parse("2006-01-02", date)
-		oldDate := date.Before(time.Now())
+		_, err := time.Parse("2006-01-02", date)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).JSON(response)
 		}
-		if oldDate {
-			return c.Status(fiber.StatusBadRequest).JSON(response)
-		}
+		// oldDate := date.Before(time.Now())
+		// if oldDate {
+		// 	return c.Status(fiber.StatusBadRequest).JSON(response)
+		// }
 	}
 	return c.Next()
 }
