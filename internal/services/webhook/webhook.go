@@ -39,7 +39,7 @@ func (w *webhookS) SendResult(response dto.ClientUpdateBody) (log *models.Log, e
 	_, err = url.ParseRequestURI(response.Header.CallbackUrl)
 	if err != nil {
 		log.FinalResult = "ignored/invalid url"
-		return log, fmt.Errorf("err: %s %w", err.Error(), asynq.SkipRetry)
+		return log, fmt.Errorf("err: %w %w", err, asynq.SkipRetry)
 	}
 
 	header := map[string]string{
@@ -54,7 +54,7 @@ func (w *webhookS) SendResult(response dto.ClientUpdateBody) (log *models.Log, e
 		var dnsErr *net.DNSError
 		if has := errors.As(err, &dnsErr); has {
 			log.FinalResult = "ignored/invalid url"
-			return log, fmt.Errorf("err: %s %w", err.Error(), asynq.SkipRetry)
+			return log, fmt.Errorf("err: %w %w", err, asynq.SkipRetry)
 		}
 		log.FinalResult = err.Error()
 		return
@@ -94,7 +94,7 @@ func (w *webhookS) RefreshToken(userID uint) (log *models.Log, err error) {
 		var dnsErr *net.DNSError
 		if has := errors.As(err, &dnsErr); has {
 			log.FinalResult = "ignored/invalid url"
-			return log, fmt.Errorf("err: %s %w", err.Error(), asynq.SkipRetry)
+			return log, fmt.Errorf("err: %w %w", err, asynq.SkipRetry)
 		}
 		log.FinalResult = err.Error()
 		return
