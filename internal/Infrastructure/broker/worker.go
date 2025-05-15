@@ -146,7 +146,7 @@ func (s *serverS) sendWebhook(ctx context.Context, t *asynq.Task) error {
 	log, err := s.webhookService.SendResult(p)
 	s.logger.RecordLog(log)
 	if err != nil {
-		if log.StatusCode == 401 {
+		if log.StatusCode == 401 || log.StatusCode == 403 {
 			log, err2 := s.webhookService.RefreshToken(p.UserID)
 			s.logger.RecordLog(log)
 			if err2 != nil {
