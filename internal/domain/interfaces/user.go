@@ -15,4 +15,5 @@ type UserService interface {
 	RegisterUser(creds dto.UserRegister) (*models.Token, error)
 	LoginUser(creds dto.UserLogin) (*models.Token, error)
 	GetUserById(id uint) (*models.User, error)
+	UpdateTokens(id uint, access, refresh string) error
 }

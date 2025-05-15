@@ -104,6 +104,20 @@ func (w *webhookS) RefreshToken(userID uint) (log *models.Log, err error) {
 		log.FinalResult = err.Error()
 		return
 	}
+
+	response := &dto.WebhookRefreshResponse{}
+	err = request.ParseInterface(response)
+	if err != nil {
+		log.FinalResult = err.Error()
+		return
+	}
+
+	err = w.userService.UpdateTokens(userID, response.AccessToken, userM.HookRefresh)
+	if err != nil {
+		log.FinalResult = err.Error()
+		return
+	}
+
 	log.FinalResult = "success"
 	log.IsSucceed = true
 	return log, nil

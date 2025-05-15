@@ -73,3 +73,20 @@ func (s *userService) GetUserById(id uint) (*models.User, error) {
 	user, err := s.userRepo.GetByID(id)
 	return user, err
 }
+
+func (s *userService) UpdateTokens(id uint, access, refresh string) error {
+	user, err := s.userRepo.GetByID(id)
+	if err != nil {
+		return err
+	}
+
+	user.HookToken = access
+	user.HookRefresh = refresh
+
+	err = s.userRepo.Update(user)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
