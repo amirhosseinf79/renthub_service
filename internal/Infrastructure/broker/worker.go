@@ -3,6 +3,7 @@ package broker
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -42,6 +43,10 @@ func NewWorker(
 			asynq.Config{
 				Concurrency: 10,
 				RetryDelayFunc: func(n int, e error, t *asynq.Task) time.Duration {
+					if errors.Is(e, dto.ErrorUnauthorized) {
+						return 1 * time.Second
+					}
+
 					return 5 * time.Second
 				},
 			},
@@ -147,6 +152,7 @@ func (s *serverS) sendWebhook(ctx context.Context, t *asynq.Task) error {
 			if err2 != nil {
 				fmt.Println(err2)
 			}
+			return fmt.Errorf("err: %w %w", err, dto.ErrorUnauthorized)
 		}
 		fmt.Println(err)
 		return err
