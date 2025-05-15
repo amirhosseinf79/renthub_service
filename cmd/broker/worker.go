@@ -14,8 +14,10 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/mihmansho"
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/otaghak"
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/shab"
+	"github.com/amirhosseinf79/renthub_service/internal/services/auth"
 	"github.com/amirhosseinf79/renthub_service/internal/services/logger"
 	manager "github.com/amirhosseinf79/renthub_service/internal/services/service_manager"
+	"github.com/amirhosseinf79/renthub_service/internal/services/webhook"
 )
 
 func main() {
@@ -24,6 +26,12 @@ func main() {
 
 	apiRepo := persistence.NewApiAuthRepository(db)
 	apiAuthService := apiauth.NewApiAuthService(apiRepo)
+
+	tokenRepo := persistence.NewTokenRepository(db)
+	tokenService := auth.NewTokenService(tokenRepo)
+	userRepo := persistence.NewUserRepository(db)
+	userService := auth.NewUserService(userRepo, tokenService)
+	webhookService := webhook.NewWebhookService(userService)
 
 	logRepo := persistence.NewLogRepository(db)
 	logService := logger.NewLogger(logRepo)
@@ -56,6 +64,7 @@ func main() {
 		serviceManager,
 		logService,
 		services,
+		webhookService,
 	)
 	broker.StartWorker()
 }

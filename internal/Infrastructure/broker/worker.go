@@ -19,6 +19,7 @@ type serverS struct {
 	serices        map[string]interfaces.ApiService
 	serviceManager interfaces.ServiceManager
 	logger         interfaces.LoggerInterface
+	webhookService interfaces.WebhookService
 }
 
 func NewWorker(
@@ -26,6 +27,7 @@ func NewWorker(
 	sericeManager interfaces.ServiceManager,
 	logger interfaces.LoggerInterface,
 	serices map[string]interfaces.ApiService,
+	webhookService interfaces.WebhookService,
 ) interfaces.BrokerServerInterface {
 	redisServer := os.Getenv("RedisServer")
 	redisPass := os.Getenv("RedisPass")
@@ -34,6 +36,7 @@ func NewWorker(
 		serviceManager: sericeManager,
 		client:         client,
 		logger:         logger,
+		webhookService: webhookService,
 		server: asynq.NewServer(
 			asynq.RedisClientOpt{Addr: redisServer, Password: redisPass},
 			asynq.Config{
@@ -135,10 +138,16 @@ func (s *serverS) sendWebhook(ctx context.Context, t *asynq.Task) error {
 	if err := json.Unmarshal(t.Payload(), &p); err != nil {
 		return fmt.Errorf("%v: %w", err, asynq.SkipRetry)
 	}
-	serviceManager := s.serviceManager.SetConfigs(p.UserID, p.Header, p.Services, p.Dates)
-	log, err := serviceManager.SendWebhook(p.FinalResult)
+	log, err := s.webhookService.SendResult(p)
 	s.logger.RecordLog(log)
 	if err != nil {
+		if log.StatusCode == 401 {
+			log, err2 := s.webhookService.RefreshToken(p.UserID)
+			s.logger.RecordLog(log)
+			if err2 != nil {
+				fmt.Println(err2)
+			}
+		}
 		fmt.Println(err)
 		return err
 	}

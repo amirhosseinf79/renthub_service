@@ -8,14 +8,17 @@ import (
 )
 
 type User struct {
-	ID        uint           `gorm:"primaryKey"`
-	Email     string         `gorm:"unique;not null"`
-	FirstName string         ``
-	LastName  string         ``
-	Password  string         ``
-	CreatedAt time.Time      `gorm:"autoCreateTime"`
-	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
-	DeletedAt gorm.DeletedAt `gorm:"index"`
+	ID          uint           `gorm:"primaryKey"`
+	Email       string         `gorm:"unique;not null"`
+	FirstName   string         ``
+	LastName    string         ``
+	Password    string         ``
+	HookToken   string         ``
+	HookRefresh string         ``
+	RefreshURL  string         ``
+	CreatedAt   time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt   time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt   gorm.DeletedAt `gorm:"index"`
 }
 
 func (u *User) ValidatePassword(password string) bool {

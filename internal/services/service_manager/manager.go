@@ -1,14 +1,9 @@
 package manager
 
 import (
-	"errors"
-	"net"
-	"net/url"
-
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
-	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 )
 
 type sm struct {
@@ -55,42 +50,6 @@ func (s *sm) SetConfigs(
 		userID:         userID,
 		dates:          dates,
 	}
-}
-
-func (s *sm) SendWebhook(response dto.ManagerResponse) (log *models.Log, err error) {
-	log = &models.Log{
-		UserID:   s.userID,
-		ClientID: response.ClientID,
-		Service:  "webhook",
-	}
-
-	_, err = url.ParseRequestURI(response.CallbackUrl)
-	if err != nil {
-		log.FinalResult = "ignored/invalid url"
-		return log, nil
-	}
-
-	header := map[string]string{}
-	extraH := map[string]string{}
-	request := requests.New("POST", response.CallbackUrl, header, extraH, log)
-	err = request.Start(response, "body")
-	if err != nil {
-		var dnsErr *net.DNSError
-		if has := errors.As(err, &dnsErr); has {
-			log.FinalResult = "ignored/invalid url"
-			return log, nil
-		}
-		log.FinalResult = err.Error()
-		return
-	}
-	ok, err := request.Ok()
-	if !ok {
-		log.FinalResult = err.Error()
-		return
-	}
-	log.FinalResult = "success"
-	log.IsSucceed = true
-	return log, nil
 }
 
 func (s *sm) recordResult(serviceResult *dto.ServiceStats, statusCode string, log *models.Log, err error) {
