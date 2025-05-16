@@ -111,24 +111,27 @@ func (h *service) generateCalendarBody(setOpen bool, dates []string) shab_dto.Ca
 	if setOpen {
 		status = "unset_disabled"
 	}
+	jdates := pkg.DatesToJalali(dates, true)
 	return shab_dto.CalendarBody{
 		Action: status,
-		Dates:  pkg.DatesToJalali(dates, true),
+		Dates:  jdates,
 	}
 }
 
 func (h *service) generateAddDiscountBody(amount int, dates []string) shab_dto.EditDiscountBody {
+	jdates := pkg.DatesToJalali(dates, true)
 	return shab_dto.EditDiscountBody{
 		Action:        "set_daily_discount",
-		Dates:         pkg.DatesToJalali(dates, true),
+		Dates:         jdates,
 		DailyDiscount: amount,
 	}
 }
 
 func (h *service) generateRemoveDiscountBody(dates []string) shab_dto.UnsetDiscountBody {
+	jdates := pkg.DatesToJalali(dates, true)
 	return shab_dto.UnsetDiscountBody{
 		Action: "unset_daily_discount",
-		Dates:  pkg.DatesToJalali(dates, true),
+		Dates:  jdates,
 	}
 }
 
@@ -148,25 +151,28 @@ func (h *service) generateVerifyOTPBody(phoneNumber string, code string) shab_dt
 }
 
 func (h *service) generateSetMinNightBody(amount int, dates []string) shab_dto.EditMinNightBody {
+	jdates := pkg.DatesToJalali(dates, true)
 	return shab_dto.EditMinNightBody{
 		Action:  "set_min_days",
-		Dates:   pkg.DatesToJalali(dates, true),
+		Dates:   jdates,
 		MinDays: amount,
 	}
 }
 
 func (h *service) generateUnsetMinNightBody(dates []string) shab_dto.EditMinNightBody {
+	jdates := pkg.DatesToJalali(dates, true)
 	return shab_dto.EditMinNightBody{
 		Action:  "set_min_days",
-		Dates:   pkg.DatesToJalali(dates, true),
+		Dates:   jdates,
 		MinDays: 1,
 	}
 }
 
 func (h *service) generatePriceBody(amount int, dates []string) shab_dto.EditPriceBody {
+	jdates := pkg.DatesToJalali(dates, true)
 	return shab_dto.EditPriceBody{
 		KeepDiscount: false,
 		Price:        amount / 1000,
-		Dates:        pkg.DatesToJalali(dates, true),
+		Dates:        jdates,
 	}
 }
