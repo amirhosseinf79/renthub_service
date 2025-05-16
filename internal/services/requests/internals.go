@@ -118,6 +118,12 @@ func (f *fetchS) commitRequest() error {
 	}
 	f.logger.StatusCode = resp.StatusCode
 	f.httpResp = resp
+	if f.logger != nil {
+		err := f.parseBodyResponse()
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

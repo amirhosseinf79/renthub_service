@@ -66,12 +66,6 @@ func (f *fetchS) Start(body any, contentType string) error {
 }
 
 func (f *fetchS) ParseInterface(response any) (err error) {
-	if f.logger != nil {
-		err := f.parseBodyResponse()
-		if err != nil {
-			return err
-		}
-	}
 	body, err := f.readBodyResponse()
 	if err != nil {
 		return err
