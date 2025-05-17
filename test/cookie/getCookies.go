@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// اجرای یک مرورگر headless (می‌تونی headless رو برداری برای مشاهده)
-	url := launcher.New().Headless(true).MustLaunch()
+	url := launcher.New().Headless(true).NoSandbox(true).MustLaunch()
 	browser := rod.New().ControlURL(url).MustConnect()
 	defer browser.MustClose()
 

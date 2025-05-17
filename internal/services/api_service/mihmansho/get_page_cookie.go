@@ -9,7 +9,7 @@ import (
 )
 
 func (s *service) getSession(token string) (string, error) {
-	url := launcher.New().Headless(true).MustLaunch()
+	url := launcher.New().Headless(true).NoSandbox(true).MustLaunch()
 	browser := rod.New().ControlURL(url).MustConnect()
 	defer browser.MustClose()
 
