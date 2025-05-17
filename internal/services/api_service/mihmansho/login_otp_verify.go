@@ -40,13 +40,18 @@ func (h *service) VerifyOtp(fields dto.RequiredFields, creds dto.OTPCreds) (log 
 		return log, errors.New(result)
 	}
 	tokenModel := response.GetToken()
+	sessionToken, err := h.getSession(tokenModel.AccessToken)
+	if err != nil {
+		log.FinalResult = err.Error()
+		return
+	}
 	tokenfields := dto.ApiAuthRequest{
 		ClientID:     fields.ClientID,
 		Username:     creds.PhoneNumber,
 		Password:     creds.OTPCode,
 		Service:      h.service,
 		AccessToken:  tokenModel.AccessToken,
-		RefreshToken: tokenModel.RefreshToken,
+		RefreshToken: sessionToken,
 		Ucode:        tokenModel.Ucode,
 	}
 	err = h.apiAuthService.UpdateOrCreate(fields.UserID, tokenfields)

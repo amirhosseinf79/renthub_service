@@ -26,5 +26,5 @@ func (s *service) getSession(token string) (string, error) {
 			return c.Value, nil
 		}
 	}
-	return "", dto.ErrorUnauthorized
+	return "", dto.ErrorSessionNotFound
 }

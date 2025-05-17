@@ -8,6 +8,7 @@ var ErrInvalidPhoneNumber = errors.New("شماره وارد شده صحیح نم
 var ErrInvalidCode = errors.New("کد تایید نامعتبر است")
 var ErrUserNotFound = errors.New("کاربر مورد نظر یافت نشد")
 var ErrorUnauthorized = errors.New("توکن یافت نشد")
+var ErrorSessionNotFound = errors.New("کد دسترسی میهمان شو یافت نشد")
 var ErrorPermission = errors.New("دسترسی غیر مجاز")
 var ErrInvalidRequest = errors.New("ورودی نامعتبر است")
 var ErrInvalidDate = errors.New("تاریخ ورودی نامعتبر است")

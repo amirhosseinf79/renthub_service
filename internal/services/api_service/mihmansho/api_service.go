@@ -91,12 +91,11 @@ func (h *service) getHeader() map[string]string {
 }
 
 func (h *service) getExtraHeader(token *models.ApiAuth) map[string]string {
-	sessionID, _ := h.getSession(token.AccessToken)
 	return map[string]string{
 		"ucode":  token.Ucode,
 		"token":  token.AccessToken,
 		"imei":   "c00add1deb77e991",
-		"cookie": sessionID,
+		"cookie": token.RefreshToken,
 	}
 }
 
