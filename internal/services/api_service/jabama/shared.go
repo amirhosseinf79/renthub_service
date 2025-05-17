@@ -83,6 +83,7 @@ func (h *service) handleGet(log *models.Log, body any, endpoint dto.EndP, fields
 		log.FinalResult = err.Error()
 		return err
 	}
+	log.IsSucceed = true
 	log.FinalResult = "success"
 	err2 := request.ParseInterface(response)
 	if err2 != nil {
