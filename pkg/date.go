@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	ptime "github.com/yaa110/go-persian-calendar"
+	"github.com/mshafiee/jalali"
 )
 
 func DatesToIso(dates []string) []string {
@@ -25,14 +25,14 @@ func DatesToJalali(dates []string, dash bool) []string {
 		}
 
 		// Now convert to Jalali
-		ptobj := ptime.New(parsedTime)
+		ptobj := jalali.ToJalali(parsedTime)
 
 		// Format it as jYY-jMM-jDD
 		var jalaliDate string
 		if dash {
-			jalaliDate = ptobj.Format("yyyy-MM-dd")
+			jalaliDate = ptobj.Format("%Y-%m-%d")
 		} else {
-			jalaliDate = ptobj.Format("yyyy/MM/dd")
+			jalaliDate = ptobj.Format("%Y/%m/%d")
 		}
 		jdates = append(jdates, jalaliDate)
 	}

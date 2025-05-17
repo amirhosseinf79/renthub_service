@@ -18,6 +18,6 @@ func main() {
 	dates := []string{"2025-06-18", "2025-06-19", "2025-06-20", "2025-06-21"}
 	test := make([]int, 100)
 	for range test {
-		fmt.Println(testGen(dates))
+		go fmt.Println(testGen(dates))
 	}
 }
