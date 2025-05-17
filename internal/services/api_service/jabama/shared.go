@@ -69,6 +69,18 @@ func (h *service) handleGet(log *models.Log, body any, endpoint dto.EndP, fields
 	}
 	ok, err := request.Ok()
 	if !ok {
+		if log.StatusCode == 401 {
+			data := dto.RequiredFields{
+				UserID:   fields.UserID,
+				ClientID: fields.ClientID,
+			}
+			_, err2 := h.AutoLogin(data)
+			if err2 != nil {
+				log.FinalResult = err2.Error()
+				return err2
+			}
+		}
+		log.FinalResult = err.Error()
 		return err
 	}
 	log.FinalResult = "success"
