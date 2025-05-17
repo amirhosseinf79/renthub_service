@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"sort"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
@@ -23,15 +24,19 @@ func New(apiAuthService interfaces.ApiAuthInterface) interfaces.ApiService {
 		service:        "mihmansho",
 		apiAuthService: apiAuthService,
 		apiSettings: dto.ApiSettings{
-			ApiURL: "https://www.mihmansho.com/myapi/v1",
+			ApiURL: "https://www.mihmansho.com",
 			Endpoints: dto.ApiEndpoints{
-				LoginFirstStep:  dto.EndP{Address: "/loginfirststep", Method: "POST", ContentType: "query"},
-				LoginSecondStep: dto.EndP{Address: "/loginwithcode", Method: "POST", ContentType: "query"},
-				LoginWithPass:   dto.EndP{Address: "/login", Method: "POST", ContentType: "query"},
-				GetProfile:      dto.EndP{Address: "/getprofile", Method: "GET", ContentType: "body"},
-				OpenCalendar:    dto.EndP{Address: "/ReserveDates", Method: "POST", ContentType: "multipart"},
-				CloseCalendar:   dto.EndP{Address: "/ReserveDates", Method: "POST", ContentType: "multipart"},
-				EditPricePerDay: dto.EndP{Address: "/EditPricesCalendar?ProductId=%v&Price=%v&AddedGuestPrice=0", Method: "POST", ContentType: "multipart"},
+				LoginFirstStep:  dto.EndP{Address: "/myapi/v1/loginfirststep", Method: "POST", ContentType: "query"},
+				LoginSecondStep: dto.EndP{Address: "/myapi/v1/loginwithcode", Method: "POST", ContentType: "query"},
+				LoginWithPass:   dto.EndP{Address: "/myapi/v1/login", Method: "POST", ContentType: "query"},
+				GetProfile:      dto.EndP{Address: "/myapi/v1/getprofile", Method: "GET", ContentType: "body"},
+				OpenCalendar:    dto.EndP{Address: "/myapi/v1/ReserveDates", Method: "POST", ContentType: "multipart"},
+				CloseCalendar:   dto.EndP{Address: "/myapi/v1/ReserveDates", Method: "POST", ContentType: "multipart"},
+				EditPricePerDay: dto.EndP{Address: "/myapi/v1/EditPricesCalendar?ProductId=%v&Price=%v&AddedGuestPrice=0", Method: "POST", ContentType: "multipart"},
+				AddDiscount:     dto.EndP{Address: "/Account/Home/HostDiscountSave", Method: "POST", ContentType: "multipart"},
+				RemoveDiscount:  dto.EndP{Address: "/Account/Home/HostDiscountSave", Method: "POST", ContentType: "multipart"},
+				SetMinNight:     dto.EndP{Address: "/Account/Home/AddSpecificsMinDay", Method: "POST", ContentType: "multipart"},
+				UnsetMinNight:   dto.EndP{Address: "/Account/Home/AddSpecificsMinDay", Method: "POST", ContentType: "multipart"},
 			},
 			Headers: map[string]string{
 				"user-agent":      "okhttp/3.12.1",
@@ -41,6 +46,7 @@ func New(apiAuthService interfaces.ApiAuthInterface) interfaces.ApiService {
 				"ucode":           "%v",
 				"token":           "%v",
 				"imei":            "%v",
+				"cookie":          "ASP.NET_SessionId=%v",
 			},
 		},
 	}
@@ -85,10 +91,12 @@ func (h *service) getHeader() map[string]string {
 }
 
 func (h *service) getExtraHeader(token *models.ApiAuth) map[string]string {
+	sessionID, _ := h.getSession(token.AccessToken)
 	return map[string]string{
-		"ucode": token.Ucode,
-		"token": token.AccessToken,
-		"imei":  "c00add1deb77e991",
+		"ucode":  token.Ucode,
+		"token":  token.AccessToken,
+		"imei":   "c00add1deb77e991",
+		"cookie": sessionID,
 	}
 }
 
@@ -163,6 +171,51 @@ func (h *service) generatePriceBody(dates []string) []byte {
 	for _, date := range jdates {
 		pbody["Dates"] = date
 	}
+	mbody, err := json.Marshal(pbody)
+	if err != nil {
+		return nil
+	}
+	return mbody
+}
+
+func (h *service) generateMinNightBody(roomID string, dates []string, minDay int) []byte {
+	pbody := mihmansho_dto.FormBody{}
+	jdates := pkg.DatesToJalali(dates, false)
+	for _, date := range jdates {
+		pbody["Date"] = date
+	}
+	pbody["ProductId"] = roomID
+	pbody["MinDay"] = fmt.Sprintf("%v", minDay)
+	mbody, err := json.Marshal(pbody)
+	if err != nil {
+		return nil
+	}
+	return mbody
+}
+
+func (h *service) generateDiscountBody(roomID string, dates []string, amount int) []byte {
+	var active string
+	if amount > 0 {
+		active = "true"
+	} else {
+		active = "false"
+	}
+	jdates := pkg.DatesToJalali(dates, false)
+	sort.Strings(jdates)
+
+	pbody := mihmansho_dto.FormBody{}
+	pbody["dh.ProductId"] = roomID
+	pbody["dh.ActiveDateDiscountHost"] = active
+	pbody["dh.StringStartDateDiscountHost"] = jdates[0]
+	pbody["dh.StringEndDateDiscountHost"] = jdates[len(jdates)-1]
+	pbody["dh.PercentDateDiscountHost"] = fmt.Sprintf("%v", amount)
+
+	// for i, date := range jdates {
+	// 	pbody[fmt.Sprintf("dhh[%v].Active", i)] = active
+	// 	pbody[fmt.Sprintf("dhh[%v].StringStartDate", i)] = date
+	// 	pbody[fmt.Sprintf("dhh[%v].StringEndDate", i)] = date
+	// }
+
 	mbody, err := json.Marshal(pbody)
 	if err != nil {
 		return nil

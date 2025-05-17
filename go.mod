@@ -4,6 +4,7 @@ go 1.23.2
 
 require (
 	github.com/go-playground/validator/v10 v10.26.0
+	github.com/go-rod/rod v0.116.2
 	github.com/gofiber/fiber/v3 v3.0.0-beta.4
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.6.0
@@ -44,6 +45,11 @@ require (
 	github.com/valyala/fasthttp v1.58.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
+	github.com/ysmood/fetchup v0.2.3 // indirect
+	github.com/ysmood/goob v0.4.0 // indirect
+	github.com/ysmood/got v0.40.0 // indirect
+	github.com/ysmood/gson v0.7.3 // indirect
+	github.com/ysmood/leakless v0.9.0 // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sync v0.13.0 // indirect
 	golang.org/x/sys v0.32.0 // indirect

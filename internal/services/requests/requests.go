@@ -51,13 +51,13 @@ func (f *fetchS) Start(body any, contentType string) error {
 	if err != nil {
 		return err
 	}
-	f.logger.RequestBody = payload.String()
 	err = f.NewRequest(payload)
 	if err != nil {
 		return err
 	}
 	f.setHeaders(headerCType)
-	// f.dumpRequest()
+	f.dumpRequest()
+	// f.logger.RequestBody = fmt.Sprintf("%v\n%v", f.headers, payload.String())
 	err = f.commitRequest()
 	if err != nil {
 		return err
