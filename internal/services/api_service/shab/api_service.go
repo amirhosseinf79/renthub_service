@@ -112,6 +112,7 @@ func (h *service) generateCalendarBody(setOpen bool, dates []string) shab_dto.Ca
 		status = "unset_disabled"
 	}
 	jdates := pkg.DatesToJalali(dates, true)
+	fmt.Println("Jalali Dates:", jdates)
 	return shab_dto.CalendarBody{
 		Action: status,
 		Dates:  jdates,
