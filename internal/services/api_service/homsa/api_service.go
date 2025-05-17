@@ -132,58 +132,68 @@ func (h *service) generateVerifyOTPBody(phoneNumber string, code string) homsa_d
 }
 
 func (h *service) generateSetMinNightBody(amount int, dates []string) homsa_dto.HomsaSetMinNightBody {
-	if len(dates) > 1 {
-		sort.Strings(dates)
+	cDates := make([]string, len(dates))
+	copy(cDates, dates)
+	if len(cDates) > 1 {
+		sort.Strings(cDates)
 	}
 	return homsa_dto.HomsaSetMinNightBody{
-		StartDate: dates[0],
-		EndDate:   dates[len(dates)-1],
+		StartDate: cDates[0],
+		EndDate:   cDates[len(cDates)-1],
 		Min:       amount,
 		Max:       nil,
 	}
 }
 
 func (h *service) generateUnsetMinNightBody(dates []string) homsa_dto.HomsaUnsetMinNightBody {
-	if len(dates) > 1 {
-		sort.Strings(dates)
+	cDates := make([]string, len(dates))
+	copy(cDates, dates)
+	if len(cDates) > 1 {
+		sort.Strings(cDates)
 	}
 	return homsa_dto.HomsaUnsetMinNightBody{
-		StartDate: dates[0],
-		EndDate:   dates[len(dates)-1],
+		StartDate: cDates[0],
+		EndDate:   cDates[len(cDates)-1],
 	}
 }
 
 func (h *service) generatePriceBody(amount int, dates []string) homsa_dto.HomsaPriceBody {
-	if len(dates) > 1 {
-		sort.Strings(dates)
+	cDates := make([]string, len(dates))
+	copy(cDates, dates)
+	if len(cDates) > 1 {
+		sort.Strings(cDates)
 	}
 	return homsa_dto.HomsaPriceBody{
-		StartDate:    dates[0],
-		EndDate:      dates[len(dates)-1],
+		StartDate:    cDates[0],
+		EndDate:      cDates[len(cDates)-1],
 		Price:        amount,
 		KeepDiscount: 0,
 	}
 }
 
 func (h *service) generateAddDiscountBody(amount int, dates []string) homsa_dto.HomsaAddDiscountBody {
-	if len(dates) > 1 {
-		sort.Strings(dates)
+	cDates := make([]string, len(dates))
+	copy(cDates, dates)
+	if len(cDates) > 1 {
+		sort.Strings(cDates)
 	}
 	return homsa_dto.HomsaAddDiscountBody{
-		StartDate:    dates[0],
-		EndDate:      dates[len(dates)-1],
+		StartDate:    cDates[0],
+		EndDate:      cDates[len(cDates)-1],
 		Discount:     amount,
 		KeepDiscount: 0,
 	}
 }
 
 func (h *service) generateRemoveDiscountBody(dates []string) homsa_dto.HomsaRemoveDiscountBody {
-	if len(dates) > 1 {
-		sort.Strings(dates)
+	cDates := make([]string, len(dates))
+	copy(cDates, dates)
+	if len(cDates) > 1 {
+		sort.Strings(cDates)
 	}
 	return homsa_dto.HomsaRemoveDiscountBody{
-		StartDate:    dates[0],
-		EndDate:      dates[len(dates)-1],
+		StartDate:    cDates[0],
+		EndDate:      cDates[len(cDates)-1],
 		KeepDiscount: 0,
 	}
 }
