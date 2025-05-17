@@ -16,8 +16,8 @@ func (h *service) AutoLogin(fields dto.RequiredFields) (log *models.Log, err err
 		log.FinalResult = err.Error()
 		return log, err
 	}
-	if model.Username == "" || model.Password == "" {
-		err = dto.ErrInvalidCredentials
+	if model.RefreshToken == "" {
+		err = dto.ErrorUnauthorized
 		log.FinalResult = err.Error()
 		return log, err
 	}
