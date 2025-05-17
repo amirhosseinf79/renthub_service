@@ -26,6 +26,7 @@ func New(apiAuthService interfaces.ApiAuthInterface) interfaces.ApiService {
 			Endpoints: dto.ApiEndpoints{
 				LoginFirstStep:  dto.EndP{Address: "/v4/account/send-code", Method: "POST", ContentType: "body"},
 				LoginSecondStep: dto.EndP{Address: "/v4/account/validate-code", Method: "POST", ContentType: "body"},
+				LoginWithPass:   dto.EndP{Address: "/v4/account/login/refresh/%v", Method: "POST", ContentType: "body"},
 				GetProfile:      dto.EndP{Address: "/v1/profile?isHost=true", Method: "GET", ContentType: "body"},
 				OpenCalendar:    dto.EndP{Address: "/v1/accommodations/host/Price/%v/price/calendar/enable", Method: "PUT", ContentType: "body"},
 				CloseCalendar:   dto.EndP{Address: "/v1/accommodations/host/Price/%v/price/calendar/disable", Method: "PUT", ContentType: "body"},

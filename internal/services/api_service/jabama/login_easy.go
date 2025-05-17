@@ -21,7 +21,7 @@ func (h *service) AutoLogin(fields dto.RequiredFields) (log *models.Log, err err
 		log.FinalResult = err.Error()
 		return log, err
 	}
-	url, err := h.getFullURL(endpoint)
+	url, err := h.getFullURL(endpoint, model.RefreshToken)
 	if err != nil {
 		log.FinalResult = err.Error()
 		return log, err
