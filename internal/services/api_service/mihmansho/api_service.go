@@ -117,6 +117,7 @@ func (h *service) generateCalendarBody(roomID string, setOpen bool, dates []stri
 	fDate := mihmansho_dto.Calendar{
 		ProductId: roomID,
 	}
+	fmt.Println("mihmansho", dates)
 	jdates := pkg.DatesToJalali(dates, false)
 	for _, jdate := range jdates {
 		fDate.Dates = append(fDate.Dates, mihmansho_dto.CalendarDates{Date: jdate, IsReserve: !setOpen, RequestId: 0})

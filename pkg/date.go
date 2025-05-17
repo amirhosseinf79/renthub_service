@@ -16,6 +16,7 @@ func DatesToIso(dates []string) []string {
 }
 
 func DatesToJalali(dates []string, dash bool) []string {
+	fmt.Println("Input Dates:", dates)
 	var jdates []string
 	for _, date := range dates {
 		parsedTime, err := time.Parse("2006-01-02", date)
