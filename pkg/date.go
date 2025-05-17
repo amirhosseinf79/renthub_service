@@ -8,19 +8,21 @@ import (
 )
 
 func DatesToIso(dates []string) []string {
+	cDates := make([]string, len(dates))
+	copy(cDates, dates)
 	var formattedDates []string
-	for _, item := range dates {
+	for _, item := range cDates {
 		formattedDates = append(formattedDates, fmt.Sprintf("%vT00:00:00.000Z", item))
 	}
 	return formattedDates
 }
 
 func DatesToJalali(dates []string, dash bool) []string {
-	copiedDates := make([]string, len(dates))
-	copy(copiedDates, dates)
-	fmt.Println("Input Dates:", copiedDates)
+	cDates := make([]string, len(dates))
+	copy(cDates, dates)
+	fmt.Println("Input Dates:", cDates)
 	var jdates []string
-	for _, date := range copiedDates {
+	for _, date := range cDates {
 		parsedTime, err := time.Parse("2006-01-02", date)
 		if err != nil {
 			return nil

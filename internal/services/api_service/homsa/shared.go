@@ -12,12 +12,14 @@ import (
 )
 
 func (h *service) generateCalendarBody(dates []string) any {
-	if len(dates) > 1 {
-		sort.Strings(dates)
+	cDates := make([]string, len(dates))
+	copy(cDates, dates)
+	if len(cDates) > 1 {
+		sort.Strings(cDates)
 	}
 	return homsa_dto.HomsaCalendarBody{
-		StartDate: dates[0],
-		EndDate:   dates[len(dates)-1],
+		StartDate: cDates[0],
+		EndDate:   cDates[len(cDates)-1],
 	}
 }
 
