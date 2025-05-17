@@ -1,6 +1,7 @@
 package mihmansho_dto
 
 type MihmanshoErrorResponse struct {
+	ResponseError    int    `json:"responseError"`
 	ErrorCode        int    `json:"errorCode"`
 	ErrorDescription string `json:"errorDescription"`
 }

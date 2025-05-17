@@ -17,10 +17,16 @@ func (m *MihmanshoProfileResponse) GetToken() *models.ApiAuth {
 }
 
 func (m *MihmanshoErrorResponse) GetResult() (bool, string) {
-	if m.ErrorCode != 0 {
-		return false, m.ErrorDescription
+	var msg string = "success"
+	if m.ErrorCode != 0 || m.ResponseError != 0 {
+		if m.ErrorDescription != "" {
+			msg = m.ErrorDescription
+		} else {
+			msg = "failed"
+		}
+		return false, msg
 	}
-	return true, m.ErrorDescription
+	return true, msg
 }
 
 func (m *MihmanshoErrorResponse) GetToken() *models.ApiAuth {
