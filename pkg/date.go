@@ -25,7 +25,6 @@ func DatesToJalali(dates []string, dash bool) []string {
 		}
 
 		// Now convert to Jalali
-		fmt.Println("Parsed Time:", parsedTime)
 		ptobj := ptime.New(parsedTime)
 
 		// Format it as jYY-jMM-jDD
@@ -36,7 +35,7 @@ func DatesToJalali(dates []string, dash bool) []string {
 			jalaliDate = ptobj.Format("yyyy/MM/dd")
 		}
 		jdates = append(jdates, jalaliDate)
-		fmt.Println("Jalali Date:", jalaliDate)
 	}
+	fmt.Println("Jalali Dates:", jdates)
 	return jdates
 }

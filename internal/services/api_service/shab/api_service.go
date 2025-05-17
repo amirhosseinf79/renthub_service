@@ -115,8 +115,6 @@ func (h *service) generateCalendarBody(setOpen bool, dates []string) shab_dto.Ca
 	fmt.Println("shab", dates)
 	tmpDates := pkg.DatesToJalali(dates, true)
 	jdates = append(jdates, tmpDates...)
-
-	fmt.Println("Jalali Dates:", jdates)
 	return shab_dto.CalendarBody{
 		Action: status,
 		Dates:  jdates,
