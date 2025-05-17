@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"regexp"
 	"time"
 
@@ -26,6 +27,7 @@ func (v *validator) DateCheck(c fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
+	fmt.Println("Dates:", inputBody.Dates)
 	for _, date := range inputBody.Dates {
 		_, err := time.Parse("2006-01-02", date)
 		if err != nil {
