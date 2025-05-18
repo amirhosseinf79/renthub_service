@@ -19,7 +19,9 @@ func (m *MihmanshoProfileResponse) GetToken() *models.ApiAuth {
 func (m *MihmanshoErrorResponse) GetResult() (bool, string) {
 	var msg string = "success"
 	if m.ErrorCode != 0 || m.ResponseError != 0 {
-		if m.ErrorDescription != "" {
+		if m.ResponseError == 2 {
+			msg = dto.ErrorSessionNotFound.Error()
+		} else if m.ErrorDescription != "" {
 			msg = m.ErrorDescription
 		} else {
 			msg = "failed"
