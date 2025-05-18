@@ -40,7 +40,7 @@ func (h *service) VerifyOtp(fields dto.RequiredFields, creds dto.OTPCreds) (log 
 		return log, errors.New(result)
 	}
 	tokenModel := response.GetToken()
-	sessionToken, err := h.getSession(tokenModel.AccessToken)
+	sessionToken, err := h.getSession(tokenModel.AccessToken, log)
 	if err != nil {
 		log.FinalResult = err.Error()
 		return
