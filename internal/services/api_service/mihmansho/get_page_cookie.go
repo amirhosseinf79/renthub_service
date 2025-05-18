@@ -2,6 +2,7 @@ package mihmansho
 
 import (
 	"fmt"
+	"regexp"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
@@ -24,6 +25,18 @@ func (s *service) getSession(token string, log *models.Log) (string, error) {
 	page.MustSetExtraHeaders("ASP.NET_SessionId", token)
 	page.MustNavigate(log.RequestURL).MustWaitLoad()
 	cookies := page.MustCookies()
+
+	body, err := page.HTML()
+	if err != nil {
+		return "", err
+	}
+	matched, err := regexp.MatchString(`(?i)\bثبت نام\b`, body)
+	if err != nil {
+		return "", err
+	}
+	if matched {
+		return "", dto.ErrorSessionNotFound
+	}
 
 	for _, c := range cookies {
 		fmt.Println("Cookie Name:", c.Name)
