@@ -20,6 +20,8 @@ func (s *service) getSession(token string, log *models.Log) (string, error) {
 	log.RequestBody = "Normal GET"
 	log.ResponseBody = "--No Body--"
 	log.RequestURL = fmt.Sprintf("https://www.mihmansho.com/myapi/v1/checklogin?token=%s&returnUrl=/account/home/manage", token)
+	page.MustSetExtraHeaders("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+	page.MustSetExtraHeaders("ASP.NET_SessionId", token)
 	page.MustNavigate(log.RequestURL).MustWaitLoad()
 	cookies := page.MustCookies()
 
