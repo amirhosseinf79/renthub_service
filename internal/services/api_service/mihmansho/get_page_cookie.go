@@ -19,20 +19,21 @@ func (s *service) getSession(token string, log *models.Log) (string, error) {
 	// token := "671dd13a-993f-4a49-b68f-c3041586e479"
 	log.StatusCode = 200
 	log.RequestBody = "Normal GET"
-	log.ResponseBody = "--No Body--"
 	log.RequestURL = fmt.Sprintf("https://www.mihmansho.com/myapi/v1/checklogin?token=%s&returnUrl=/account/home/manage", token)
-	page.MustSetExtraHeaders("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+
+	page.MustSetExtraHeaders("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
 	page.MustSetExtraHeaders("ASP.NET_SessionId", token)
+
 	page.MustNavigate(log.RequestURL).MustWaitLoad()
-	fmt.Println("Page URL:", page.MustInfo().URL)
 	page.MustNavigate(log.RequestURL).MustWaitLoad()
-	fmt.Println("Page URL:", page.MustInfo().URL)
-	loggedIn := strings.Contains(page.MustInfo().URL, "account/home/manage")
+
+	log.ResponseBody = page.MustInfo().URL
+	loggedIn := strings.Contains(log.ResponseBody, "account/home/manage")
 	if !loggedIn {
 		return "", dto.ErrorSessionNotFound
 	}
-	cookies := page.MustCookies()
 
+	cookies := page.MustCookies()
 	for _, c := range cookies {
 		fmt.Println("Cookie Name:", c.Name)
 		if c.Name == "ASP.NET_SessionId" {
