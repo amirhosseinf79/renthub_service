@@ -1,6 +1,8 @@
 package manager
 
 import (
+	"sort"
+
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
@@ -41,6 +43,7 @@ func (s *sm) SetConfigs(
 	services []dto.SiteEntry,
 	dates []string,
 ) interfaces.ServiceManager {
+	sort.Strings(dates)
 	return &sm{
 		apiAuthService: s.apiAuthService,
 		apiServices:    s.apiServices,

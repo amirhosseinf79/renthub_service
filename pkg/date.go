@@ -2,27 +2,16 @@ package pkg
 
 import (
 	"fmt"
-	"sort"
 	"time"
 
 	"github.com/mshafiee/jalali"
 )
-
-func SortDates(dates []string) []string {
-	cDates := make([]string, len(dates))
-	copy(cDates, dates)
-	if len(cDates) > 1 {
-		sort.Strings(cDates)
-	}
-	return cDates
-}
 
 func DatesToIso(dates []string) []string {
 	var formattedDates []string
 	for _, item := range dates {
 		formattedDates = append(formattedDates, fmt.Sprintf("%vT00:00:00.000Z", item))
 	}
-	sort.Strings(formattedDates)
 	return formattedDates
 }
 
@@ -47,7 +36,6 @@ func DatesToJalali(dates []string, dash bool) []string {
 		}
 		jdates = append(jdates, jalaliDate)
 	}
-	sort.Strings(jdates)
 	fmt.Println("Jalali Dates:", jdates)
 	return jdates
 }

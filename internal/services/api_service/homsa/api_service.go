@@ -8,7 +8,6 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	homsa_dto "github.com/amirhosseinf79/renthub_service/internal/dto/homsa"
-	"github.com/amirhosseinf79/renthub_service/pkg"
 )
 
 type service struct {
@@ -132,56 +131,50 @@ func (h *service) generateVerifyOTPBody(phoneNumber string, code string) homsa_d
 }
 
 func (h *service) generateCalendarBody(dates []string) any {
-	cDates := pkg.SortDates(dates)
 	return homsa_dto.HomsaCalendarBody{
-		StartDate: cDates[0],
-		EndDate:   cDates[len(cDates)-1],
+		StartDate: dates[0],
+		EndDate:   dates[len(dates)-1],
 	}
 }
 
 func (h *service) generateSetMinNightBody(amount int, dates []string) homsa_dto.HomsaSetMinNightBody {
-	cDates := pkg.SortDates(dates)
 	return homsa_dto.HomsaSetMinNightBody{
-		StartDate: cDates[0],
-		EndDate:   cDates[len(cDates)-1],
+		StartDate: dates[0],
+		EndDate:   dates[len(dates)-1],
 		Min:       amount,
 		Max:       nil,
 	}
 }
 
 func (h *service) generateUnsetMinNightBody(dates []string) homsa_dto.HomsaUnsetMinNightBody {
-	cDates := pkg.SortDates(dates)
 	return homsa_dto.HomsaUnsetMinNightBody{
-		StartDate: cDates[0],
-		EndDate:   cDates[len(cDates)-1],
+		StartDate: dates[0],
+		EndDate:   dates[len(dates)-1],
 	}
 }
 
 func (h *service) generatePriceBody(amount int, dates []string) homsa_dto.HomsaPriceBody {
-	cDates := pkg.SortDates(dates)
 	return homsa_dto.HomsaPriceBody{
-		StartDate:    cDates[0],
-		EndDate:      cDates[len(cDates)-1],
+		StartDate:    dates[0],
+		EndDate:      dates[len(dates)-1],
 		Price:        amount,
 		KeepDiscount: 0,
 	}
 }
 
 func (h *service) generateAddDiscountBody(amount int, dates []string) homsa_dto.HomsaAddDiscountBody {
-	cDates := pkg.SortDates(dates)
 	return homsa_dto.HomsaAddDiscountBody{
-		StartDate:    cDates[0],
-		EndDate:      cDates[len(cDates)-1],
+		StartDate:    dates[0],
+		EndDate:      dates[len(dates)-1],
 		Discount:     amount,
 		KeepDiscount: 0,
 	}
 }
 
 func (h *service) generateRemoveDiscountBody(dates []string) homsa_dto.HomsaRemoveDiscountBody {
-	cDates := pkg.SortDates(dates)
 	return homsa_dto.HomsaRemoveDiscountBody{
-		StartDate:    cDates[0],
-		EndDate:      cDates[len(cDates)-1],
+		StartDate:    dates[0],
+		EndDate:      dates[len(dates)-1],
 		KeepDiscount: 0,
 	}
 }
