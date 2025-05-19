@@ -111,8 +111,7 @@ func (f *fetchS) dumpRequest() {
 }
 
 func (f *fetchS) commitRequest() error {
-	client := &http.Client{}
-	resp, err := client.Do(f.httpReq)
+	resp, err := f.client.Do(f.httpReq)
 	if err != nil {
 		return err
 	}

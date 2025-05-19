@@ -16,6 +16,7 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/otaghak"
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/shab"
 	"github.com/amirhosseinf79/renthub_service/internal/services/auth"
+	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 )
 
 func main() {
@@ -28,13 +29,14 @@ func main() {
 	// api auth model
 	apiRepo := persistence.NewApiAuthRepository(db)
 	apiAuthService := apiauth.NewApiAuthService(apiRepo)
+	requestService := requests.New()
 
-	homsaService := homsa.New(apiAuthService)
-	jabamaService := jabama.New(apiAuthService)
-	jajigaService := jajiga.New(apiAuthService)
-	mihmanshoService := mihmansho.New(apiAuthService)
-	otaghakService := otaghak.New(apiAuthService)
-	shabService := shab.New(apiAuthService)
+	homsaService := homsa.New(apiAuthService, requestService)
+	jabamaService := jabama.New(apiAuthService, requestService)
+	jajigaService := jajiga.New(apiAuthService, requestService)
+	mihmanshoService := mihmansho.New(apiAuthService, requestService)
+	otaghakService := otaghak.New(apiAuthService, requestService)
+	shabService := shab.New(apiAuthService, requestService)
 
 	services := map[string]interfaces.ApiService{
 		"homsa":     homsaService,

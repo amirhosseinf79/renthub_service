@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
@@ -19,9 +20,18 @@ type fetchS struct {
 	httpReq  *http.Request
 	httpResp *http.Response
 	logger   *models.Log
+	client   *http.Client
 }
 
-func New(method, url string, headers, extra map[string]string, logger *models.Log) interfaces.FetchService {
+func New() interfaces.FetchService {
+	return &fetchS{
+		client: &http.Client{
+			Timeout: 10 * time.Second,
+		},
+	}
+}
+
+func (f *fetchS) New(method, url string, headers, extra map[string]string, logger *models.Log) interfaces.FetchService {
 	logger.RequestURL = url
 
 	return &fetchS{
@@ -30,6 +40,7 @@ func New(method, url string, headers, extra map[string]string, logger *models.Lo
 		headers: headers,
 		extra:   extra,
 		logger:  logger,
+		client:  f.client,
 	}
 }
 

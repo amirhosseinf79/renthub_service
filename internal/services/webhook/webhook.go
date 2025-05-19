@@ -9,17 +9,18 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
-	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 	"github.com/hibiken/asynq"
 )
 
 type webhookS struct {
 	userService interfaces.UserService
+	request     interfaces.FetchService
 }
 
-func NewWebhookService(userService interfaces.UserService) interfaces.WebhookService {
+func NewWebhookService(userService interfaces.UserService, request interfaces.FetchService) interfaces.WebhookService {
 	return &webhookS{
 		userService: userService,
+		request:     request,
 	}
 }
 
@@ -48,7 +49,7 @@ func (w *webhookS) SendResult(response dto.ClientUpdateBody) (log *models.Log, e
 	extraH := map[string]string{
 		"Authorization": userM.HookToken,
 	}
-	request := requests.New("POST", response.Header.CallbackUrl, header, extraH, log)
+	request := w.request.New("POST", response.Header.CallbackUrl, header, extraH, log)
 	err = request.Start(response.FinalResult, "body")
 	if err != nil {
 		var dnsErr *net.DNSError
@@ -88,7 +89,7 @@ func (w *webhookS) RefreshToken(userID uint) (log *models.Log, err error) {
 		RefreshToken: userM.HookRefresh,
 	}
 
-	request := requests.New("POST", userM.RefreshURL, header, extraH, log)
+	request := w.request.New("POST", userM.RefreshURL, header, extraH, log)
 	err = request.Start(body, "body")
 	if err != nil {
 		var dnsErr *net.DNSError

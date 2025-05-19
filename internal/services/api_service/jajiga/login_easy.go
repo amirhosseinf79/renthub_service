@@ -5,7 +5,6 @@ import (
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
-	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 )
 
 func (h *service) AutoLogin(fields dto.RequiredFields) (log *models.Log, err error) {
@@ -32,7 +31,7 @@ func (h *service) AutoLogin(fields dto.RequiredFields) (log *models.Log, err err
 		Password: model.Password,
 	}
 	bodyRow := h.generateEasyLoginBody(body)
-	request := requests.New(endpoint.Method, url, header, map[string]string{}, log)
+	request := h.request.New(endpoint.Method, url, header, map[string]string{}, log)
 	err = request.Start(bodyRow, endpoint.ContentType)
 	if err != nil {
 		log.FinalResult = err.Error()

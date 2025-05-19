@@ -15,12 +15,14 @@ type service struct {
 	apiAuthService interfaces.ApiAuthInterface
 	service        string
 	apiSettings    dto.ApiSettings
+	request        interfaces.FetchService
 }
 
-func New(apiAuthService interfaces.ApiAuthInterface) interfaces.ApiService {
+func New(apiAuthService interfaces.ApiAuthInterface, request interfaces.FetchService) interfaces.ApiService {
 	return &service{
 		service:        "jajiga",
 		apiAuthService: apiAuthService,
+		request:        request,
 		apiSettings: dto.ApiSettings{
 			ApiURL: "https://api.jajiga.com/api",
 			Endpoints: dto.ApiEndpoints{

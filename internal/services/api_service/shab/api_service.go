@@ -15,12 +15,14 @@ type service struct {
 	apiAuthService interfaces.ApiAuthInterface
 	service        string
 	apiSettings    dto.ApiSettings
+	request        interfaces.FetchService
 }
 
-func New(apiAuthService interfaces.ApiAuthInterface) interfaces.ApiService {
+func New(apiAuthService interfaces.ApiAuthInterface, request interfaces.FetchService) interfaces.ApiService {
 	return &service{
 		service:        "shab",
 		apiAuthService: apiAuthService,
+		request:        request,
 		apiSettings: dto.ApiSettings{
 			ApiURL: "https://api.shab.travel/api/fa/sandbox/v_1_4",
 			Endpoints: dto.ApiEndpoints{

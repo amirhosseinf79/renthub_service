@@ -5,7 +5,6 @@ import (
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
-	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 )
 
 func (h *service) VerifyOtp(fields dto.RequiredFields, creds dto.OTPCreds) (log *models.Log, err error) {
@@ -18,7 +17,7 @@ func (h *service) VerifyOtp(fields dto.RequiredFields, creds dto.OTPCreds) (log 
 	}
 	header := h.getHeader()
 	bodyRow := h.generateVerifyOTPBody(creds.PhoneNumber, creds.OTPCode)
-	request := requests.New(endpoint.Method, url, header, map[string]string{}, log)
+	request := h.request.New(endpoint.Method, url, header, map[string]string{}, log)
 	err = request.Start(bodyRow, endpoint.ContentType)
 	if err != nil {
 		log.FinalResult = err.Error()

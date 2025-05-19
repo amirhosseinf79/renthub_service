@@ -5,7 +5,6 @@ import (
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
-	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 	"gorm.io/gorm"
 )
 
@@ -23,7 +22,7 @@ func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.End
 		log.FinalResult = err.Error()
 		return err
 	}
-	request := requests.New(endpoint.Method, url, h.getHeader(), h.getExtraHeader(model), log)
+	request := h.request.New(endpoint.Method, url, h.getHeader(), h.getExtraHeader(model), log)
 	err = request.Start(body, endpoint.ContentType)
 	if err != nil {
 		log.FinalResult = err.Error()
@@ -61,7 +60,7 @@ func (h *service) handleGet(log *models.Log, body any, endpoint dto.EndP, fields
 		log.FinalResult = err.Error()
 		return err
 	}
-	request := requests.New(endpoint.Method, url, h.getHeader(), h.getExtraHeader(model), log)
+	request := h.request.New(endpoint.Method, url, h.getHeader(), h.getExtraHeader(model), log)
 	err = request.Start(body, endpoint.ContentType)
 	if err != nil {
 		log.FinalResult = err.Error()
