@@ -6,9 +6,11 @@ import (
 )
 
 func (h *service) SetMinNight(fields dto.UpdateFields) (log *models.Log, err error) {
-	log = h.initLog(fields.UserID, fields.ClientID)
+	log, err = h.AutoLogin(fields.RequiredFields)
+	if err != nil {
+		return log, err
+	}
 	endpoint := h.getEndpoints().SetMinNight
-	h.AutoLogin(fields.RequiredFields)
 	body := h.generateMinNightBody(fields.RoomID, fields.Dates, fields.Amount)
 	err = h.handleUpdateResult(log, body, endpoint, fields)
 	return log, err

@@ -6,9 +6,11 @@ import (
 )
 
 func (h *service) RemoveDiscount(fields dto.UpdateFields) (log *models.Log, err error) {
-	log = h.initLog(fields.UserID, fields.ClientID)
+	log, err = h.AutoLogin(fields.RequiredFields)
+	if err != nil {
+		return log, err
+	}
 	endpoint := h.getEndpoints().RemoveDiscount
-	h.AutoLogin(fields.RequiredFields)
 	body := h.generateDiscountBody(fields.RoomID, fields.Dates, 0)
 	err = h.handleUpdateResult(log, body, endpoint, fields)
 	return log, err
