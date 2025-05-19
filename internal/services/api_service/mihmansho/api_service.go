@@ -142,12 +142,12 @@ func (h *service) generateCalendarBody(roomID string, setOpen bool, dates []stri
 	return mbody
 }
 
-func (h *service) generateEasyLoginBody(fields dto.ApiEasyLogin) mihmansho_dto.AuthBody {
-	return mihmansho_dto.AuthBody{
-		Username: fields.Username,
-		Password: fields.Password,
-	}
-}
+// func (h *service) generateEasyLoginBody(fields dto.ApiEasyLogin) mihmansho_dto.AuthBody {
+// 	return mihmansho_dto.AuthBody{
+// 		Username: fields.Username,
+// 		Password: fields.Password,
+// 	}
+// }
 
 func (h *service) generateSendOTPBody(phoneNumber string) mihmansho_dto.OTPBody {
 	return mihmansho_dto.OTPBody{
