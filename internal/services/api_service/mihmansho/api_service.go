@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"sort"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
@@ -200,8 +199,6 @@ func (h *service) generateDiscountBody(roomID string, dates []string, amount int
 		active = "false"
 	}
 	jdates := pkg.DatesToJalali(dates, false)
-	sort.Strings(jdates)
-
 	pbody := mihmansho_dto.FormBody{}
 	pbody["dh.ProductId"] = roomID
 	pbody["dh.ActiveDateDiscountHost"] = active

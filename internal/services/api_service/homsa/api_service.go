@@ -3,12 +3,12 @@ package homsa
 import (
 	"bytes"
 	"fmt"
-	"sort"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	homsa_dto "github.com/amirhosseinf79/renthub_service/internal/dto/homsa"
+	"github.com/amirhosseinf79/renthub_service/pkg"
 )
 
 type service struct {
@@ -131,12 +131,16 @@ func (h *service) generateVerifyOTPBody(phoneNumber string, code string) homsa_d
 	}
 }
 
-func (h *service) generateSetMinNightBody(amount int, dates []string) homsa_dto.HomsaSetMinNightBody {
-	cDates := make([]string, len(dates))
-	copy(cDates, dates)
-	if len(cDates) > 1 {
-		sort.Strings(cDates)
+func (h *service) generateCalendarBody(dates []string) any {
+	cDates := pkg.SortDates(dates)
+	return homsa_dto.HomsaCalendarBody{
+		StartDate: cDates[0],
+		EndDate:   cDates[len(cDates)-1],
 	}
+}
+
+func (h *service) generateSetMinNightBody(amount int, dates []string) homsa_dto.HomsaSetMinNightBody {
+	cDates := pkg.SortDates(dates)
 	return homsa_dto.HomsaSetMinNightBody{
 		StartDate: cDates[0],
 		EndDate:   cDates[len(cDates)-1],
@@ -146,11 +150,7 @@ func (h *service) generateSetMinNightBody(amount int, dates []string) homsa_dto.
 }
 
 func (h *service) generateUnsetMinNightBody(dates []string) homsa_dto.HomsaUnsetMinNightBody {
-	cDates := make([]string, len(dates))
-	copy(cDates, dates)
-	if len(cDates) > 1 {
-		sort.Strings(cDates)
-	}
+	cDates := pkg.SortDates(dates)
 	return homsa_dto.HomsaUnsetMinNightBody{
 		StartDate: cDates[0],
 		EndDate:   cDates[len(cDates)-1],
@@ -158,11 +158,7 @@ func (h *service) generateUnsetMinNightBody(dates []string) homsa_dto.HomsaUnset
 }
 
 func (h *service) generatePriceBody(amount int, dates []string) homsa_dto.HomsaPriceBody {
-	cDates := make([]string, len(dates))
-	copy(cDates, dates)
-	if len(cDates) > 1 {
-		sort.Strings(cDates)
-	}
+	cDates := pkg.SortDates(dates)
 	return homsa_dto.HomsaPriceBody{
 		StartDate:    cDates[0],
 		EndDate:      cDates[len(cDates)-1],
@@ -172,11 +168,7 @@ func (h *service) generatePriceBody(amount int, dates []string) homsa_dto.HomsaP
 }
 
 func (h *service) generateAddDiscountBody(amount int, dates []string) homsa_dto.HomsaAddDiscountBody {
-	cDates := make([]string, len(dates))
-	copy(cDates, dates)
-	if len(cDates) > 1 {
-		sort.Strings(cDates)
-	}
+	cDates := pkg.SortDates(dates)
 	return homsa_dto.HomsaAddDiscountBody{
 		StartDate:    cDates[0],
 		EndDate:      cDates[len(cDates)-1],
@@ -186,11 +178,7 @@ func (h *service) generateAddDiscountBody(amount int, dates []string) homsa_dto.
 }
 
 func (h *service) generateRemoveDiscountBody(dates []string) homsa_dto.HomsaRemoveDiscountBody {
-	cDates := make([]string, len(dates))
-	copy(cDates, dates)
-	if len(cDates) > 1 {
-		sort.Strings(cDates)
-	}
+	cDates := pkg.SortDates(dates)
 	return homsa_dto.HomsaRemoveDiscountBody{
 		StartDate:    cDates[0],
 		EndDate:      cDates[len(cDates)-1],
