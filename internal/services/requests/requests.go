@@ -83,7 +83,6 @@ func (f *fetchS) ParseInterface(response any) (err error) {
 		return err
 	}
 	err = json.Unmarshal(body, response)
-	fmt.Println(response)
 	return
 }
 

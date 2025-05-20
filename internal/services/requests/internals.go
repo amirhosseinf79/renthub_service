@@ -126,9 +126,5 @@ func (f *fetchS) commitRequest() error {
 	}
 	f.httpResp.Body = io.NopCloser(bytes.NewBuffer(body))
 	f.logger.ResponseBody = string(body)
-
-	if f.logger != nil {
-		f.logger.RequestBody = string(body)
-	}
 	return nil
 }
