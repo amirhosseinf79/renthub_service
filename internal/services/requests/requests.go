@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -77,14 +78,12 @@ func (f *fetchS) Start(body any, contentType string) error {
 }
 
 func (f *fetchS) ParseInterface(response any) (err error) {
-	body, err := f.readBodyResponse()
+	body, err := io.ReadAll(f.httpResp.Body)
 	if err != nil {
 		return err
 	}
 	err = json.Unmarshal(body, response)
-	if err != nil {
-		return
-	}
+	fmt.Println(response)
 	return
 }
 

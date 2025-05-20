@@ -115,31 +115,20 @@ func (f *fetchS) commitRequest() error {
 	if err != nil {
 		return err
 	}
-	f.logger.StatusCode = resp.StatusCode
-	f.httpResp = resp
-	if f.logger != nil {
-		err := f.parseBodyResponse()
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
+	defer resp.Body.Close()
 
-func (f *fetchS) parseBodyResponse() error {
-	bodyBytes, err := f.readBodyResponse()
+	f.logger.StatusCode = resp.StatusCode
+
+	f.httpResp = resp
+	body, err := io.ReadAll(f.httpResp.Body)
 	if err != nil {
 		return err
 	}
-	f.httpResp.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-	f.logger.ResponseBody = string(bodyBytes)
-	return nil
-}
+	f.httpResp.Body = io.NopCloser(bytes.NewBuffer(body))
+	f.logger.ResponseBody = string(body)
 
-func (f *fetchS) readBodyResponse() ([]byte, error) {
-	body, err := io.ReadAll(f.httpResp.Body)
-	if err != nil {
-		return nil, err
+	if f.logger != nil {
+		f.logger.RequestBody = string(body)
 	}
-	return body, nil
+	return nil
 }
