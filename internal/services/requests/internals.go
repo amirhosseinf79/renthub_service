@@ -118,7 +118,7 @@ func (f *fetchS) commitRequest() error {
 	if err != nil {
 		nErr, ok := err.(net.Error)
 		if errors.Is(err, context.DeadlineExceeded) || (ok && nErr.Timeout()) {
-			f.logger.ResponseBody = context.DeadlineExceeded.Error()
+			f.logger.ResponseBody = err.Error()
 			return dto.ErrTimeOut
 		}
 		return err
