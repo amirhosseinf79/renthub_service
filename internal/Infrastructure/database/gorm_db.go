@@ -3,6 +3,7 @@ package database
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"gorm.io/driver/postgres"
@@ -18,9 +19,17 @@ func NewGormDB(debug bool) *gorm.DB {
 		gormConfig.Logger = logger.Default.LogMode(logger.Info)
 	}
 
-	db, err := gorm.Open(postgres.Open(connStr), gormConfig)
-	if err != nil {
-		log.Fatal("failed to connect database:", err)
+	var db *gorm.DB
+	var err error
+
+	for {
+		db, err = gorm.Open(postgres.Open(connStr), gormConfig)
+		if err != nil {
+			log.Fatal("failed to connect database:", err)
+			time.Sleep(5 * time.Second)
+			continue
+		}
+		break
 	}
 
 	err = db.AutoMigrate(
