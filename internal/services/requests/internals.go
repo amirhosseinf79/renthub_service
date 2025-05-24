@@ -2,10 +2,13 @@ package requests
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"net/http/httputil"
 
@@ -113,6 +116,11 @@ func (f *fetchS) dumpRequest() {
 func (f *fetchS) commitRequest() error {
 	resp, err := f.client.Do(f.httpReq)
 	if err != nil {
+		nErr, ok := err.(net.Error)
+		if errors.Is(err, context.DeadlineExceeded) || (ok && nErr.Timeout()) {
+			f.logger.ResponseBody = dto.ErrTimeOut.Error()
+			return dto.ErrTimeOut
+		}
 		return err
 	}
 	defer resp.Body.Close()
