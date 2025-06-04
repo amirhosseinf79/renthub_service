@@ -13,6 +13,8 @@ services:
 
   redis:
     image: redis:7
+    volumes:
+      - redis-data:/data
 
   app:
     build:
@@ -44,3 +46,4 @@ services:
 
 volumes:
   db-data:
+  redis-data:
