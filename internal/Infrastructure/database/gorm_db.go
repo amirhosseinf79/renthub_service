@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -25,7 +26,7 @@ func NewGormDB(debug bool) *gorm.DB {
 	for {
 		db, err = gorm.Open(postgres.Open(connStr), gormConfig)
 		if err != nil {
-			log.Fatal("failed to connect database:", err)
+			fmt.Println("failed to connect database:", err)
 			time.Sleep(5 * time.Second)
 			continue
 		}
