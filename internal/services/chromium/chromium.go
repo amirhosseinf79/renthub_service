@@ -68,38 +68,36 @@ func (s *ChromiumService) GetMihmanshoSessionID(token string, log *models.Log) (
 func (s *ChromiumService) GetJajigaHeaders(log *models.Log) (map[string]string, error) {
 	page := s.browser.MustPage()
 
-	headers := make(map[string]string)
+	headers := make(chan map[string]string, 1)
 	targetRequestSubstring := "api.jajiga.com"
-	found := false
 
-	fmt.Println("Initiating ctx...")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	fmt.Println("Waiting for request to contain:", targetRequestSubstring)
 	page.EachEvent(func(e *proto.NetworkRequestWillBeSent) {
-		select {
-		case <-ctx.Done():
-			return
-		default:
-		}
+		headersMap := make(map[string]string)
 		if strings.Contains(e.Request.URL, targetRequestSubstring) {
 			fmt.Println("Request Found:", e.Request.URL)
 			for k, v := range e.Request.Headers {
-				headers[k] = fmt.Sprintf("%v", v)
+				headersMap[k] = fmt.Sprintf("%v", v)
 			}
-			found = true
-			cancel()
+			select {
+			case headers <- headersMap:
+			default:
+			}
 		}
 	})()
 
-	fmt.Println("Navigating to Jajiga...")
-	page.MustNavigate("https://www.jajiga.com").MustWaitLoad()
-	<-ctx.Done()
+	go func() {
+		page.Navigate("https://www.jajiga.com")
+	}()
 
-	fmt.Println("Done.")
-	if !found {
+	select {
+	case headersMap := <-headers:
+		page.MustClose()
+		return headersMap, nil
+	case <-ctx.Done():
+		page.MustClose()
 		return nil, dto.ErrInvalidRequest
 	}
-	return headers, nil
 }
