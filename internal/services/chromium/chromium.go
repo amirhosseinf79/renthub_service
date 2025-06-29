@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	"time"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
@@ -68,38 +67,24 @@ func (s *ChromiumService) GetJajigaHeaders(log *models.Log) (map[string]string, 
 	page := s.browser.MustPage("https://www.jajiga.com")
 
 	targetRequestSubstring := "api.jajiga.com"
-	found := make(chan bool, 1)
-	done := make(chan struct{})
+	found := false
 
 	headers := make(map[string]string)
 
 	page.EachEvent(func(e *proto.NetworkRequestWillBeSent) {
 		if strings.Contains(e.Request.URL, targetRequestSubstring) {
-			fmt.Println("🎯 Request Found:", e.Request.URL)
+			fmt.Println("Request Found:", e.Request.URL)
 			for k, v := range e.Request.Headers {
 				headers[k] = fmt.Sprintf("%v", v)
 			}
-			select {
-			case found <- true:
-			default:
-			}
+			found = true
 		}
 	})()
 
-	go func() {
-		page.MustWaitLoad().MustWaitIdle()
-		close(done)
-	}()
-
-	select {
-	case <-found:
-		page.Close()
-		return headers, nil
-	case <-done:
-		page.Close()
-		return nil, dto.ErrInvalidRequest
-	case <-time.After(15 * time.Second):
-		page.Close()
+	page.MustWaitLoad()
+	page.Close()
+	if !found {
 		return nil, dto.ErrInvalidRequest
 	}
+	return headers, nil
 }
