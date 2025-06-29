@@ -16,6 +16,7 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/otaghak"
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/shab"
 	"github.com/amirhosseinf79/renthub_service/internal/services/auth"
+	"github.com/amirhosseinf79/renthub_service/internal/services/chromium"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 )
 
@@ -31,10 +32,13 @@ func main() {
 	apiAuthService := apiauth.NewApiAuthService(apiRepo)
 	requestService := requests.New()
 
+	chromiumService := chromium.NewChromiumService()
+	defer chromiumService.Close()
+
 	homsaService := homsa.New(apiAuthService, requestService)
 	jabamaService := jabama.New(apiAuthService, requestService)
-	jajigaService := jajiga.New(apiAuthService, requestService)
-	mihmanshoService := mihmansho.New(apiAuthService, requestService)
+	jajigaService := jajiga.New(apiAuthService, requestService, chromiumService)
+	mihmanshoService := mihmansho.New(apiAuthService, requestService, chromiumService)
 	otaghakService := otaghak.New(apiAuthService, requestService)
 	shabService := shab.New(apiAuthService, requestService)
 

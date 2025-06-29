@@ -12,7 +12,7 @@ GRANT CREATE ON SCHEMA public TO rooot;
 ALTER SCHEMA public OWNER TO rooot;
 \q
 
-select created_at,service,client_id,is_succeed,status_code,final_result from logs;
+select created_at,service,client_id,is_succeed,status_code,final_result from logs order by id desc;
 
 
 [Unit]

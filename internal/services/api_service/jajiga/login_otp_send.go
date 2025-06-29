@@ -15,9 +15,15 @@ func (h *service) SendOtp(fields dto.RequiredFields, phoneNumber string) (log *m
 		log.FinalResult = err.Error()
 		return log, err
 	}
+	extraHeaders, err := h.chromium.GetJajigaHeaders(log)
+	if err != nil {
+		log.FinalResult = err.Error()
+		return log, err
+	}
+
 	header := h.getHeader()
 	body := h.generateSendOTPBody(phoneNumber)
-	request := h.request.New(endpoint.Method, url, header, map[string]string{}, log)
+	request := h.request.New(endpoint.Method, url, header, extraHeaders, log)
 	err = request.Start(body, endpoint.ContentType)
 	if err != nil {
 		log.FinalResult = err.Error()

@@ -16,13 +16,19 @@ type service struct {
 	service        string
 	apiSettings    dto.ApiSettings
 	request        interfaces.FetchService
+	chromium       interfaces.ChromeService
 }
 
-func New(apiAuthService interfaces.ApiAuthInterface, request interfaces.FetchService) interfaces.ApiService {
+func New(
+	apiAuthService interfaces.ApiAuthInterface,
+	request interfaces.FetchService,
+	chrome interfaces.ChromeService,
+) interfaces.ApiService {
 	return &service{
 		service:        "jajiga",
 		apiAuthService: apiAuthService,
 		request:        request,
+		chromium:       chrome,
 		apiSettings: dto.ApiSettings{
 			ApiURL: "https://api.jajiga.com/api",
 			Endpoints: dto.ApiEndpoints{
@@ -46,7 +52,12 @@ func New(apiAuthService interfaces.ApiAuthInterface, request interfaces.FetchSer
 				"Host":            "api.jajiga.com",
 				"accept-charset":  "UTF-8",
 				"lang":            "fa",
+				"x-lang":          "fa",
 				"Authorization":   "Bearer %v",
+				"x-request-b":     "%v",
+				"x-request-h":     "%v",
+				"x-request-t":     "%v",
+				"x-session-id":    "%v",
 			},
 		},
 	}

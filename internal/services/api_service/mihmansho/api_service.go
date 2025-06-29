@@ -17,13 +17,20 @@ type service struct {
 	service        string
 	apiSettings    dto.ApiSettings
 	request        interfaces.FetchService
+	chromium       interfaces.ChromeService
 }
 
-func New(apiAuthService interfaces.ApiAuthInterface, request interfaces.FetchService) interfaces.ApiService {
+func New(
+	apiAuthService interfaces.ApiAuthInterface,
+	request interfaces.FetchService,
+
+	chrome interfaces.ChromeService,
+) interfaces.ApiService {
 	return &service{
 		service:        "mihmansho",
 		apiAuthService: apiAuthService,
 		request:        request,
+		chromium:       chrome,
 		apiSettings: dto.ApiSettings{
 			ApiURL: "https://www.mihmansho.com",
 			Endpoints: dto.ApiEndpoints{

@@ -12,7 +12,8 @@ func (h *service) AutoLogin(fields dto.RequiredFields) (log *models.Log, err err
 		log.FinalResult = err.Error()
 		return
 	}
-	newSessionID, err := h.getSession(model.AccessToken, log)
+	// newSessionID, err := h.getSession(model.AccessToken, log)
+	newSessionID, err := h.chromium.GetMihmanshoSessionID(model.AccessToken, log)
 	if err != nil {
 		log.FinalResult = err.Error()
 		return
