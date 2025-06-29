@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
@@ -53,7 +54,6 @@ func (s *ChromiumService) GetMihmanshoSessionID(token string, log *models.Log) (
 	}
 
 	cookies := page.MustCookies()
-	page.Close()
 	for _, c := range cookies {
 		fmt.Println("Cookie Name:", c.Name)
 		if c.Name == "ASP.NET_SessionId" {
@@ -68,7 +68,8 @@ func (s *ChromiumService) GetJajigaHeaders(log *models.Log) (map[string]string, 
 	page := s.browser.MustPage("https://www.jajiga.com")
 
 	targetRequestSubstring := "api.jajiga.com"
-	found := false
+	found := make(chan bool, 1)
+	done := make(chan bool, 1)
 
 	headers := make(map[string]string)
 
@@ -76,17 +77,26 @@ func (s *ChromiumService) GetJajigaHeaders(log *models.Log) (map[string]string, 
 		if strings.Contains(e.Request.URL, targetRequestSubstring) {
 			fmt.Println("Request Found:", e.Request.URL)
 			for k, v := range e.Request.Headers {
-				fmt.Println("Header:", k, "Value:", v)
 				headers[k] = fmt.Sprintf("%v", v)
 			}
-			found = true
+			found <- true
 		}
 	})()
 
-	page.MustWaitLoad()
-	page.Close()
-	if !found {
+	go func() {
+		page.MustWaitLoad()
+		done <- true
+	}()
+
+	select {
+	case <-found:
+		page.Close()
+		return headers, nil
+	case <-done:
+		page.Close()
+		return nil, dto.ErrInvalidRequest
+	case <-time.After(15 * time.Second):
+		page.Close()
 		return nil, dto.ErrInvalidRequest
 	}
-	return headers, nil
 }
