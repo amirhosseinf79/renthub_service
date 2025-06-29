@@ -76,6 +76,7 @@ func (s *ChromiumService) GetJajigaHeaders(log *models.Log) (map[string]string, 
 		if strings.Contains(e.Request.URL, targetRequestSubstring) {
 			fmt.Println("Request Found:", e.Request.URL)
 			for k, v := range e.Request.Headers {
+				fmt.Println("Header:", k, "Value:", v)
 				headers[k] = fmt.Sprintf("%v", v)
 			}
 			found = true
