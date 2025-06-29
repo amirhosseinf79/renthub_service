@@ -53,6 +53,7 @@ func (s *ChromiumService) GetMihmanshoSessionID(token string, log *models.Log) (
 	}
 
 	cookies := page.MustCookies()
+	page.Close()
 	for _, c := range cookies {
 		fmt.Println("Cookie Name:", c.Name)
 		if c.Name == "ASP.NET_SessionId" {
