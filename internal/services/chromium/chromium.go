@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
@@ -64,12 +65,18 @@ func (s *ChromiumService) GetMihmanshoSessionID(token string, log *models.Log) (
 }
 
 func (s *ChromiumService) GetJajigaHeaders(log *models.Log) (map[string]string, error) {
-	page := s.browser.MustPage()
-
-	targetRequestSubstring := "api.jajiga.com"
-	found := false
+	page := s.browser.MustPage("https://www.jajiga.com")
 
 	headers := make(map[string]string)
+	targetRequestSubstring := "api.jajiga.com"
+	done := make(chan bool, 1)
+	found := false
+
+	timer := time.AfterFunc(15*time.Second, func() {
+		page.Close()
+		done <- true
+	})
+	defer timer.Stop()
 
 	page.EachEvent(func(e *proto.NetworkRequestWillBeSent) {
 		if strings.Contains(e.Request.URL, targetRequestSubstring) {
@@ -78,12 +85,18 @@ func (s *ChromiumService) GetJajigaHeaders(log *models.Log) (map[string]string, 
 				headers[k] = fmt.Sprintf("%v", v)
 			}
 			found = true
+			done <- true
 		}
 	})()
 
-	page.MustNavigate("https://www.jajiga.com")
-	page.MustWaitLoad()
+	go func() {
+		page.MustWaitLoad()
+		done <- true
+	}()
 
+	fmt.Println("Waiting for request to be sent...")
+	<-done
+	page.Close()
 	if !found {
 		return nil, dto.ErrInvalidRequest
 	}
