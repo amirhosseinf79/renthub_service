@@ -1,6 +1,7 @@
 package chromium
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"strings"
@@ -69,34 +70,30 @@ func (s *ChromiumService) GetJajigaHeaders(log *models.Log) (map[string]string, 
 
 	headers := make(map[string]string)
 	targetRequestSubstring := "api.jajiga.com"
-	done := make(chan bool, 1)
 	found := false
 
-	timer := time.AfterFunc(15*time.Second, func() {
-		page.Close()
-		done <- true
-	})
-	defer timer.Stop()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
 	page.EachEvent(func(e *proto.NetworkRequestWillBeSent) {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
 		if strings.Contains(e.Request.URL, targetRequestSubstring) {
 			fmt.Println("Request Found:", e.Request.URL)
 			for k, v := range e.Request.Headers {
 				headers[k] = fmt.Sprintf("%v", v)
 			}
 			found = true
-			done <- true
+			cancel()
 		}
 	})()
 
-	go func() {
-		page.MustWaitLoad()
-		done <- true
-	}()
+	page.MustNavigate("https://www.jajiga.com").MustWaitLoad()
+	<-ctx.Done()
 
-	fmt.Println("Waiting for request to be sent...")
-	<-done
-	page.Close()
 	if !found {
 		return nil, dto.ErrInvalidRequest
 	}
