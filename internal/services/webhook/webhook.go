@@ -114,7 +114,7 @@ func (w *webhookS) RefreshToken(userID uint) (log *models.Log, err error) {
 	}
 
 	info := dto.UserUpdate{
-		HookToken: &response.AccessToken,
+		HookToken: response.AccessToken,
 	}
 
 	err = w.userService.UpdateUser(userID, info)
