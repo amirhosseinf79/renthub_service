@@ -23,7 +23,7 @@ func NewChromiumService() interfaces.ChromeService {
 	browser := rod.New().ControlURL(confUrl)
 	err := browser.Connect()
 	if err != nil {
-		log.Fatalf("Failed to connect to the browser:", err)
+		log.Fatal("Failed to connect to the browser:", err)
 	}
 	return &ChromiumService{
 		browser: browser,
