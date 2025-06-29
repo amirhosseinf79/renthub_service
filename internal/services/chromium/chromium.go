@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	"time"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
@@ -65,11 +64,10 @@ func (s *ChromiumService) GetMihmanshoSessionID(token string, log *models.Log) (
 }
 
 func (s *ChromiumService) GetJajigaHeaders(log *models.Log) (map[string]string, error) {
-	page := s.browser.MustPage("https://www.jajiga.com")
+	page := s.browser.MustPage()
 
 	targetRequestSubstring := "api.jajiga.com"
-	found := make(chan bool, 1)
-	done := make(chan bool, 1)
+	found := false
 
 	headers := make(map[string]string)
 
@@ -79,24 +77,15 @@ func (s *ChromiumService) GetJajigaHeaders(log *models.Log) (map[string]string, 
 			for k, v := range e.Request.Headers {
 				headers[k] = fmt.Sprintf("%v", v)
 			}
-			found <- true
+			found = true
 		}
 	})()
 
-	go func() {
-		page.MustWaitLoad()
-		done <- true
-	}()
+	page.MustNavigate("https://www.jajiga.com")
+	page.MustWaitLoad()
 
-	select {
-	case <-found:
-		page.Close()
-		return headers, nil
-	case <-done:
-		page.Close()
-		return nil, dto.ErrInvalidRequest
-	case <-time.After(15 * time.Second):
-		page.Close()
+	if !found {
 		return nil, dto.ErrInvalidRequest
 	}
+	return headers, nil
 }
