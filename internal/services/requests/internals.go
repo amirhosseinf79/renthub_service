@@ -110,7 +110,7 @@ func (f *fetchS) dumpRequest() {
 	}
 	dumps := string(dump)
 	f.logger.RequestBody = dumps
-	// fmt.Println(dumps)
+	fmt.Println(dumps)
 }
 
 func (f *fetchS) commitRequest() error {
