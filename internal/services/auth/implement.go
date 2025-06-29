@@ -19,7 +19,7 @@ func ImplementAuthUser(db *gorm.DB) *authUserService {
 	tokenService := NewTokenService(tokenRepo)
 	userservice := NewUserService(userRepo, tokenService)
 	authTokenMiddleware := middleware.NewAuthTokenMiddleware(tokenService)
-	userHandler := handler.NewUserHandler(userservice)
+	userHandler := handler.NewUserHandler(userservice, tokenService)
 
 	return &authUserService{
 		UserHandler:         userHandler,

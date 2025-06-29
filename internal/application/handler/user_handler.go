@@ -12,9 +12,10 @@ type userHandler struct {
 	tokenService interfaces.TokenService
 }
 
-func NewUserHandler(userService interfaces.UserService) interfaces.UserHandler {
+func NewUserHandler(userService interfaces.UserService, tokenService interfaces.TokenService) interfaces.UserHandler {
 	return &userHandler{
-		userService: userService,
+		userService:  userService,
+		tokenService: tokenService,
 	}
 }
 
