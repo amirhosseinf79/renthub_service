@@ -1,3 +1,16 @@
+CREATE DATABASE renthub;
+\c renthub
+CREATE USER rooot WITH PASSWORD 'Amir2001';
+ALTER ROLE rooot SET client_encoding TO 'utf8';
+ALTER ROLE rooot SET default_transaction_isolation TO 'read committed';
+ALTER ROLE rooot SET timezone TO 'UTC';
+GRANT ALL PRIVILEGES ON DATABASE smart TO rooot;
+GRANT USAGE ON SCHEMA public TO rooot;
+GRANT CREATE ON SCHEMA public TO rooot;
+ALTER SCHEMA public OWNER TO rooot;
+\q
+
+
 [Unit]
 Description=RentHub Service 
 After=network.target
@@ -9,8 +22,8 @@ Restart=always
 User=root
 Environment=PORT=8080
 Environment="DB=host=localhost user=rooot password=Amir2001 dbname=renthub port=5432 sslmode=disable TimeZone=Asia/Tehran"
-Environment="RedisServer=tirich-mir.liara.cloud:32327"
-Environment="RedisPass=wF30WArFekbGDp7336E5HNE6"
+Environment="RedisServer=localhost:6379"
+Environment="RedisPass="
 
 
 [Install]
