@@ -66,15 +66,17 @@ func (s *ChromiumService) GetMihmanshoSessionID(token string, log *models.Log) (
 }
 
 func (s *ChromiumService) GetJajigaHeaders(log *models.Log) (map[string]string, error) {
-	page := s.browser.MustPage("https://www.jajiga.com")
+	page := s.browser.MustPage()
 
 	headers := make(map[string]string)
 	targetRequestSubstring := "api.jajiga.com"
 	found := false
 
+	fmt.Println("Initiating ctx...")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	fmt.Println("Waiting for request to contain:", targetRequestSubstring)
 	page.EachEvent(func(e *proto.NetworkRequestWillBeSent) {
 		select {
 		case <-ctx.Done():
@@ -91,9 +93,11 @@ func (s *ChromiumService) GetJajigaHeaders(log *models.Log) (map[string]string, 
 		}
 	})()
 
+	fmt.Println("Navigating to Jajiga...")
 	page.MustNavigate("https://www.jajiga.com").MustWaitLoad()
 	<-ctx.Done()
 
+	fmt.Println("Done.")
 	if !found {
 		return nil, dto.ErrInvalidRequest
 	}
