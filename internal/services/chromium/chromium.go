@@ -74,19 +74,21 @@ func (s *ChromiumService) GetJajigaHeaders(log *models.Log) (map[string]string, 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	page.EachEvent(func(e *proto.NetworkRequestWillBeSent) {
-		headersMap := make(map[string]string)
-		if strings.Contains(e.Request.URL, targetRequestSubstring) {
-			fmt.Println("Request Found:", e.Request.URL)
-			for k, v := range e.Request.Headers {
-				headersMap[k] = fmt.Sprintf("%v", v)
+	go func() {
+		page.EachEvent(func(e *proto.NetworkRequestWillBeSent) {
+			headersMap := make(map[string]string)
+			if strings.Contains(e.Request.URL, targetRequestSubstring) {
+				fmt.Println("Request Found:", e.Request.URL)
+				for k, v := range e.Request.Headers {
+					headersMap[k] = fmt.Sprintf("%v", v)
+				}
+				select {
+				case headers <- headersMap:
+				default:
+				}
 			}
-			select {
-			case headers <- headersMap:
-			default:
-			}
-		}
-	})()
+		})()
+	}()
 
 	go func() {
 		page.Navigate("https://www.jajiga.com")
