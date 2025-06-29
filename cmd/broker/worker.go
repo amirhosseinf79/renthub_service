@@ -44,7 +44,7 @@ func main() {
 
 	homsaService := homsa.New(apiAuthService, requestService)
 	jabamaService := jabama.New(apiAuthService, requestService)
-	jajigaService := jajiga.New(apiAuthService, requestService, chromiumService)
+	jajigaService := jajiga.New(apiAuthService, requestService)
 	mihmanshoService := mihmansho.New(apiAuthService, requestService, chromiumService)
 	otaghakService := otaghak.New(apiAuthService, requestService)
 	shabService := shab.New(apiAuthService, requestService)

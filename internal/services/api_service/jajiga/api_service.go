@@ -2,7 +2,13 @@ package jajiga
 
 import (
 	"bytes"
+	"crypto/md5"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	"strings"
+	"time"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
@@ -16,19 +22,16 @@ type service struct {
 	service        string
 	apiSettings    dto.ApiSettings
 	request        interfaces.FetchService
-	chromium       interfaces.ChromeService
 }
 
 func New(
 	apiAuthService interfaces.ApiAuthInterface,
 	request interfaces.FetchService,
-	chrome interfaces.ChromeService,
 ) interfaces.ApiService {
 	return &service{
 		service:        "jajiga",
 		apiAuthService: apiAuthService,
 		request:        request,
-		chromium:       chrome,
 		apiSettings: dto.ApiSettings{
 			ApiURL: "https://api.jajiga.com/api",
 			Endpoints: dto.ApiEndpoints{
@@ -104,6 +107,46 @@ func (h *service) getHeader() map[string]string {
 func (h *service) getExtraHeader(token *models.ApiAuth) map[string]string {
 	return map[string]string{
 		"Authorization": token.AccessToken,
+	}
+}
+
+func (h *service) generateXHeaders(method, url string, body any) map[string]string {
+	// method := "POST"
+	// url := "/auth/login"
+	// body := `{"mobile":"09109988333","password":"mr052069101"}`
+
+	xRequestT := fmt.Sprintf("%d", time.Now().Unix())
+
+	var b = []byte{}
+	var err error
+
+	if body != nil {
+		b, err = json.Marshal(body)
+		if err != nil {
+			return nil
+		}
+	}
+
+	md5Sum := md5.Sum(b)
+	xRequestB := hex.EncodeToString(md5Sum[:])
+
+	raw := strings.ToUpper(method) + "/api" + url + xRequestB + xRequestT
+
+	sha := sha256.Sum256([]byte(raw))
+	xRequestH := hex.EncodeToString(sha[:])[:32]
+
+	fmt.Println("x-request-t:", xRequestT)
+
+	fmt.Println("body:", string(b))
+	fmt.Println("x-request-b:", xRequestB)
+
+	fmt.Println("row:", raw)
+	fmt.Println("x-request-h:", xRequestH)
+
+	return map[string]string{
+		"x-request-t": xRequestT,
+		"x-request-b": xRequestB,
+		"x-request-h": xRequestH,
 	}
 }
 

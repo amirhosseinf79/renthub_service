@@ -16,15 +16,15 @@ func (h *service) VerifyOtp(fields dto.RequiredFields, creds dto.OTPCreds) (log 
 		return log, err
 	}
 
-	extraHeaders, err := h.chromium.GetJajigaHeaders(log)
-	if err != nil {
-		log.FinalResult = err.Error()
-		return log, err
-	}
+	// extraHeaders, err := h.chromium.GetJajigaHeaders(log)
+	// if err != nil {
+	// 	log.FinalResult = err.Error()
+	// 	return log, err
+	// }
 
 	header := h.getHeader()
 	bodyRow := h.generateVerifyOTPBody(creds.PhoneNumber, creds.OTPCode)
-	request := h.request.New(endpoint.Method, url, header, extraHeaders, log)
+	request := h.request.New(endpoint.Method, url, header, h.generateXHeaders(endpoint.Method, endpoint.Address, bodyRow), log)
 	err = request.Start(bodyRow, endpoint.ContentType)
 	if err != nil {
 		log.FinalResult = err.Error()
