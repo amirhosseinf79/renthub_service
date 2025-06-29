@@ -2,6 +2,7 @@ package chromium
 
 import (
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -19,7 +20,11 @@ type ChromiumService struct {
 
 func NewChromiumService() interfaces.ChromeService {
 	confUrl := launcher.New().Headless(true).NoSandbox(true).MustLaunch()
-	browser := rod.New().ControlURL(confUrl).MustConnect()
+	browser := rod.New().ControlURL(confUrl)
+	err := browser.Connect()
+	if err != nil {
+		log.Fatalf("Failed to connect to the browser:", err)
+	}
 	return &ChromiumService{
 		browser: browser,
 	}
