@@ -5,15 +5,17 @@ import "github.com/gofiber/fiber/v3"
 func (s server) InitRoutes() {
 	api := s.app.Group("/api/v1")
 
-	// s.initAuthRoutes(api)
+	s.initAuthRoutes(api)
 	s.initManagerRoutes(api)
 	s.initApiAuthRouts(api)
 }
 
-// func (s server) initAuthRoutes(api fiber.Router) {
-// 	api.Post("/auth/register", s.userHandler.RegisterUser)
-// 	api.Post("/auth/login", s.userHandler.LoginUser)
-// }
+func (s server) initAuthRoutes(api fiber.Router) {
+	api.Post("/auth/register", s.userHandler.RegisterUser)
+	api.Post("/auth/login", s.userHandler.LoginUser)
+	api.Post("/auth/refresh", s.userHandler.RefreshToken)
+	api.Post("/auth/update", s.userHandler.UpdateUser, s.tokenMiddleware.CheckTokenAuth)
+}
 
 func (s server) initManagerRoutes(api fiber.Router) {
 	update := api.Group(

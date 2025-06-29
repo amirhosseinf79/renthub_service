@@ -8,7 +8,8 @@ import (
 )
 
 type userHandler struct {
-	userService interfaces.UserService
+	userService  interfaces.UserService
+	tokenService interfaces.TokenService
 }
 
 func NewUserHandler(userService interfaces.UserService) interfaces.UserHandler {
@@ -41,6 +42,47 @@ func (h *userHandler) LoginUser(c fiber.Ctx) error {
 	}
 
 	token, err := h.userService.LoginUser(body)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(dto.ErrorResponse{
+			Message: err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(token)
+}
+
+func (h *userHandler) UpdateUser(c fiber.Ctx) error {
+	var body dto.UserUpdate
+	response, err := pkg.ValidateRequestBody(&body, c)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+
+	userID, ok := c.Locals("userID").(uint)
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).JSON(dto.ErrorResponse{
+			Message: "unauthorized",
+		})
+	}
+
+	err = h.userService.UpdateUser(userID, body)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(dto.ErrorResponse{
+			Message: err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(dto.ErrorResponse{
+		Message: "user updated successfully",
+	})
+}
+
+func (h *userHandler) RefreshToken(c fiber.Ctx) error {
+	var body dto.RefreshTokenBody
+	response, err := pkg.ValidateRequestBody(&body, c)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+
+	token, err := h.tokenService.RefreshToken(body.RefreshToken)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(dto.ErrorResponse{
 			Message: err.Error(),

@@ -10,10 +10,23 @@ type UserLogin struct {
 }
 
 type UserRegister struct {
-	Email     string `form:"email" validate:"required,email"`
-	Password  string `form:"password" validate:"required"`
-	FirstName string `form:"first_name" validate:"required"`
-	LastName  string `form:"last_name" validate:"required"`
+	Email       string `json:"email" validate:"required,email"`
+	Password    string `json:"password" validate:"required"`
+	FirstName   string `json:"first_name" validate:"required"`
+	LastName    string `json:"last_name" validate:"required"`
+	HookToken   string `json:"hook_token" validate:"required"`
+	HookRefresh string `json:"hook_refresh" validate:"required"`
+	RefreshURL  string `json:"refresh_url" validate:"required"`
+}
+
+type UserUpdate struct {
+	Email       *string `json:"email" validate:"required,email"`
+	Password    *string `json:"password"`
+	FirstName   *string `json:"first_name"`
+	LastName    *string `json:"last_name"`
+	HookToken   *string `json:"hook_token"`
+	HookRefresh *string `json:"hook_refresh"`
+	RefreshURL  *string `json:"refresh_url"`
 }
 
 type ErrorResponse struct {
@@ -23,4 +36,8 @@ type ErrorResponse struct {
 type OTPErrorResponse struct {
 	Message        string `json:"message"`
 	ServiceMessage string `json:"serviceMessage"`
+}
+
+type RefreshTokenBody struct {
+	RefreshToken string `json:"refresh_token" validate:"required"`
 }

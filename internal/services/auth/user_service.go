@@ -36,10 +36,13 @@ func (s *userService) RegisterUser(creds dto.UserRegister) (*models.Token, error
 	}
 
 	user := models.User{
-		Email:     creds.Email,
-		Password:  hashedPassword,
-		FirstName: creds.FirstName,
-		LastName:  creds.LastName,
+		Email:       creds.Email,
+		Password:    hashedPassword,
+		FirstName:   creds.FirstName,
+		LastName:    creds.LastName,
+		HookToken:   creds.HookToken,
+		HookRefresh: creds.HookRefresh,
+		RefreshURL:  creds.RefreshURL,
 	}
 
 	err = s.userRepo.Create(&user)
@@ -74,14 +77,37 @@ func (s *userService) GetUserById(id uint) (*models.User, error) {
 	return user, err
 }
 
-func (s *userService) UpdateTokens(id uint, access, refresh string) error {
+func (s *userService) UpdateUser(id uint, info dto.UserUpdate) error {
 	user, err := s.userRepo.GetByID(id)
 	if err != nil {
 		return err
 	}
 
-	user.HookToken = access
-	user.HookRefresh = refresh
+	if info.Email != nil {
+		user.Email = *info.Email
+	}
+	if info.Password != nil {
+		hashedPassword, err := pkg.HashPassword(*info.Password)
+		if err != nil {
+			return err
+		}
+		user.Password = hashedPassword
+	}
+	if info.FirstName != nil {
+		user.FirstName = *info.FirstName
+	}
+	if info.LastName != nil {
+		user.LastName = *info.LastName
+	}
+	if info.HookToken != nil {
+		user.HookToken = *info.HookToken
+	}
+	if info.HookRefresh != nil {
+		user.HookRefresh = *info.HookRefresh
+	}
+	if info.RefreshURL != nil {
+		user.RefreshURL = *info.RefreshURL
+	}
 
 	err = s.userRepo.Update(user)
 	if err != nil {
