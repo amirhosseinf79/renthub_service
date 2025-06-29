@@ -83,30 +83,30 @@ func (s *userService) UpdateUser(id uint, info dto.UserUpdate) error {
 		return err
 	}
 
-	if info.Email != nil {
-		user.Email = *info.Email
+	if info.Email != "" {
+		user.Email = info.Email
 	}
-	if info.Password != nil {
-		hashedPassword, err := pkg.HashPassword(*info.Password)
+	if info.Password != "" {
+		hashedPassword, err := pkg.HashPassword(info.Password)
 		if err != nil {
 			return err
 		}
 		user.Password = hashedPassword
 	}
-	if info.FirstName != nil {
-		user.FirstName = *info.FirstName
+	if info.FirstName != "" {
+		user.FirstName = info.FirstName
 	}
-	if info.LastName != nil {
-		user.LastName = *info.LastName
+	if info.LastName != "" {
+		user.LastName = info.LastName
 	}
-	if info.HookToken != nil {
-		user.HookToken = *info.HookToken
+	if info.HookToken != "" {
+		user.HookToken = info.HookToken
 	}
-	if info.HookRefresh != nil {
-		user.HookRefresh = *info.HookRefresh
+	if info.HookRefresh != "" {
+		user.HookRefresh = info.HookRefresh
 	}
-	if info.RefreshURL != nil {
-		user.RefreshURL = *info.RefreshURL
+	if info.RefreshURL != "" {
+		user.RefreshURL = info.RefreshURL
 	}
 
 	err = s.userRepo.Update(user)

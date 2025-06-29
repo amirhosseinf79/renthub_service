@@ -20,13 +20,13 @@ type UserRegister struct {
 }
 
 type UserUpdate struct {
-	Email       *string `json:"email" validate:"required,email"`
-	Password    *string `json:"password" validate:"omitempty"`
-	FirstName   *string `json:"first_name" validate:"omitempty"`
-	LastName    *string `json:"last_name" validate:"omitempty"`
-	HookToken   *string `json:"hook_token" validate:"omitempty"`
-	HookRefresh *string `json:"hook_refresh" validate:"omitempty"`
-	RefreshURL  *string `json:"refresh_url" validate:"omitempty"`
+	Email       string `json:"email" validate:"required,email"`
+	Password    string `json:"password" validate:"omitempty"`
+	FirstName   string `json:"first_name" validate:"omitempty"`
+	LastName    string `json:"last_name" validate:"omitempty"`
+	HookToken   string `json:"hook_token" validate:"omitempty"`
+	HookRefresh string `json:"hook_refresh" validate:"omitempty"`
+	RefreshURL  string `json:"refresh_url" validate:"omitempty"`
 }
 
 type ErrorResponse struct {
