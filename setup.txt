@@ -1,3 +1,5 @@
+sudo -u postgres psql
+
 CREATE DATABASE renthub;
 \c renthub
 CREATE USER rooot WITH PASSWORD 'Amir2001';
@@ -9,6 +11,8 @@ GRANT USAGE ON SCHEMA public TO rooot;
 GRANT CREATE ON SCHEMA public TO rooot;
 ALTER SCHEMA public OWNER TO rooot;
 \q
+
+select created_at,service,client_id,is_succeed,status_code,final_result from logs;
 
 
 [Unit]
