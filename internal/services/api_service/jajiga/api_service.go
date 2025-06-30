@@ -3,7 +3,6 @@ package jajiga
 import (
 	"bytes"
 	"crypto/md5"
-	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -112,8 +111,9 @@ func (h *service) getExtraHeader(token *models.ApiAuth) map[string]string {
 
 func (h *service) generateXHeaders(method, url string, body any) map[string]string {
 	// method := "POST"
-	// url := "/auth/login"
-	// body := `{"mobile":"09109988333","password":"mr052069101"}`
+	// url := "/auth/otp/send"
+	// body := `{"mobile":"09334429096","iso2":"IR"}`
+	plusStr := "22ab046bd59212160e654bd5a610eb8da87723239db6d059f3074ad451c667b2"
 
 	xRequestT := fmt.Sprintf("%d", time.Now().Unix())
 
@@ -130,10 +130,10 @@ func (h *service) generateXHeaders(method, url string, body any) map[string]stri
 	md5Sum := md5.Sum(b)
 	xRequestB := hex.EncodeToString(md5Sum[:])
 
-	raw := strings.ToUpper(method) + "/api" + url + xRequestB + xRequestT
+	raw := strings.ToUpper(method) + "/api" + url + xRequestB + xRequestT + plusStr
 
-	sha := sha256.Sum256([]byte(raw))
-	xRequestH := hex.EncodeToString(sha[:])[:32]
+	md5Raw := md5.Sum([]byte(raw))
+	xRequestH := hex.EncodeToString(md5Raw[:])[:32]
 
 	fmt.Println("x-request-t:", xRequestT)
 
