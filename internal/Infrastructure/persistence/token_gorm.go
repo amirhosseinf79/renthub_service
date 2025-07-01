@@ -1,8 +1,6 @@
 package persistence
 
 import (
-	"time"
-
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/repository"
 	"gorm.io/gorm"
@@ -19,7 +17,8 @@ func NewTokenRepository(db *gorm.DB) repository.TokenRepository {
 
 func (t *tokenRepo) GetByToken(token string) (*models.Token, error) {
 	var tokenM models.Token
-	err := t.db.Where("token = ? AND updated_at >= ?", token, time.Now().Add(-8*time.Hour)).First(&tokenM).Error
+	// err := t.db.Where("token = ? AND updated_at >= ?", token, time.Now().Add(-8*time.Hour)).First(&tokenM).Error
+	err := t.db.Where("token = ?", token).First(&tokenM).Error
 	if err != nil {
 		return nil, err
 	}
