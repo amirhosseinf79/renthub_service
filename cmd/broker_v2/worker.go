@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	broker_v1 "github.com/amirhosseinf79/renthub_service/internal/Infrastructure/broker/v1"
+	broker_v2 "github.com/amirhosseinf79/renthub_service/internal/Infrastructure/broker/v2"
 	"github.com/amirhosseinf79/renthub_service/internal/Infrastructure/database"
 	"github.com/amirhosseinf79/renthub_service/internal/Infrastructure/persistence"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
@@ -18,13 +18,13 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/services/chromium"
 	"github.com/amirhosseinf79/renthub_service/internal/services/logger"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
-	manager_v1 "github.com/amirhosseinf79/renthub_service/internal/services/service_manager/v1"
-	webhook_v1 "github.com/amirhosseinf79/renthub_service/internal/services/webhook/v1"
+	manager_v2 "github.com/amirhosseinf79/renthub_service/internal/services/service_manager/v2"
+	webhook_v2 "github.com/amirhosseinf79/renthub_service/internal/services/webhook/v2"
 )
 
 func main() {
 	db := database.NewGormDB(false)
-	clientServiceManager := broker_v1.NewClient()
+	clientServiceManager := broker_v2.NewClient()
 
 	apiRepo := persistence.NewApiAuthRepository(db)
 	apiAuthService := apiauth.NewApiAuthService(apiRepo)
@@ -36,7 +36,7 @@ func main() {
 	tokenService := auth_v1.NewTokenService(tokenRepo)
 	userService := auth_v1.NewUserService(userRepo, tokenService)
 
-	webhookService := webhook_v1.NewWebhookService(userService, requestService)
+	webhookService := webhook_v2.NewWebhookService(userService, requestService)
 
 	logRepo := persistence.NewLogRepository(db)
 	logService := logger.NewLogger(logRepo)
@@ -60,14 +60,14 @@ func main() {
 		"shab":      shabService,
 	}
 
-	serviceManager := manager_v1.New(
+	serviceManager := manager_v2.New(
 		services,
 		apiAuthService,
 		logService,
 	)
 
 	fmt.Println("Connecting to worker...")
-	broker := broker_v1.NewWorker(
+	broker := broker_v2.NewWorker(
 		clientServiceManager,
 		serviceManager,
 		logService,
