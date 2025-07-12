@@ -10,27 +10,36 @@ import (
 )
 
 type server struct {
-	app                 *fiber.App
-	tokenMiddleware     interfaces.TokenMiddleware
-	userHandler         interfaces.UserHandler
-	apiManagerValidator interfaces.ValidatorInterface
-	apiTokenMiddleware  interfaces.ApiAuthMiddleware
-	apiManagerHandler   interfaces.ManagerHandlerInterface
+	app                    *fiber.App
+	tokenMiddleware        interfaces.TokenMiddleware
+	userHandler            interfaces.UserHandler
+	apiManagerValidator    interfaces.ValidatorInterface
+	apiTokenMiddleware     interfaces.ApiAuthMiddleware
+	apiManagerHandler      interfaces.ManagerHandlerInterface
+	apiManagerValidator_v2 interfaces.ValidatorInterface
+	apiTokenMiddleware_v2  interfaces.ApiAuthMiddleware
+	apiManagerHandler_v2   interfaces.ManagerHandlerInterface
 }
 
 func NewServer(
 	tokenMiddleware interfaces.TokenMiddleware,
 	userHandler interfaces.UserHandler,
-	apiTokenMiddleware interfaces.ApiAuthMiddleware,
 	apiManagerValidator interfaces.ValidatorInterface,
+	apiTokenMiddleware interfaces.ApiAuthMiddleware,
 	apiManagerHandler interfaces.ManagerHandlerInterface,
+	apiManagerValidator_v2 interfaces.ValidatorInterface,
+	apiTokenMiddleware_v2 interfaces.ApiAuthMiddleware,
+	apiManagerHandler_v2 interfaces.ManagerHandlerInterface,
 ) *server {
 	return &server{
-		tokenMiddleware:     tokenMiddleware,
-		userHandler:         userHandler,
-		apiManagerValidator: apiManagerValidator,
-		apiTokenMiddleware:  apiTokenMiddleware,
-		apiManagerHandler:   apiManagerHandler,
+		tokenMiddleware:        tokenMiddleware,
+		userHandler:            userHandler,
+		apiManagerValidator:    apiManagerValidator,
+		apiTokenMiddleware:     apiTokenMiddleware,
+		apiManagerHandler:      apiManagerHandler,
+		apiManagerValidator_v2: apiManagerValidator_v2,
+		apiTokenMiddleware_v2:  apiTokenMiddleware_v2,
+		apiManagerHandler_v2:   apiManagerHandler_v2,
 	}
 }
 

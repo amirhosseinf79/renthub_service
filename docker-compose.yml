@@ -32,7 +32,20 @@ services:
   broker:
     build:
       context: .
-      dockerfile: cmd/broker/Dockerfile
+      dockerfile: cmd/broker_v1/Dockerfile
+    depends_on:
+      - db
+      - redis
+    environment:
+      - PORT=8080
+      - DB=host=db user=postgres password=postgres dbname=renthub port=5432 sslmode=disable TimeZone=Asia/Tehran
+      - RedisServer=redis:6379
+      - RedisPass=
+
+  broker2:
+    build:
+      context: .
+      dockerfile: cmd/broker_v2s/Dockerfile
     depends_on:
       - db
       - redis

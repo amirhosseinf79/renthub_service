@@ -10,7 +10,7 @@ on:
     branches: ["main"]
 
 jobs:
-  buildApp:
+  App:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43,8 +43,8 @@ jobs:
           script: |
             chmod +x ${{ secrets.SERVER_TARGET_DIR }}/renthub_server
             sudo systemctl restart renthub_new.service
-  
-  buildBroker:
+
+  Broker_v1:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,7 +55,7 @@ jobs:
           go-version: "1.23.2"
 
       - name: Build broker server
-        run: go build -o broker_server ./cmd/broker/worker.go
+        run: go build -o broker1_server ./cmd/broker_v1/worker.go
 
       - name: Copy broker binary to server
         uses: appleboy/scp-action@v0.1.7
@@ -64,7 +64,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
-          source: "broker_server"
+          source: "broker1_server"
           target: ${{ secrets.SERVER_TARGET_DIR }}
 
       - name: Restart services on server
@@ -75,5 +75,39 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
           script: |
-            chmod +x ${{ secrets.SERVER_TARGET_DIR }}/broker_server
-            sudo systemctl restart worker.service
+            chmod +x ${{ secrets.SERVER_TARGET_DIR }}/broker1_server
+            sudo systemctl restart worker1.service
+
+  Broker_v2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.23.2"
+
+      - name: Build broker server v2
+        run: go build -o broker2_server ./cmd/broker_v2/worker.go
+
+      - name: Copy broker binary to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          source: "broker2_server"
+          target: ${{ secrets.SERVER_TARGET_DIR }}
+
+      - name: Restart services on server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          script: |
+            chmod +x ${{ secrets.SERVER_TARGET_DIR }}/broker2_server
+            sudo systemctl restart worker2.service

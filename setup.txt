@@ -13,7 +13,7 @@ ALTER SCHEMA public OWNER TO rooot;
 \q
 
 select logs.created_at,users.email,logs.service,logs.request_url,logs.final_result from logs join users on logs.user_id = users.id order by logs.id desc;
-select created_at,service,client_id,is_succeed,status_code,final_result from logs order by id desc;
+select id,created_at,service,client_id,is_succeed,status_code,final_result from logs order by id desc;
 select created_at,service,request_url,status_code,final_result from logs order by id desc;
 
 

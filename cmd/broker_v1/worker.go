@@ -1,15 +1,11 @@
 package main
 
 import (
+	"fmt"
+
 	broker_v1 "github.com/amirhosseinf79/renthub_service/internal/Infrastructure/broker/v1"
-	broker_v2 "github.com/amirhosseinf79/renthub_service/internal/Infrastructure/broker/v2"
 	"github.com/amirhosseinf79/renthub_service/internal/Infrastructure/database"
 	"github.com/amirhosseinf79/renthub_service/internal/Infrastructure/persistence"
-	"github.com/amirhosseinf79/renthub_service/internal/Infrastructure/server"
-	handler_v1 "github.com/amirhosseinf79/renthub_service/internal/application/handler/v1"
-	handler_v2 "github.com/amirhosseinf79/renthub_service/internal/application/handler/v2"
-	middleware_v1 "github.com/amirhosseinf79/renthub_service/internal/application/middleware/v1"
-	middleware_v2 "github.com/amirhosseinf79/renthub_service/internal/application/middleware/v2"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	apiauth "github.com/amirhosseinf79/renthub_service/internal/services/api_auth"
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/homsa"
@@ -20,21 +16,30 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/shab"
 	auth_v1 "github.com/amirhosseinf79/renthub_service/internal/services/auth/v1"
 	"github.com/amirhosseinf79/renthub_service/internal/services/chromium"
+	"github.com/amirhosseinf79/renthub_service/internal/services/logger"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
+	manager_v1 "github.com/amirhosseinf79/renthub_service/internal/services/service_manager/v1"
+	webhook_v1 "github.com/amirhosseinf79/renthub_service/internal/services/webhook/v1"
 )
 
 func main() {
 	db := database.NewGormDB(false)
-	broker_v1 := broker_v1.NewClient()
-	broker_v2 := broker_v2.NewClient()
+	clientServiceManager := broker_v1.NewClient()
 
-	// User auth system
-	authUserService_v1 := auth_v1.ImplementAuthUser(db)
-
-	// api auth model
 	apiRepo := persistence.NewApiAuthRepository(db)
 	apiAuthService := apiauth.NewApiAuthService(apiRepo)
 	requestService := requests.New()
+
+	tokenRepo := persistence.NewTokenRepository(db)
+	userRepo := persistence.NewUserRepository(db)
+
+	tokenService := auth_v1.NewTokenService(tokenRepo)
+	userService := auth_v1.NewUserService(userRepo, tokenService)
+
+	webhookService := webhook_v1.NewWebhookService(userService, requestService)
+
+	logRepo := persistence.NewLogRepository(db)
+	logService := logger.NewLogger(logRepo)
 
 	chromiumService := chromium.NewChromiumService()
 	defer chromiumService.Close()
@@ -55,28 +60,19 @@ func main() {
 		"shab":      shabService,
 	}
 
-	// manager middlewares & handler
-	apiManagerValidator_v1 := middleware_v1.NewValidator()
-	apiTokenMiddleware_v1 := middleware_v1.NewApiTokenMiddleware(broker_v1, apiAuthService)
-	apiManagerHandler_v1 := handler_v1.NewManagerHandler(services, broker_v1, apiAuthService)
-
-	// manager middlewares & handler
-	apiManagerValidator_v2 := middleware_v2.NewValidator()
-	apiTokenMiddleware_v2 := middleware_v2.NewApiTokenMiddleware(broker_v2, apiAuthService)
-	apiManagerHandler_v2 := handler_v2.NewManagerHandler(services, broker_v2, apiAuthService)
-
-	server := server.NewServer(
-		authUserService_v1.AuthTokenMiddleware,
-		authUserService_v1.UserHandler,
-		apiManagerValidator_v1,
-		apiTokenMiddleware_v1,
-		apiManagerHandler_v1,
-		apiManagerValidator_v2,
-		apiTokenMiddleware_v2,
-		apiManagerHandler_v2,
+	serviceManager := manager_v1.New(
+		services,
+		apiAuthService,
+		logService,
 	)
 
-	server.InitServer()
-	server.InitRoutes()
-	server.Start()
+	fmt.Println("Connecting to worker...")
+	broker := broker_v1.NewWorker(
+		clientServiceManager,
+		serviceManager,
+		logService,
+		services,
+		webhookService,
+	)
+	broker.StartWorker()
 }
