@@ -7,6 +7,35 @@ import (
 	"github.com/mshafiee/jalali"
 )
 
+func SeperateDates(dates []string) (result [][]string) {
+	layout := "2006/01/02"
+	var parsedDates []time.Time
+	for _, d := range dates {
+		t, _ := time.Parse(layout, d)
+		parsedDates = append(parsedDates, t)
+	}
+
+	var group []string
+	for i := 0; i < len(parsedDates); i++ {
+		if i == 0 {
+			group = append(group, parsedDates[i].Format(layout))
+			continue
+		}
+		diff := parsedDates[i].Sub(parsedDates[i-1]).Hours() / 24
+		if diff == 1 {
+			group = append(group, parsedDates[i].Format(layout))
+		} else {
+			result = append(result, group)
+			group = []string{parsedDates[i].Format(layout)}
+		}
+	}
+
+	if len(group) > 0 {
+		result = append(result, group)
+	}
+	return
+}
+
 func DatesToIso(dates []string) []string {
 	var formattedDates []string
 	for _, item := range dates {

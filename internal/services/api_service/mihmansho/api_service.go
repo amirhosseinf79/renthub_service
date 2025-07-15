@@ -211,16 +211,16 @@ func (h *service) generateDiscountBody(roomID string, dates []string, amount int
 	jdates := pkg.DatesToJalali(dates, false)
 	pbody := mihmansho_dto.FormBody{}
 	pbody["dh.ProductId"] = roomID
-	pbody["dh.ActiveDateDiscountHost"] = active
-	pbody["dh.StringStartDateDiscountHost"] = jdates[0]
-	pbody["dh.StringEndDateDiscountHost"] = jdates[len(jdates)-1]
-	pbody["dh.PercentDateDiscountHost"] = fmt.Sprintf("%v", amount)
+	// pbody["dh.ActiveDateDiscountHost"] = active
+	// pbody["dh.StringStartDateDiscountHost"] = jdates[0]
+	// pbody["dh.StringEndDateDiscountHost"] = jdates[len(jdates)-1]
+	// pbody["dh.PercentDateDiscountHost"] = fmt.Sprintf("%v", amount)
 
-	// for i, date := range jdates {
-	// 	pbody[fmt.Sprintf("dhh[%v].Active", i)] = active
-	// 	pbody[fmt.Sprintf("dhh[%v].StringStartDate", i)] = date
-	// 	pbody[fmt.Sprintf("dhh[%v].StringEndDate", i)] = date
-	// }
+	for i, date := range jdates {
+		pbody[fmt.Sprintf("dhh[%v].Active", i)] = active
+		pbody[fmt.Sprintf("dhh[%v].StringStartDate", i)] = date
+		pbody[fmt.Sprintf("dhh[%v].StringEndDate", i)] = date
+	}
 
 	mbody, err := json.Marshal(pbody)
 	if err != nil {

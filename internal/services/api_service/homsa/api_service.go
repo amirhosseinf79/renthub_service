@@ -8,6 +8,7 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	homsa_dto "github.com/amirhosseinf79/renthub_service/internal/dto/homsa"
+	"github.com/amirhosseinf79/renthub_service/pkg"
 )
 
 type service struct {
@@ -132,51 +133,87 @@ func (h *service) generateVerifyOTPBody(phoneNumber string, code string) homsa_d
 	}
 }
 
-func (h *service) generateCalendarBody(dates []string) any {
-	return homsa_dto.HomsaCalendarBody{
-		StartDate: dates[0],
-		EndDate:   dates[len(dates)-1],
+func (h *service) generateCalendarBody(dates []string) []homsa_dto.HomsaCalendarBody {
+	var list []homsa_dto.HomsaCalendarBody
+	splittedDates := pkg.SeperateDates(dates)
+	for _, date := range splittedDates {
+		form := homsa_dto.HomsaCalendarBody{
+			StartDate: date[0],
+			EndDate:   date[len(date)-1],
+		}
+		list = append(list, form)
 	}
+	return list
 }
 
-func (h *service) generateSetMinNightBody(amount int, dates []string) homsa_dto.HomsaSetMinNightBody {
-	return homsa_dto.HomsaSetMinNightBody{
-		StartDate: dates[0],
-		EndDate:   dates[len(dates)-1],
-		Min:       amount,
-		Max:       nil,
+func (h *service) generateSetMinNightBody(amount int, dates []string) []homsa_dto.HomsaSetMinNightBody {
+	var list []homsa_dto.HomsaSetMinNightBody
+	splittedDates := pkg.SeperateDates(dates)
+	for _, date := range splittedDates {
+		form := homsa_dto.HomsaSetMinNightBody{
+			StartDate: date[0],
+			EndDate:   date[len(date)-1],
+			Min:       amount,
+			Max:       nil,
+		}
+		list = append(list, form)
 	}
+	return list
 }
 
-func (h *service) generateUnsetMinNightBody(dates []string) homsa_dto.HomsaUnsetMinNightBody {
-	return homsa_dto.HomsaUnsetMinNightBody{
-		StartDate: dates[0],
-		EndDate:   dates[len(dates)-1],
+func (h *service) generateUnsetMinNightBody(dates []string) []homsa_dto.HomsaUnsetMinNightBody {
+	var list []homsa_dto.HomsaUnsetMinNightBody
+	splittedDates := pkg.SeperateDates(dates)
+	for _, date := range splittedDates {
+		form := homsa_dto.HomsaUnsetMinNightBody{
+			StartDate: date[0],
+			EndDate:   date[len(date)-1],
+		}
+		list = append(list, form)
 	}
+	return list
 }
 
-func (h *service) generatePriceBody(amount int, dates []string) homsa_dto.HomsaPriceBody {
-	return homsa_dto.HomsaPriceBody{
-		StartDate:    dates[0],
-		EndDate:      dates[len(dates)-1],
-		Price:        amount,
-		KeepDiscount: 0,
+func (h *service) generatePriceBody(amount int, dates []string) []homsa_dto.HomsaPriceBody {
+	var list []homsa_dto.HomsaPriceBody
+	splittedDates := pkg.SeperateDates(dates)
+	for _, date := range splittedDates {
+		form := homsa_dto.HomsaPriceBody{
+			StartDate:    date[0],
+			EndDate:      date[len(date)-1],
+			Price:        amount,
+			KeepDiscount: 0,
+		}
+		list = append(list, form)
 	}
+	return list
 }
 
-func (h *service) generateAddDiscountBody(amount int, dates []string) homsa_dto.HomsaAddDiscountBody {
-	return homsa_dto.HomsaAddDiscountBody{
-		StartDate:    dates[0],
-		EndDate:      dates[len(dates)-1],
-		Discount:     amount,
-		KeepDiscount: 0,
+func (h *service) generateAddDiscountBody(amount int, dates []string) []homsa_dto.HomsaAddDiscountBody {
+	var list []homsa_dto.HomsaAddDiscountBody
+	splittedDates := pkg.SeperateDates(dates)
+	for _, date := range splittedDates {
+		form := homsa_dto.HomsaAddDiscountBody{
+			StartDate:    date[0],
+			EndDate:      date[len(date)-1],
+			Discount:     amount,
+			KeepDiscount: 0,
+		}
+		list = append(list, form)
 	}
+	return list
 }
 
-func (h *service) generateRemoveDiscountBody(dates []string) homsa_dto.HomsaRemoveDiscountBody {
-	return homsa_dto.HomsaRemoveDiscountBody{
-		StartDate:    dates[0],
-		EndDate:      dates[len(dates)-1],
-		KeepDiscount: 0,
+func (h *service) generateRemoveDiscountBody(dates []string) []homsa_dto.HomsaRemoveDiscountBody {
+	var list []homsa_dto.HomsaRemoveDiscountBody
+	splittedDates := pkg.SeperateDates(dates)
+	for _, date := range splittedDates {
+		form := homsa_dto.HomsaRemoveDiscountBody{
+			StartDate:    date[0],
+			EndDate:      date[len(date)-1],
+			KeepDiscount: 0,
+		}
+		list = append(list, form)
 	}
+	return list
 }
