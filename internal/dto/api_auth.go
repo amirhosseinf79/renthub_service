@@ -10,6 +10,11 @@ type ApiAuthRequest struct {
 	Ucode        string `json:"ucode"`
 }
 
+type ApiAuthSignOut struct {
+	ClientID string `json:"clientId" validate:"required"`
+	Service  string `json:"service" validate:"required"`
+}
+
 type OTPCreds struct {
 	PhoneNumber string
 	OTPCode     string

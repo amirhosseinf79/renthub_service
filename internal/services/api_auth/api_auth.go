@@ -59,3 +59,7 @@ func (h *apiAuthService) GetClientAll(userID uint, clientID string) (list []*mod
 	list = h.apiAuthRepo.GetAll(userID, clientID)
 	return
 }
+
+func (h *apiAuthService) SignOutSerice(userID uint, fields dto.ApiAuthSignOut) error {
+	return h.apiAuthRepo.DeleteService(userID, fields.ClientID, fields.Service)
+}

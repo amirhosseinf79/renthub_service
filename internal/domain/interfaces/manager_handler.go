@@ -12,4 +12,5 @@ type ManagerHandlerInterface interface {
 	CheckAuth(ctx fiber.Ctx) error
 	SendServiceOTP(ctx fiber.Ctx) error
 	VerifyServiceOTP(ctx fiber.Ctx) error
+	SignOutClient(ctx fiber.Ctx) error
 }

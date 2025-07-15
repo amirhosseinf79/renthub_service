@@ -32,6 +32,15 @@ func (r *apiAuthRepo) GetAll(userID uint, clientID string) (list []*models.ApiAu
 	return
 }
 
+func (r *apiAuthRepo) DeleteService(userID uint, clientID, service string) error {
+	item, err := r.GetByUnique(userID, clientID, service)
+	if err != nil {
+		return err
+	}
+	r.db.Delete(item)
+	return nil
+}
+
 func (r *apiAuthRepo) Create(token *models.ApiAuth) error {
 	return r.db.Create(token).Error
 }

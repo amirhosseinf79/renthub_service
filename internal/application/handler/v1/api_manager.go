@@ -198,3 +198,19 @@ func (h *handlerSt) TokenLogin(ctx fiber.Ctx) error {
 		Message: "ok",
 	})
 }
+
+func (h *handlerSt) SignOutClient(ctx fiber.Ctx) error {
+	var fields dto.ApiAuthSignOut
+	response, err := pkg.ValidateRequestBody(&fields, ctx)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(response)
+	}
+	userID := ctx.Locals("userID").(uint)
+	err = h.ApiAuthService.SignOutSerice(userID, fields)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(dto.ErrorResponse{
+			Message: dto.ErrorUnauthorized.Error(),
+		})
+	}
+	return ctx.SendStatus(fiber.StatusNoContent)
+}
