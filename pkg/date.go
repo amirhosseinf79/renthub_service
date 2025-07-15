@@ -8,7 +8,7 @@ import (
 )
 
 func SeperateDates(dates []string) (result [][]string) {
-	layout := "2006/01/02"
+	layout := "2006-01-02"
 	var parsedDates []time.Time
 	for _, d := range dates {
 		t, _ := time.Parse(layout, d)
