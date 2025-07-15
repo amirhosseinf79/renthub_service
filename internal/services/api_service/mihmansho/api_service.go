@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"regexp"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
@@ -174,7 +173,6 @@ func (h *service) generateVerifyOTPBody(phoneNumber string, code string) mihmans
 }
 
 func (h *service) generatePriceBody(dates []string) []byte {
-	re := regexp.MustCompile(`Date_\d+`)
 	pbody := mihmansho_dto.FormBody{}
 	jdates := pkg.DatesToJalali(dates, false)
 	for i, date := range jdates {
@@ -184,12 +182,11 @@ func (h *service) generatePriceBody(dates []string) []byte {
 	if err != nil {
 		return nil
 	}
-	ss := re.ReplaceAllString(string(mbody), "Date")
-	return []byte(ss)
+	return mbody
 }
 
 func (h *service) generateMinNightBody(roomID string, dates []string, minDay int) []byte {
-	re := regexp.MustCompile(`Date_\d+`)
+
 	pbody := mihmansho_dto.FormBody{}
 	jdates := pkg.DatesToJalali(dates, false)
 	for i, date := range jdates {
@@ -201,8 +198,7 @@ func (h *service) generateMinNightBody(roomID string, dates []string, minDay int
 	if err != nil {
 		return nil
 	}
-	ss := re.ReplaceAllString(string(mbody), "Date")
-	return []byte(ss)
+	return mbody
 }
 
 func (h *service) generateDiscountBody(roomID string, dates []string, amount int) []byte {

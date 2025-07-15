@@ -11,6 +11,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httputil"
+	"regexp"
 
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	"github.com/google/go-querystring/query"
@@ -26,6 +27,7 @@ func (f *fetchS) requestBody(bodyRow any) (*bytes.Buffer, error) {
 }
 
 func (f *fetchS) requestMultipart(bodyRow any) (*bytes.Buffer, string, error) {
+	re := regexp.MustCompile(`Date_\d+`)
 	bodyS, ok := bodyRow.([]byte)
 	if !ok {
 		return nil, "", dto.ErrInvalidRequest
@@ -38,7 +40,8 @@ func (f *fetchS) requestMultipart(bodyRow any) (*bytes.Buffer, string, error) {
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	for key, val := range mapBody {
-		err := writer.WriteField(key, val)
+		newKey := re.ReplaceAllString(key, "Date")
+		err := writer.WriteField(newKey, val)
 		if err != nil {
 			return nil, "", err
 		}
