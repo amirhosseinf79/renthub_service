@@ -176,7 +176,7 @@ func (h *service) generatePriceBody(dates []string) []byte {
 	pbody := mihmansho_dto.FormBody{}
 	jdates := pkg.DatesToJalali(dates, false)
 	for i, date := range jdates {
-		pbody[fmt.Sprintf("Date_%v", i)] = date
+		pbody[fmt.Sprintf("Dates_num%v", i)] = date
 	}
 	mbody, err := json.Marshal(pbody)
 	if err != nil {
@@ -190,7 +190,7 @@ func (h *service) generateMinNightBody(roomID string, dates []string, minDay int
 	pbody := mihmansho_dto.FormBody{}
 	jdates := pkg.DatesToJalali(dates, false)
 	for i, date := range jdates {
-		pbody[fmt.Sprintf("Date_%v", i)] = date
+		pbody[fmt.Sprintf("Date_num%v", i)] = date
 	}
 	pbody["ProductId"] = roomID
 	pbody["MinDay"] = fmt.Sprintf("%v", minDay)

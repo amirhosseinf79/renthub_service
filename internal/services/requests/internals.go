@@ -27,7 +27,7 @@ func (f *fetchS) requestBody(bodyRow any) (*bytes.Buffer, error) {
 }
 
 func (f *fetchS) requestMultipart(bodyRow any) (*bytes.Buffer, string, error) {
-	re := regexp.MustCompile(`Date_\d+`)
+	re := regexp.MustCompile(`_num\d+`)
 	bodyS, ok := bodyRow.([]byte)
 	if !ok {
 		return nil, "", dto.ErrInvalidRequest
@@ -40,7 +40,7 @@ func (f *fetchS) requestMultipart(bodyRow any) (*bytes.Buffer, string, error) {
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	for key, val := range mapBody {
-		newKey := re.ReplaceAllString(key, "Date")
+		newKey := re.ReplaceAllString(key, "")
 		err := writer.WriteField(newKey, val)
 		if err != nil {
 			return nil, "", err
