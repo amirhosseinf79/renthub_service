@@ -208,18 +208,28 @@ func (h *service) generateDiscountBody(roomID string, dates []string, amount int
 	} else {
 		active = "false"
 	}
-	jdates := pkg.DatesToJalali(dates, false)
+
+	splittedDates := pkg.SeperateDates(dates)
 	pbody := mihmansho_dto.FormBody{}
 	pbody["dh.ProductId"] = roomID
+
+	// jdates := pkg.DatesToJalali(dates, false)
 	// pbody["dh.ActiveDateDiscountHost"] = active
 	// pbody["dh.StringStartDateDiscountHost"] = jdates[0]
 	// pbody["dh.StringEndDateDiscountHost"] = jdates[len(jdates)-1]
 	// pbody["dh.PercentDateDiscountHost"] = fmt.Sprintf("%v", amount)
 
-	for i, date := range jdates {
+	// for i, date := range jdates {
+	// 	pbody[fmt.Sprintf("dhh[%v].Active", i)] = active
+	// 	pbody[fmt.Sprintf("dhh[%v].StringStartDate", i)] = date
+	// 	pbody[fmt.Sprintf("dhh[%v].StringEndDate", i)] = date
+	// }
+
+	for i, sDate := range splittedDates {
+		jdates := pkg.DatesToJalali(sDate, false)
 		pbody[fmt.Sprintf("dhh[%v].Active", i)] = active
-		pbody[fmt.Sprintf("dhh[%v].StringStartDate", i)] = date
-		pbody[fmt.Sprintf("dhh[%v].StringEndDate", i)] = date
+		pbody[fmt.Sprintf("dhh[%v].StringStartDate", i)] = jdates[0]
+		pbody[fmt.Sprintf("dhh[%v].StringEndDate", i)] = jdates[len(jdates)-1]
 	}
 
 	mbody, err := json.Marshal(pbody)
