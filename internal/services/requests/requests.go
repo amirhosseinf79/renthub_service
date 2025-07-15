@@ -27,7 +27,7 @@ type fetchS struct {
 func New() interfaces.FetchService {
 	return &fetchS{
 		client: &http.Client{
-			Timeout: 10 * time.Second,
+			Timeout: 5 * time.Second,
 		},
 	}
 }
@@ -90,13 +90,16 @@ func (f *fetchS) Ok() (bool, error) {
 	ok := 200 <= f.httpResp.StatusCode && f.httpResp.StatusCode < 300
 	var result error
 	if !ok {
-		if f.httpResp.StatusCode == 401 {
+		switch f.httpResp.StatusCode {
+		case 401:
 			result = dto.ErrorUnauthorized
-		} else if f.httpResp.StatusCode == 403 {
+		case 403:
 			result = dto.ErrorPermission
-		} else if f.httpResp.StatusCode == 404 {
+		case 404:
 			result = dto.ErrRoomNotFound
-		} else {
+		case 503:
+			result = dto.ErrTimeOut
+		default:
 			result = dto.ErrInvalidRequest
 		}
 	}

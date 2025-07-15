@@ -1,6 +1,9 @@
 package manager_v2
 
 import (
+	"errors"
+	"time"
+
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	request_v2 "github.com/amirhosseinf79/renthub_service/internal/dto/request/v2"
@@ -25,13 +28,24 @@ func (s *sm) asyncCalendar(service request_v2.SiteEntry, action string, chResult
 		return
 	}
 
-	switch action {
-	case "block":
-		log, err = selectedService.CloseCalendar(fields)
-	case "unblock":
-		log, err = selectedService.OpenCalendar(fields)
-	default:
-		err = dto.ErrInvalidRequest
+	savedTime := time.Now().Unix()
+	currentTime := savedTime
+	for currentTime-savedTime < s.timeLimit {
+		currentTime = time.Now().Unix()
+		switch action {
+		case "block":
+			log, err = selectedService.CloseCalendar(fields)
+		case "unblock":
+			log, err = selectedService.OpenCalendar(fields)
+		default:
+			err = dto.ErrInvalidRequest
+		}
+		if err != nil {
+			if errors.Is(err, dto.ErrTimeOut) {
+				continue
+			}
+		}
+		break
 	}
 	s.recordResult(&serviceResult, service.Code, log, err)
 	chResult <- serviceResult

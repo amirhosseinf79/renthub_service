@@ -13,6 +13,7 @@ type sm struct {
 	logger         interfaces.LoggerInterface
 	apiServices    map[string]interfaces.ApiService
 	requestHeader  request_v2.ReqHeaderEntry
+	timeLimit      int64
 	userID         uint
 	services       []request_v2.SiteEntry
 	dates          []string
@@ -27,6 +28,7 @@ func New(
 		apiAuthService: apiAuthService,
 		apiServices:    apiServices,
 		logger:         logger,
+		timeLimit:      10,
 	}
 }
 
@@ -41,6 +43,7 @@ func (s *sm) SetConfigs(
 		apiAuthService: s.apiAuthService,
 		apiServices:    s.apiServices,
 		logger:         s.logger,
+		timeLimit:      s.timeLimit,
 		requestHeader:  header,
 		services:       services,
 		userID:         userID,

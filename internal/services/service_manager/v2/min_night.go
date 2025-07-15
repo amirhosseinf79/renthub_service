@@ -1,6 +1,9 @@
 package manager_v2
 
 import (
+	"errors"
+	"time"
+
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	request_v2 "github.com/amirhosseinf79/renthub_service/internal/dto/request/v2"
@@ -26,11 +29,22 @@ func (s *sm) asyncMinNight(service request_v2.SiteEntry, limitDays int, chResult
 		return
 	}
 
-	switch limitDays {
-	case 0:
-		log, err = selectedService.UnsetMiniNight(fields)
-	default:
-		log, err = selectedService.SetMinNight(fields)
+	savedTime := time.Now().Unix()
+	currentTime := savedTime
+	for currentTime-savedTime < s.timeLimit {
+		currentTime = time.Now().Unix()
+		switch limitDays {
+		case 0:
+			log, err = selectedService.UnsetMiniNight(fields)
+		default:
+			log, err = selectedService.SetMinNight(fields)
+		}
+		if err != nil {
+			if errors.Is(err, dto.ErrTimeOut) {
+				continue
+			}
+		}
+		break
 	}
 	s.recordResult(&serviceResult, service.Code, log, err)
 	chResult <- serviceResult

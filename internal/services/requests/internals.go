@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"regexp"
+	"syscall"
 
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	"github.com/google/go-querystring/query"
@@ -120,8 +121,10 @@ func (f *fetchS) commitRequest() error {
 	resp, err := f.client.Do(f.httpReq)
 	if err != nil {
 		nErr, ok := err.(net.Error)
+		f.logger.ResponseBody = err.Error()
 		if errors.Is(err, context.DeadlineExceeded) || (ok && nErr.Timeout()) {
-			f.logger.ResponseBody = err.Error()
+			return dto.ErrTimeOut
+		} else if errors.Is(err, syscall.ECONNRESET) {
 			return dto.ErrTimeOut
 		}
 		return err

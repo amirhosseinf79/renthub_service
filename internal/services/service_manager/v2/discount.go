@@ -1,6 +1,9 @@
 package manager_v2
 
 import (
+	"errors"
+	"time"
+
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	request_v2 "github.com/amirhosseinf79/renthub_service/internal/dto/request/v2"
@@ -26,11 +29,22 @@ func (s *sm) asyncDiscount(service request_v2.SiteEntry, discountPercent int, ch
 		return
 	}
 
-	switch discountPercent {
-	case 0:
-		log, err = selectedService.RemoveDiscount(fields)
-	default:
-		log, err = selectedService.AddDiscount(fields)
+	savedTime := time.Now().Unix()
+	currentTime := savedTime
+	for currentTime-savedTime < s.timeLimit {
+		currentTime = time.Now().Unix()
+		switch discountPercent {
+		case 0:
+			log, err = selectedService.RemoveDiscount(fields)
+		default:
+			log, err = selectedService.AddDiscount(fields)
+		}
+		if err != nil {
+			if errors.Is(err, dto.ErrTimeOut) {
+				continue
+			}
+		}
+		break
 	}
 	s.recordResult(&serviceResult, service.Code, log, err)
 	chResult <- serviceResult
