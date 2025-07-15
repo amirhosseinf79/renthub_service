@@ -198,3 +198,7 @@ func (h *handlerSt) TokenLogin(ctx fiber.Ctx) error {
 		Message: "ok",
 	})
 }
+
+func (h *handlerSt) SignOutClient(ctx fiber.Ctx) error {
+	return nil
+}
