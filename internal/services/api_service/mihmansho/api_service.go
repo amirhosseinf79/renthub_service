@@ -230,6 +230,7 @@ func (h *service) generateDiscountBody(roomID string, dates []string, amount int
 		pbody[fmt.Sprintf("dhh[%v].Active", i)] = active
 		pbody[fmt.Sprintf("dhh[%v].StringStartDate", i)] = jdates[0]
 		pbody[fmt.Sprintf("dhh[%v].StringEndDate", i)] = jdates[len(jdates)-1]
+		pbody[fmt.Sprintf("dhh[%v].Percent", i)] = fmt.Sprintf("%v", amount)
 	}
 
 	mbody, err := json.Marshal(pbody)
