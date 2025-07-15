@@ -28,7 +28,7 @@ func New(
 		apiAuthService: apiAuthService,
 		apiServices:    apiServices,
 		logger:         logger,
-		timeLimit:      10,
+		timeLimit:      15,
 	}
 }
 
