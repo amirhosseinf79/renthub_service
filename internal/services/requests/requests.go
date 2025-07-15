@@ -27,7 +27,7 @@ type fetchS struct {
 func New() interfaces.FetchService {
 	return &fetchS{
 		client: &http.Client{
-			Timeout: 5 * time.Second,
+			Timeout: 10 * time.Second,
 		},
 	}
 }

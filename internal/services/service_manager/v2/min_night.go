@@ -39,6 +39,7 @@ func (s *sm) asyncMinNight(service request_v2.SiteEntry, limitDays int, chResult
 		default:
 			log, err = selectedService.SetMinNight(fields)
 		}
+		s.recordResult(&serviceResult, service.Code, log, err)
 		if err != nil {
 			if errors.Is(err, dto.ErrTimeOut) {
 				continue
@@ -46,7 +47,6 @@ func (s *sm) asyncMinNight(service request_v2.SiteEntry, limitDays int, chResult
 		}
 		break
 	}
-	s.recordResult(&serviceResult, service.Code, log, err)
 	chResult <- serviceResult
 }
 

@@ -40,6 +40,7 @@ func (s *sm) asyncCalendar(service request_v2.SiteEntry, action string, chResult
 		default:
 			err = dto.ErrInvalidRequest
 		}
+		s.recordResult(&serviceResult, service.Code, log, err)
 		if err != nil {
 			if errors.Is(err, dto.ErrTimeOut) {
 				continue
@@ -47,7 +48,6 @@ func (s *sm) asyncCalendar(service request_v2.SiteEntry, action string, chResult
 		}
 		break
 	}
-	s.recordResult(&serviceResult, service.Code, log, err)
 	chResult <- serviceResult
 }
 

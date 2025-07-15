@@ -39,6 +39,7 @@ func (s *sm) asyncDiscount(service request_v2.SiteEntry, discountPercent int, ch
 		default:
 			log, err = selectedService.AddDiscount(fields)
 		}
+		s.recordResult(&serviceResult, service.Code, log, err)
 		if err != nil {
 			if errors.Is(err, dto.ErrTimeOut) {
 				continue
@@ -46,7 +47,6 @@ func (s *sm) asyncDiscount(service request_v2.SiteEntry, discountPercent int, ch
 		}
 		break
 	}
-	s.recordResult(&serviceResult, service.Code, log, err)
 	chResult <- serviceResult
 }
 

@@ -34,6 +34,7 @@ func (s *sm) asyncPrice(service request_v2.SiteEntry, chResult chan request_v2.S
 	for currentTime-savedTime < s.timeLimit {
 		currentTime = time.Now().Unix()
 		log, err = selectedService.EditPricePerDays(fields)
+		s.recordResult(&serviceResult, service.Code, log, err)
 		if err != nil {
 			if errors.Is(err, dto.ErrTimeOut) {
 				continue
@@ -41,7 +42,6 @@ func (s *sm) asyncPrice(service request_v2.SiteEntry, chResult chan request_v2.S
 		}
 		break
 	}
-	s.recordResult(&serviceResult, service.Code, log, err)
 	chResult <- serviceResult
 }
 
