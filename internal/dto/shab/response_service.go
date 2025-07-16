@@ -33,6 +33,7 @@ func (r *AuthOTPResponse) GetToken() *models.ApiAuth {
 
 func (r *ErrResponse) GetResult() (bool, string) {
 	isOk := r.Meta.Status < 300
+	fmt.Println("msg:", r.Meta.Messages)
 	if msgs, ok := r.Meta.Messages.(map[string][]string); ok {
 		for _, value := range msgs {
 			if len(value) > 0 {

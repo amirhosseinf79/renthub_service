@@ -11,7 +11,7 @@ import (
 func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.EndP, fields dto.UpdateFields) (err error) {
 	model, err := h.apiAuthService.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = dto.ErrorApiTokenExpired
 		}
 		log.FinalResult = err.Error()
