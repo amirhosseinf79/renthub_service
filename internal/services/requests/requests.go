@@ -97,6 +97,8 @@ func (f *fetchS) Ok() (bool, error) {
 			result = dto.ErrorPermission
 		case 404:
 			result = dto.ErrRoomNotFound
+		case 500:
+			result = dto.ErrTimeOut
 		case 503:
 			result = dto.ErrTimeOut
 		default:
