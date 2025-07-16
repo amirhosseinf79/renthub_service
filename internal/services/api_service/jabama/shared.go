@@ -12,7 +12,7 @@ func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.End
 	model, err := h.apiAuthService.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = dto.ErrorUnauthorized
+			err = dto.ErrorApiTokenExpired
 		}
 		log.FinalResult = err.Error()
 		return err
@@ -50,7 +50,7 @@ func (h *service) handleGet(log *models.Log, body any, endpoint dto.EndP, fields
 	model, err := h.apiAuthService.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			err = dto.ErrorUnauthorized
+			err = dto.ErrorApiTokenExpired
 		}
 		log.FinalResult = err.Error()
 		return err

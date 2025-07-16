@@ -92,7 +92,7 @@ func (f *fetchS) Ok() (bool, error) {
 	if !ok {
 		switch f.httpResp.StatusCode {
 		case 401:
-			result = dto.ErrorUnauthorized
+			result = dto.ErrorApiTokenExpired
 		case 403:
 			result = dto.ErrorPermission
 		case 404:

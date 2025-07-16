@@ -16,7 +16,7 @@ func (h *service) AutoLogin(fields dto.RequiredFields) (log *models.Log, err err
 		return log, err
 	}
 	if model.RefreshToken == "" {
-		err = dto.ErrorUnauthorized
+		err = dto.ErrorApiTokenExpired
 		log.FinalResult = err.Error()
 		return log, err
 	}
