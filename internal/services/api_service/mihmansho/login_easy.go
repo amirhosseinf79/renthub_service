@@ -1,16 +1,21 @@
 package mihmansho
 
 import (
+	"errors"
+
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
+	"gorm.io/gorm"
 )
 
 func (h *service) AutoLogin(fields dto.RequiredFields) (log *models.Log, err error) {
 	log = h.initLog(fields.UserID, fields.ClientID)
 	model, err := h.apiAuthService.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
-		log.FinalResult = err.Error()
-		return
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = dto.ErrorApiTokenExpired
+		}
+		return log, err
 	}
 	// newSessionID, err := h.getSession(model.AccessToken, log)
 	newSessionID, err := h.chromium.GetMihmanshoSessionID(model.AccessToken, log)
