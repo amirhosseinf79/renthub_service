@@ -65,5 +65,8 @@ func (s *sm) recordResult(serviceResult *request_v2.ServiceStats, objId string, 
 	if err != nil {
 		serviceResult.Status = "failed"
 		serviceResult.ErrorMessage = err.Error()
+	} else {
+		serviceResult.Status = "success"
+		serviceResult.ErrorMessage = ""
 	}
 }
