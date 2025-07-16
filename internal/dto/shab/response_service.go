@@ -34,16 +34,23 @@ func (r *AuthOTPResponse) GetToken() *models.ApiAuth {
 func (r *ErrResponse) GetResult() (bool, string) {
 	isOk := r.Meta.Status < 300
 	fmt.Println("msg:", r.Meta.Messages)
-	if msgs, ok := r.Meta.Messages.(map[string][]string); ok {
-		for _, value := range msgs {
-			if len(value) > 0 {
-				return false, value[0]
+	switch msgs := r.Meta.Messages.(type) {
+	case map[string]any:
+		for _, v := range msgs {
+			if arr, ok := v.([]interface{}); ok && len(arr) > 0 {
+				if msg, ok := arr[0].(string); ok {
+					return false, msg
+				}
 			}
 		}
-	} else if msgs, ok := r.Meta.Messages.([]string); ok {
-		for _, value := range msgs {
-			return false, value
+	case []any: // اگر پیام‌ها به صورت لیست ساده باشه
+		for _, v := range msgs {
+			if msg, ok := v.(string); ok {
+				return false, msg
+			}
 		}
+	case string:
+		return false, msgs
 	}
 	return isOk, fmt.Sprintf("Error %v", r.Meta.Status)
 }
