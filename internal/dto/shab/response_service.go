@@ -33,11 +33,10 @@ func (r *AuthOTPResponse) GetToken() *models.ApiAuth {
 
 func (r *ErrResponse) GetResult() (bool, string) {
 	isOk := r.Meta.Status < 300
-	fmt.Println("msg:", r.Meta.Messages)
 	switch msgs := r.Meta.Messages.(type) {
 	case map[string]any:
 		for _, v := range msgs {
-			if arr, ok := v.([]interface{}); ok && len(arr) > 0 {
+			if arr, ok := v.([]any); ok && len(arr) > 0 {
 				if msg, ok := arr[0].(string); ok {
 					return false, msg
 				}

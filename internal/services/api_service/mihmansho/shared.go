@@ -2,6 +2,7 @@ package mihmansho
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
@@ -11,6 +12,7 @@ import (
 func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.EndP, fields dto.UpdateFields) (err error) {
 	model, err := h.apiAuthService.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
+		fmt.Println(err, errors.Is(err, gorm.ErrRecordNotFound))
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = dto.ErrorApiTokenExpired
 		}
