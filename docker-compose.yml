@@ -35,6 +35,7 @@ services:
     depends_on:
       - db
       - redis
+      - app
     environment:
       - PORT=8080
       - DB=host=db user=postgres password=postgres dbname=renthub port=5432 sslmode=disable TimeZone=Asia/Tehran
@@ -48,6 +49,8 @@ services:
     depends_on:
       - db
       - redis
+      - app
+      - broker
     environment:
       - PORT=8080
       - DB=host=db user=postgres password=postgres dbname=renthub port=5432 sslmode=disable TimeZone=Asia/Tehran
