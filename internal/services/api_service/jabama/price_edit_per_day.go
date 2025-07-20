@@ -7,7 +7,6 @@ import (
 
 func (h *service) EditPricePerDays(fields dto.UpdateFields) (log *models.Log, err error) {
 	log = h.initLog(fields.UserID, fields.ClientID, dto.SetPrice)
-	log.Action = dto.SetPrice
 	endpoint := h.getEndpoints().EditPricePerDay
 	body := h.generatePriceBody(&fields)
 	err = h.handleUpdateResult(log, body, endpoint, fields)
