@@ -12,5 +12,6 @@ var UnsetMinNight = "unsetMinNight"
 var SetMinNight = "setMinNight"
 var SetPrice = "setPrice"
 
+var GetCalendar = "getCalendar"
 var GetRoomDetails = "getRoomDetails"
 var GetRoomList = "getRoomList"
