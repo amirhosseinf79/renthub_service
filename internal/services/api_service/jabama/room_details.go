@@ -6,7 +6,7 @@ import (
 )
 
 func (h *service) GetRoomDetails(fields dto.GetDetail, result any) (log *models.Log, err error) {
-	log = h.initLog(fields.UserID, fields.ClientID)
+	log = h.initLog(fields.UserID, fields.ClientID, dto.GetRoomDetails)
 	endpoint := h.getEndpoints().GETRoomDetails
 	err = h.handleGet(log, nil, endpoint, fields, result)
 	if err != nil {

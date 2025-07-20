@@ -9,7 +9,7 @@ import (
 )
 
 func (h *service) AutoLogin(fields dto.RequiredFields) (log *models.Log, err error) {
-	log = h.initLog(fields.UserID, fields.ClientID)
+	log = h.initLog(fields.UserID, fields.ClientID, dto.AutoLogin)
 	model, err := h.apiAuthService.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

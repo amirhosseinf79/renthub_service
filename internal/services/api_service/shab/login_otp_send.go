@@ -8,7 +8,7 @@ import (
 )
 
 func (h *service) SendOtp(fields dto.RequiredFields, phoneNumber string) (log *models.Log, err error) {
-	log = h.initLog(fields.UserID, fields.ClientID)
+	log = h.initLog(fields.UserID, fields.ClientID, dto.SendOTP)
 	endpoint := h.getEndpoints().LoginFirstStep
 	url, err := h.getFullURL(endpoint)
 	if err != nil {

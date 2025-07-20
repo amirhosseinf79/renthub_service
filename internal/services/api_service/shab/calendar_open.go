@@ -6,7 +6,7 @@ import (
 )
 
 func (h *service) OpenCalendar(fields dto.UpdateFields) (log *models.Log, err error) {
-	log = h.initLog(fields.UserID, fields.ClientID)
+	log = h.initLog(fields.UserID, fields.ClientID, dto.OpenCalendar)
 	endpoint := h.getEndpoints().OpenCalendar
 	body := h.generateCalendarBody(true, fields.Dates)
 	err = h.handleUpdateResult(log, body, endpoint, fields)

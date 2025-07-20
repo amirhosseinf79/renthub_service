@@ -6,7 +6,7 @@ import (
 )
 
 func (h *service) SetMinNight(fields dto.UpdateFields) (log *models.Log, err error) {
-	log = h.initLog(fields.UserID, fields.ClientID)
+	log = h.initLog(fields.UserID, fields.ClientID, dto.SetMinNight)
 	endpoint := h.getEndpoints().SetMinNight
 	bodies := h.generateSetMinNightBody(fields.Amount, fields.Dates)
 	for _, body := range bodies {

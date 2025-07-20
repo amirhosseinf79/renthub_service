@@ -7,7 +7,7 @@ import (
 
 func (h *service) AddDiscount(fields dto.UpdateFields) (log *models.Log, err error) {
 	endpoint := h.getEndpoints().AddDiscount
-	log = h.initLog(fields.UserID, fields.ClientID)
+	log = h.initLog(fields.UserID, fields.ClientID, dto.AddDiscount)
 	body := h.generateAddDiscountBody(fields.RoomID, fields.Amount, fields.Dates)
 	err = h.handleUpdateResult(log, body, endpoint, fields)
 	return log, err

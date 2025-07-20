@@ -6,7 +6,7 @@ import (
 )
 
 func (h *service) CheckLogin(fields dto.RequiredFields) (log *models.Log, err error) {
-	log = h.initLog(fields.UserID, fields.ClientID)
+	log = h.initLog(fields.UserID, fields.ClientID, dto.LoginCheck)
 	endpoint := h.getEndpoints().GetProfile
 	err = h.handleUpdateResult(log, nil, endpoint, dto.UpdateFields{RequiredFields: fields})
 	return log, err

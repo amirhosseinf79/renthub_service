@@ -8,7 +8,7 @@ import (
 )
 
 func (h *service) VerifyOtp(fields dto.RequiredFields, creds dto.OTPCreds) (log *models.Log, err error) {
-	log = h.initLog(fields.UserID, fields.ClientID)
+	log = h.initLog(fields.UserID, fields.ClientID, dto.VerifyOTP)
 	endpoint := h.getEndpoints().LoginSecondStep
 	url, err := h.getFullURL(endpoint)
 	if err != nil {

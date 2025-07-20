@@ -65,11 +65,12 @@ func New(
 	}
 }
 
-func (h *service) initLog(userID uint, clientID string) *models.Log {
+func (h *service) initLog(userID uint, clientID string, action string) *models.Log {
 	return &models.Log{
 		UserID:   userID,
 		ClientID: clientID,
 		Service:  h.service,
+		Action:   action,
 	}
 }
 

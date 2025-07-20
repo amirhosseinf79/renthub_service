@@ -6,15 +6,14 @@ CREATE USER rooot WITH PASSWORD 'Amir2001';
 ALTER ROLE rooot SET client_encoding TO 'utf8';
 ALTER ROLE rooot SET default_transaction_isolation TO 'read committed';
 ALTER ROLE rooot SET timezone TO 'UTC';
-GRANT ALL PRIVILEGES ON DATABASE smart TO rooot;
+GRANT ALL PRIVILEGES ON DATABASE renthub TO rooot;
 GRANT USAGE ON SCHEMA public TO rooot;
 GRANT CREATE ON SCHEMA public TO rooot;
 ALTER SCHEMA public OWNER TO rooot;
 \q
 
 select logs.created_at,users.email,logs.service,logs.request_url,logs.final_result from logs join users on logs.user_id = users.id order by logs.id desc;
-select id,created_at,service,client_id,is_succeed,status_code,final_result from logs order by id desc;
-select created_at,service,request_url,status_code,final_result from logs order by id desc;
+select id,created_at,client_id,service,action,status_code,final_result from logs order by id desc;
 
 
 [Unit]

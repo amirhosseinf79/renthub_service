@@ -5,6 +5,7 @@ import "gorm.io/gorm"
 type Log struct {
 	gorm.Model
 	Service      string
+	Action       string
 	UserID       uint
 	ClientID     string
 	IsSucceed    bool
