@@ -131,11 +131,10 @@ func (h *service) generateErrResponse() interfaces.ApiResponseManager {
 
 // Body
 func (h *service) generateCalendarDetailsBody(roomId string, dates []string) mihmansho_dto.CalendarQuery {
-	if len(dates) == 0 {
+	jdates := pkg.DatesToJalali(dates, false)
+	if len(jdates) == 0 {
 		return mihmansho_dto.CalendarQuery{ProductId: roomId}
 	}
-
-	jdates := pkg.DatesToJalali(dates, false)
 	return mihmansho_dto.CalendarQuery{ProductId: roomId, Date: jdates[0]}
 }
 

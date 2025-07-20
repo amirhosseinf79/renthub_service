@@ -7,6 +7,7 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	mihmansho_dto "github.com/amirhosseinf79/renthub_service/internal/dto/mihmansho"
+	"github.com/amirhosseinf79/renthub_service/pkg"
 )
 
 func (h *service) EditPricePerDays(fields dto.UpdateFields) (log *models.Log, err error) {
@@ -17,13 +18,14 @@ func (h *service) EditPricePerDays(fields dto.UpdateFields) (log *models.Log, er
 		return
 	}
 
-	if len(fields.Dates) == 0 {
+	jdates := pkg.DatesToJalali(fields.Dates, false)
+	if len(jdates) == 0 {
 		err = dto.ErrInvalidRequest
 		log.FinalResult = err.Error()
 		return
 	}
 
-	firstDate := fields.Dates[0]
+	firstDate := jdates[0]
 	guestPrice := -1
 	for _, data := range calendarResponse.CalendarData {
 		dateSection := strings.Split(firstDate, "/")
