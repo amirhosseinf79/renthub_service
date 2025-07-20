@@ -13,6 +13,6 @@ func (h *service) SetMinNight(fields dto.UpdateFields) (log *models.Log, err err
 	log.Action = dto.SetMinNight
 	endpoint := h.getEndpoints().SetMinNight
 	body := h.generateMinNightBody(fields.RoomID, fields.Dates, fields.Amount)
-	err = h.handleUpdateResult(log, body, endpoint, fields)
+	err = h.handleUpdateResult(log, body, endpoint, fields, 0)
 	return log, err
 }

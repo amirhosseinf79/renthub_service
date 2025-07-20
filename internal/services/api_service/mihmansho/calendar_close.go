@@ -9,6 +9,6 @@ func (h *service) CloseCalendar(fields dto.UpdateFields) (log *models.Log, err e
 	endpoint := h.getEndpoints().CloseCalendar
 	log = h.initLog(fields.UserID, fields.ClientID, dto.CloseCalendar)
 	body := h.generateCalendarBody(fields.RoomID, false, fields.Dates)
-	err = h.handleUpdateResult(log, body, endpoint, fields)
+	err = h.handleUpdateResult(log, body, endpoint, fields, 0)
 	return log, err
 }

@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.EndP, fields dto.UpdateFields, extaUrlFields ...any) (err error) {
+func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.EndP, fields dto.UpdateFields, addedGuests int) (err error) {
 	model, err := h.apiAuthService.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -17,7 +17,7 @@ func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.End
 		log.FinalResult = err.Error()
 		return err
 	}
-	url, err := h.getFullURL(endpoint, fields.RoomID, fields.Amount/1000, extaUrlFields)
+	url, err := h.getFullURL(endpoint, fields.RoomID, fields.Amount/1000, addedGuests)
 	if err != nil {
 		log.FinalResult = err.Error()
 		return err
