@@ -45,7 +45,7 @@ func New(
 				RemoveDiscount:     dto.EndP{Address: "/Account/Home/HostDiscountSave", Method: "POST", ContentType: "multipart"},
 				SetMinNight:        dto.EndP{Address: "/Account/Home/AddSpecificsMinDay", Method: "POST", ContentType: "multipart"},
 				UnsetMinNight:      dto.EndP{Address: "/Account/Home/AddSpecificsMinDay", Method: "POST", ContentType: "multipart"},
-				GetCalendarDetails: dto.EndP{Address: "/myapi/v1/getcalendar?productid=%v&date=%v", Method: "POST", ContentType: "query"},
+				GetCalendarDetails: dto.EndP{Address: "/myapi/v1/getcalendar", Method: "POST", ContentType: "query"},
 			},
 			Headers: map[string]string{
 				"user-agent":      "okhttp/3.12.1",
@@ -130,6 +130,15 @@ func (h *service) generateErrResponse() interfaces.ApiResponseManager {
 }
 
 // Body
+func (h *service) generateCalendarDetailsBody(roomId string, dates []string) mihmansho_dto.CalendarQuery {
+	if len(dates) == 0 {
+		return mihmansho_dto.CalendarQuery{ProductId: roomId}
+	}
+
+	jdates := pkg.DatesToJalali(dates, false)
+	return mihmansho_dto.CalendarQuery{ProductId: roomId, Date: jdates[0]}
+}
+
 func (h *service) generateCalendarBody(roomID string, setOpen bool, dates []string) []byte {
 	fDate := mihmansho_dto.Calendar{
 		ProductId: roomID,

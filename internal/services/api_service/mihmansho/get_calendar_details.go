@@ -5,7 +5,6 @@ import (
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
-	"github.com/amirhosseinf79/renthub_service/pkg"
 	"gorm.io/gorm"
 )
 
@@ -19,15 +18,9 @@ func (h *service) GetCalendarDetails(fields dto.UpdateFields, response any) (log
 		log.FinalResult = err.Error()
 		return
 	}
-	if len(fields.Dates) == 0 {
-		err = dto.ErrInvalidRequest
-		return
-	}
 
 	endpoint := h.getEndpoints().GetCalendarDetails
-	dates := pkg.DatesToJalali(fields.Dates, false)
-
-	url, err := h.getFullURL(endpoint, fields.RoomID, dates[0])
+	url, err := h.getFullURL(endpoint)
 	if err != nil {
 		return
 	}
@@ -35,7 +28,8 @@ func (h *service) GetCalendarDetails(fields dto.UpdateFields, response any) (log
 	header := h.getHeader()
 	extraHeader := h.getExtraHeader(model)
 	request := h.request.New(endpoint.Method, url, header, extraHeader, log)
-	err = request.Start(nil, endpoint.ContentType)
+	body := h.generateCalendarDetailsBody(fields.RoomID, fields.Dates)
+	err = request.Start(body, endpoint.ContentType)
 
 	if err != nil {
 		return
