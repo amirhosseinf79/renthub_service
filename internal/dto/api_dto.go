@@ -31,19 +31,20 @@ type EndP struct {
 }
 
 type ApiEndpoints struct {
-	LoginFirstStep  EndP
-	LoginSecondStep EndP
-	LoginWithPass   EndP
-	GetProfile      EndP
-	OpenCalendar    EndP
-	CloseCalendar   EndP
-	EditPricePerDay EndP
-	AddDiscount     EndP
-	RemoveDiscount  EndP
-	SetMinNight     EndP
-	UnsetMinNight   EndP
-	GETRooms        EndP
-	GETRoomDetails  EndP
+	LoginFirstStep     EndP
+	LoginSecondStep    EndP
+	LoginWithPass      EndP
+	GetProfile         EndP
+	OpenCalendar       EndP
+	CloseCalendar      EndP
+	EditPricePerDay    EndP
+	AddDiscount        EndP
+	RemoveDiscount     EndP
+	SetMinNight        EndP
+	UnsetMinNight      EndP
+	GETRooms           EndP
+	GETRoomDetails     EndP
+	GetCalendarDetails EndP
 }
 
 type ApiSettings struct {
