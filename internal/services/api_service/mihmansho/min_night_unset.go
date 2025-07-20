@@ -10,6 +10,7 @@ func (h *service) UnsetMiniNight(fields dto.UpdateFields) (log *models.Log, err 
 	if err != nil {
 		return log, err
 	}
+	log.Action = dto.UnsetMinNight
 	endpoint := h.getEndpoints().UnsetMinNight
 	body := h.generateMinNightBody(fields.RoomID, fields.Dates, 1)
 	err = h.handleUpdateResult(log, body, endpoint, fields)

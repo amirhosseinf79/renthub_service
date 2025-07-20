@@ -25,6 +25,7 @@ func (h *service) EditPricePerDays(fields dto.UpdateFields) (log *models.Log, er
 		}
 	}
 
+	log.Action = dto.SetPrice
 	endpoint := h.getEndpoints().EditPricePerDay
 	body := h.generatePriceBody(fields.Amount, fields.Dates)
 	err = h.handleUpdateResult(log, body, endpoint, fields)
