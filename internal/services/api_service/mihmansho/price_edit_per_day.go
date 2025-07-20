@@ -10,8 +10,9 @@ import (
 
 func (h *service) EditPricePerDays(fields dto.UpdateFields) (log *models.Log, err error) {
 	calendarResponse := mihmansho_dto.CalendarDetailsResponse{}
-	log, err = h.GetCalendarDetails(fields, calendarResponse)
+	log, err = h.GetCalendarDetails(fields, &calendarResponse)
 	if err != nil {
+		log.FinalResult = err.Error()
 		return
 	}
 
@@ -25,6 +26,7 @@ func (h *service) EditPricePerDays(fields dto.UpdateFields) (log *models.Log, er
 
 	if guestPrice < 0 {
 		err = dto.ErrInvalidRequest
+		log.FinalResult = err.Error()
 		return
 	}
 
