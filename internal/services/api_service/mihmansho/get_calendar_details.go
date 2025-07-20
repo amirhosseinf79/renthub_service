@@ -3,18 +3,20 @@ package mihmansho
 import (
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
+	"github.com/amirhosseinf79/renthub_service/pkg"
 )
 
 func (h *service) GetCalendarDetails(fields dto.UpdateFields, response any) (log *models.Log, err error) {
-	log = h.initLog(fields.UserID, fields.ClientID, dto.SetPrice)
-	endpoint := h.getEndpoints().GetCalendarDetails
-
 	if len(fields.Dates) == 0 {
 		err = dto.ErrInvalidRequest
 		return
 	}
 
-	url, err := h.getFullURL(endpoint, fields.RoomID, fields.Dates[0])
+	log = h.initLog(fields.UserID, fields.ClientID, dto.SetPrice)
+	endpoint := h.getEndpoints().GetCalendarDetails
+	dates := pkg.DatesToJalali(fields.Dates, false)
+
+	url, err := h.getFullURL(endpoint, fields.RoomID, dates[0])
 	if err != nil {
 		return
 	}
