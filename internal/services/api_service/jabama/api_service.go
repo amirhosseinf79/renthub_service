@@ -133,10 +133,21 @@ func (h *service) generateVerifyOTPBody(phoneNumber string, code string) jabama_
 	}
 }
 
-func (h *service) generatePriceBody(amount int, dates []string) jabama_dto.EditPricePerDay {
+func (h *service) generatePriceBody(fields *dto.UpdateFields) jabama_dto.EditPricePerDay {
+	result := jabama_dto.RoomListResponse{}
+	getFields := dto.GetDetail{
+		RequiredFields: fields.RequiredFields,
+	}
+	h.GetRoomList(getFields, &result)
+	for _, room := range result.Result.Items {
+		if fields.RoomID == fmt.Sprintf("%v", room.Code) {
+			fields.RoomID = room.ID
+			break
+		}
+	}
 	return jabama_dto.EditPricePerDay{
 		Type:  nil,
-		Days:  dates,
-		Value: amount * 10,
+		Days:  fields.Dates,
+		Value: fields.Amount * 10,
 	}
 }
