@@ -2,17 +2,13 @@ package requests
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
-	"net"
 	"net/http"
 	"net/http/httputil"
 	"regexp"
-	"syscall"
 
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	"github.com/google/go-querystring/query"
@@ -120,14 +116,18 @@ func (f *fetchS) dumpRequest() {
 func (f *fetchS) commitRequest() error {
 	resp, err := f.client.Do(f.httpReq)
 	if err != nil {
-		nErr, ok := err.(net.Error)
 		f.logger.ResponseBody = err.Error()
-		if errors.Is(err, context.DeadlineExceeded) || (ok && nErr.Timeout()) {
-			return dto.ErrTimeOut
-		} else if errors.Is(err, syscall.ECONNRESET) {
-			return dto.ErrTimeOut
-		}
-		return err
+		return dto.ErrTimeOut
+		// var dnsErr *net.DNSError
+		// nErr, ok := err.(net.Error)
+		// if errors.Is(err, context.DeadlineExceeded) || (ok && nErr.Timeout()) {
+		// 	return dto.ErrTimeOut
+		// } else if errors.Is(err, syscall.ECONNRESET) {
+		// 	return dto.ErrTimeOut
+		// } else if errors.As(err, &dnsErr) {
+		// 	return dto.ErrTimeOut
+		// }
+		// return err
 	}
 	defer resp.Body.Close()
 
