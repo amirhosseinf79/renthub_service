@@ -24,7 +24,7 @@ func New(apiAuthService interfaces.ApiAuthInterface, request interfaces.FetchSer
 		apiAuthService: apiAuthService,
 		request:        request,
 		apiSettings: dto.ApiSettings{
-			ApiURL: "https://api.shab.travel/api/fa/sandbox/v_1_4",
+			ApiURL: "https://api.shab.ir/api/fa/sandbox/v_1_4",
 			Endpoints: dto.ApiEndpoints{
 				LoginFirstStep:  dto.EndP{Address: "/auth/login-otp", Method: "POST", ContentType: "body"},
 				LoginSecondStep: dto.EndP{Address: "/auth/verify-otp", Method: "POST", ContentType: "body"},
