@@ -84,8 +84,8 @@ func (h *service) handleGet(log *models.Log, body any, endpoint dto.EndP, fields
 
 func (h *service) updateRoomID(fields *dto.UpdateFields) (log *models.Log, err error) {
 	counter := 0
-	changed := false
-	for !changed && counter < 2 {
+	found := false
+	for !found && counter < 2 {
 		counter++
 		result := jabama_dto.RoomListResponse{}
 		getFields := dto.GetDetail{
@@ -95,10 +95,15 @@ func (h *service) updateRoomID(fields *dto.UpdateFields) (log *models.Log, err e
 		for _, room := range result.Result.Items {
 			if fields.RoomID == fmt.Sprintf("%v", room.Code) {
 				fields.RoomID = room.ID
-				changed = true
+				found = true
 				break
 			}
 		}
+	}
+	if !found {
+		err = dto.ErrRoomNotFound
+		log.FinalResult = err.Error()
+		return
 	}
 	return
 }
