@@ -9,12 +9,6 @@ func (h *service) EditPricePerDays(fields dto.UpdateFields) (log *models.Log, er
 	// log = h.initLog(fields.UserID, fields.ClientID, dto.SetPrice)
 	guestPrice, log, err := h.getAddGuestPrice(fields)
 	if err != nil {
-		log.FinalResult = err.Error()
-		return
-	}
-	if guestPrice < 0 {
-		err = dto.ErrInvalidDate
-		log.FinalResult = err.Error()
 		return
 	}
 	log.Action = dto.SetPrice

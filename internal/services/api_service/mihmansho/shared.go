@@ -72,5 +72,14 @@ func (h *service) getAddGuestPrice(fields dto.UpdateFields) (guestPrice int, log
 			}
 		}
 	}
+	if err != nil {
+		log.FinalResult = err.Error()
+		return
+	}
+	if guestPrice < 0 {
+		err = dto.ErrInvalidDate
+		log.FinalResult = err.Error()
+		return
+	}
 	return
 }
