@@ -117,7 +117,7 @@ func (h *service) getCurrentPrice(fields dto.UpdateFields) (price int, log *mode
 	}
 	price = response.Result.Price.CurrentPrice
 	if price == 0 {
-		err = dto.ErrInvalidRequest
+		err = dto.ErrInvalidDay
 		log.FinalResult = err.Error()
 	}
 	return
