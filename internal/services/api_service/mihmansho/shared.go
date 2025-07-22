@@ -2,9 +2,13 @@ package mihmansho
 
 import (
 	"errors"
+	"strconv"
+	"strings"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
+	mihmansho_dto "github.com/amirhosseinf79/renthub_service/internal/dto/mihmansho"
+	"github.com/amirhosseinf79/renthub_service/pkg"
 	"gorm.io/gorm"
 )
 
@@ -41,4 +45,32 @@ func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.End
 		log.IsSucceed = true
 	}
 	return err
+}
+
+func (h *service) getAddGuestPrice(fields dto.UpdateFields) (guestPrice int, log *models.Log, err error) {
+	guestPrice = -1
+	counter := 0
+	found := false
+	for !found && counter < 2 {
+		counter++
+		calendarResponse := mihmansho_dto.CalendarDetailsResponse{}
+		log, err = h.GetCalendarDetails(fields, &calendarResponse)
+		jdates := pkg.DatesToJalali(fields.Dates, false)
+		if len(jdates) == 0 {
+			return
+		}
+
+		firstDate := jdates[0]
+		for _, data := range calendarResponse.CalendarData {
+			dateSection := strings.Split(firstDate, "/")
+			day, _ := strconv.Atoi(dateSection[2])
+			if data.Day == day {
+				currPrice, _ := strconv.Atoi(data.AddedPrice)
+				guestPrice = currPrice
+				found = true
+				break
+			}
+		}
+	}
+	return
 }

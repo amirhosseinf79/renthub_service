@@ -2,9 +2,11 @@ package jabama
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
+	jabama_dto "github.com/amirhosseinf79/renthub_service/internal/dto/jabama"
 	"gorm.io/gorm"
 )
 
@@ -78,4 +80,25 @@ func (h *service) handleGet(log *models.Log, body any, endpoint dto.EndP, fields
 		return err2
 	}
 	return nil
+}
+
+func (h *service) updateRoomID(fields *dto.UpdateFields) (log *models.Log, err error) {
+	counter := 0
+	changed := false
+	for !changed && counter < 2 {
+		counter++
+		result := jabama_dto.RoomListResponse{}
+		getFields := dto.GetDetail{
+			RequiredFields: fields.RequiredFields,
+		}
+		log, err = h.GetRoomList(getFields, &result)
+		for _, room := range result.Result.Items {
+			if fields.RoomID == fmt.Sprintf("%v", room.Code) {
+				fields.RoomID = room.ID
+				changed = true
+				break
+			}
+		}
+	}
+	return
 }

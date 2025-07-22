@@ -115,21 +115,6 @@ func (h *service) generateErrResponse() interfaces.ApiResponseManager {
 	return &jabama_dto.Response{}
 }
 
-// Shared
-func (h *service) updateRoomID(fields *dto.UpdateFields) {
-	result := jabama_dto.RoomListResponse{}
-	getFields := dto.GetDetail{
-		RequiredFields: fields.RequiredFields,
-	}
-	h.GetRoomList(getFields, &result)
-	for _, room := range result.Result.Items {
-		if fields.RoomID == fmt.Sprintf("%v", room.Code) {
-			fields.RoomID = room.ID
-			break
-		}
-	}
-}
-
 // Body
 func (h *service) generateCalendarBody(dates []string) jabama_dto.OpenClosCalendar {
 	return jabama_dto.OpenClosCalendar{
@@ -151,7 +136,6 @@ func (h *service) generateVerifyOTPBody(phoneNumber string, code string) jabama_
 }
 
 func (h *service) generatePriceBody(fields *dto.UpdateFields) jabama_dto.EditPricePerDay {
-	h.updateRoomID(fields)
 	return jabama_dto.EditPricePerDay{
 		Type:  nil,
 		Days:  fields.Dates,
@@ -160,7 +144,6 @@ func (h *service) generatePriceBody(fields *dto.UpdateFields) jabama_dto.EditPri
 }
 
 func (h *service) generateDiscountBody(fields *dto.UpdateFields) jabama_dto.DiscountDTO {
-	h.updateRoomID(fields)
 	return jabama_dto.DiscountDTO{
 		Days:  fields.Dates,
 		Value: fields.Amount,

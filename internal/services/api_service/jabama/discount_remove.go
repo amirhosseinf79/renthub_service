@@ -6,7 +6,12 @@ import (
 )
 
 func (h *service) RemoveDiscount(fields dto.UpdateFields) (log *models.Log, err error) {
-	log = h.initLog(fields.UserID, fields.ClientID, dto.RemoveDiscount)
+	// log = h.initLog(fields.UserID, fields.ClientID, dto.RemoveDiscount)
+	log, err = h.updateRoomID(&fields)
+	if err != nil {
+		return
+	}
+	log.Action = dto.RemoveDiscount
 	endpoint := h.getEndpoints().RemoveDiscount
 	body := h.generateDiscountBody(&fields)
 	err = h.handleUpdateResult(log, body, endpoint, fields)

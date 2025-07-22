@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"strconv"
-	"strings"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
@@ -184,28 +182,6 @@ func (h *service) generateVerifyOTPBody(phoneNumber string, code string) mihmans
 	}
 }
 
-func (h *service) getAddGuestPrice(fields dto.UpdateFields) (guestPrice int) {
-	guestPrice = 0
-	calendarResponse := mihmansho_dto.CalendarDetailsResponse{}
-	h.GetCalendarDetails(fields, &calendarResponse)
-	jdates := pkg.DatesToJalali(fields.Dates, false)
-	if len(jdates) == 0 {
-		return
-	}
-
-	firstDate := jdates[0]
-	for _, data := range calendarResponse.CalendarData {
-		dateSection := strings.Split(firstDate, "/")
-		day, _ := strconv.Atoi(dateSection[2])
-		if data.Day == day {
-			currPrice, _ := strconv.Atoi(data.AddedPrice)
-			guestPrice = currPrice
-			break
-		}
-	}
-	return
-}
-
 func (h *service) generatePriceBody(dates []string) []byte {
 	pbody := mihmansho_dto.FormBody{}
 	jdates := pkg.DatesToJalali(dates, false)
@@ -220,7 +196,6 @@ func (h *service) generatePriceBody(dates []string) []byte {
 }
 
 func (h *service) generateMinNightBody(roomID string, dates []string, minDay int) []byte {
-
 	pbody := mihmansho_dto.FormBody{}
 	jdates := pkg.DatesToJalali(dates, false)
 	for i, date := range jdates {
