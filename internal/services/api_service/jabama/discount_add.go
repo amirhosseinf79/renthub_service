@@ -7,10 +7,10 @@ import (
 
 func (h *service) AddDiscount(fields dto.UpdateFields) (log *models.Log, err error) {
 	// log = h.initLog(fields.UserID, fields.ClientID, dto.AddDiscount)
-	log, err = h.updateRoomID(&fields)
-	if err != nil {
-		return
-	}
+	// log, err = h.updateRoomID(&fields)
+	// if err != nil {
+	// 	return
+	// }
 	endpoint := h.getEndpoints().AddDiscount
 	cPrice, log, err := h.getCurrentPrice(fields)
 	if err != nil {
