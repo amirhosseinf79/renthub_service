@@ -9,8 +9,5 @@ func (h *service) GetRoomList(fields dto.GetDetail, result any) (log *models.Log
 	log = h.initLog(fields.UserID, fields.ClientID, dto.GetRoomList)
 	endpoint := h.getEndpoints().GETRooms
 	err = h.handleGet(log, nil, endpoint, fields, result)
-	if err != nil {
-		return log, err
-	}
 	return
 }
