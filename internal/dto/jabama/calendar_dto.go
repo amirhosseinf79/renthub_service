@@ -9,3 +9,8 @@ type EditPricePerDay struct {
 	Days  []string `json:"days"`
 	Value int      `json:"value"`
 }
+
+type DiscountDTO struct {
+	Days  []string `json:"days"`
+	Value int      `json:"value"`
+}

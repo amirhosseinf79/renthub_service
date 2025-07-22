@@ -8,12 +8,6 @@ import (
 func (h *service) EditPricePerDays(fields dto.UpdateFields) (log *models.Log, err error) {
 	log = h.initLog(fields.UserID, fields.ClientID, dto.SetPrice)
 	guestPrice := h.getAddGuestPrice(fields)
-	if guestPrice < 0 {
-		err = dto.ErrInvalidRequest
-		log.FinalResult = err.Error()
-		return
-	}
-
 	endpoint := h.getEndpoints().EditPricePerDay
 	body := h.generatePriceBody(fields.Dates)
 	err = h.handleUpdateResult(log, body, endpoint, fields, guestPrice)

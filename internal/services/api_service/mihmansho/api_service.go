@@ -185,7 +185,7 @@ func (h *service) generateVerifyOTPBody(phoneNumber string, code string) mihmans
 }
 
 func (h *service) getAddGuestPrice(fields dto.UpdateFields) (guestPrice int) {
-	guestPrice = -1
+	guestPrice = 0
 	calendarResponse := mihmansho_dto.CalendarDetailsResponse{}
 	h.GetCalendarDetails(fields, &calendarResponse)
 	jdates := pkg.DatesToJalali(fields.Dates, false)

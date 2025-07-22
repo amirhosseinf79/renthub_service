@@ -33,6 +33,8 @@ func New(apiAuthService interfaces.ApiAuthInterface, request interfaces.FetchSer
 				OpenCalendar:    dto.EndP{Address: "/v1/accommodations/host/Price/%v/price/calendar/enable", Method: "PUT", ContentType: "body"},
 				CloseCalendar:   dto.EndP{Address: "/v1/accommodations/host/Price/%v/price/calendar/disable", Method: "PUT", ContentType: "body"},
 				EditPricePerDay: dto.EndP{Address: "/taraaz/v1/pricing/management/accommodation/%v", Method: "PUT", ContentType: "body"},
+				AddDiscount:     dto.EndP{Address: "", Method: "PUT", ContentType: "body"},
+				RemoveDiscount:  dto.EndP{Address: "", Method: "PUT", ContentType: "body"},
 				GETRooms:        dto.EndP{Address: "/v2/accommodation/host/accommodation", Method: "GET", ContentType: "query"},
 				// GETRoomDetails:  dto.EndP{Address: "/v2/accommodation/host/accommodation", Method: "GET", ContentType: "query"},
 			},
@@ -113,6 +115,21 @@ func (h *service) generateErrResponse() interfaces.ApiResponseManager {
 	return &jabama_dto.Response{}
 }
 
+// Shared
+func (h *service) updateRoomID(fields *dto.UpdateFields) {
+	result := jabama_dto.RoomListResponse{}
+	getFields := dto.GetDetail{
+		RequiredFields: fields.RequiredFields,
+	}
+	h.GetRoomList(getFields, &result)
+	for _, room := range result.Result.Items {
+		if fields.RoomID == fmt.Sprintf("%v", room.Code) {
+			fields.RoomID = room.ID
+			break
+		}
+	}
+}
+
 // Body
 func (h *service) generateCalendarBody(dates []string) jabama_dto.OpenClosCalendar {
 	return jabama_dto.OpenClosCalendar{
@@ -134,20 +151,18 @@ func (h *service) generateVerifyOTPBody(phoneNumber string, code string) jabama_
 }
 
 func (h *service) generatePriceBody(fields *dto.UpdateFields) jabama_dto.EditPricePerDay {
-	result := jabama_dto.RoomListResponse{}
-	getFields := dto.GetDetail{
-		RequiredFields: fields.RequiredFields,
-	}
-	h.GetRoomList(getFields, &result)
-	for _, room := range result.Result.Items {
-		if fields.RoomID == fmt.Sprintf("%v", room.Code) {
-			fields.RoomID = room.ID
-			break
-		}
-	}
+	h.updateRoomID(fields)
 	return jabama_dto.EditPricePerDay{
 		Type:  nil,
 		Days:  fields.Dates,
 		Value: fields.Amount * 10,
+	}
+}
+
+func (h *service) generateDiscountBody(fields *dto.UpdateFields) jabama_dto.DiscountDTO {
+	h.updateRoomID(fields)
+	return jabama_dto.DiscountDTO{
+		Days:  fields.Dates,
+		Value: fields.Amount,
 	}
 }
