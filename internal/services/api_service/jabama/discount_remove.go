@@ -11,12 +11,12 @@ func (h *service) RemoveDiscount(fields dto.UpdateFields) (log *models.Log, err 
 	if err != nil {
 		return
 	}
-	log.Action = dto.RemoveDiscount
 	endpoint := h.getEndpoints().RemoveDiscount
 	cPrice, log, err := h.getCurrentPrice(fields)
 	if err != nil {
 		return
 	}
+	log.Action = dto.RemoveDiscount
 	body := h.generateDiscountBody(&fields, cPrice)
 	err = h.handleUpdateResult(log, body, endpoint, fields)
 	return log, err

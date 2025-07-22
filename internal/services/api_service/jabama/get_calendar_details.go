@@ -9,7 +9,11 @@ import (
 )
 
 func (h *service) GetCalendarDetails(fields dto.UpdateFields, response any) (log *models.Log, err error) {
-	log = h.initLog(fields.UserID, fields.ClientID, dto.GetCalendar)
+	log, err = h.updateRoomID(&fields)
+	if err != nil {
+		return
+	}
+	log.Action = dto.GetCalendar
 	model, err := h.apiAuthService.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -20,7 +24,7 @@ func (h *service) GetCalendarDetails(fields dto.UpdateFields, response any) (log
 	}
 
 	endpoint := h.getEndpoints().GetCalendarDetails
-	url, err := h.getFullURL(endpoint)
+	url, err := h.getFullURL(endpoint, fields.RoomID)
 	if err != nil {
 		return
 	}
