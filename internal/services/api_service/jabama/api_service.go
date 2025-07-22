@@ -33,8 +33,8 @@ func New(apiAuthService interfaces.ApiAuthInterface, request interfaces.FetchSer
 				OpenCalendar:    dto.EndP{Address: "/v1/accommodations/host/Price/%v/price/calendar/enable", Method: "PUT", ContentType: "body"},
 				CloseCalendar:   dto.EndP{Address: "/v1/accommodations/host/Price/%v/price/calendar/disable", Method: "PUT", ContentType: "body"},
 				EditPricePerDay: dto.EndP{Address: "/taraaz/v1/pricing/management/accommodation/%v", Method: "PUT", ContentType: "body"},
-				AddDiscount:     dto.EndP{Address: "", Method: "PUT", ContentType: "body"},
-				RemoveDiscount:  dto.EndP{Address: "", Method: "PUT", ContentType: "body"},
+				AddDiscount:     dto.EndP{Address: "/taraaz/v1/accommodation/host/base-price/update/calendar/%v", Method: "PUT", ContentType: "body"},
+				RemoveDiscount:  dto.EndP{Address: "/taraaz/v1/accommodation/host/base-price/update/calendar/%v", Method: "PUT", ContentType: "body"},
 				GETRooms:        dto.EndP{Address: "/v2/accommodation/host/accommodation", Method: "GET", ContentType: "query"},
 				// GETRoomDetails:  dto.EndP{Address: "/v2/accommodation/host/accommodation", Method: "GET", ContentType: "query"},
 			},
@@ -143,9 +143,14 @@ func (h *service) generatePriceBody(fields *dto.UpdateFields) jabama_dto.EditPri
 	}
 }
 
-func (h *service) generateDiscountBody(fields *dto.UpdateFields) jabama_dto.DiscountDTO {
+func (h *service) generateDiscountBody(fields *dto.UpdateFields, currentPrice int) jabama_dto.DiscountDTO {
 	return jabama_dto.DiscountDTO{
-		Days:  fields.Dates,
-		Value: fields.Amount,
+		Days:     fields.Dates,
+		Discount: fields.Amount,
+		Price:    currentPrice,
 	}
+}
+
+func (h *service) generateCalendarDetailsBody(days []string) jabama_dto.CalendarBody {
+	return jabama_dto.CalendarBody{Days: days}
 }

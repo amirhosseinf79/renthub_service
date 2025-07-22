@@ -11,6 +11,11 @@ type EditPricePerDay struct {
 }
 
 type DiscountDTO struct {
-	Days  []string `json:"days"`
-	Value int      `json:"value"`
+	Days     []string `json:"days"`
+	Discount int      `json:"discount"`
+	Price    int      `json:"price"`
+}
+
+type CalendarBody struct {
+	Days []string `json:"days"`
 }
