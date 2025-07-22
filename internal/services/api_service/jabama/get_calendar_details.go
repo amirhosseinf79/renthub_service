@@ -9,11 +9,7 @@ import (
 )
 
 func (h *service) GetCalendarDetails(fields dto.UpdateFields, response any) (log *models.Log, err error) {
-	log, err = h.updateRoomID(&fields)
-	if err != nil {
-		return
-	}
-	log.Action = dto.GetCalendar
+	log = h.initLog(fields.UserID, fields.ClientID, dto.GetCalendar)
 	model, err := h.apiAuthService.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
