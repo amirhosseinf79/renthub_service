@@ -39,7 +39,8 @@ func NewChromiumService() interfaces.ChromeService {
 			continue
 		}
 		fmt.Println("Closing page:", p.TargetID)
-		p.MustClose()
+		err := p.Close()
+		fmt.Println("Cannot close page:", err)
 	}
 
 	return &ChromiumService{
