@@ -26,6 +26,17 @@ func NewChromiumService() interfaces.ChromeService {
 	if err != nil {
 		log.Fatal("Failed to connect to the browser:", err)
 	}
+
+	pages, err := browser.Pages()
+	if err != nil {
+		fmt.Println("Cannot list pages:", err)
+	}
+
+	for _, p := range pages {
+		fmt.Println("Closing page:", p.TargetID)
+		p.MustClose()
+	}
+
 	return &ChromiumService{
 		browser: browser,
 	}
