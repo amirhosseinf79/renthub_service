@@ -66,13 +66,17 @@ func (h *service) getAddGuestPrice(fields dto.UpdateFields) (guestPrice int, log
 		matches := re.FindAllString(cleanText, -1)
 		for _, match := range matches {
 			realNum, _ := strconv.Atoi(match)
-			if realNum > 1000 {
+			if realNum > 10000 {
 				guestPrice = realNum / 1000
 				break
 			}
 		}
 	} else {
 		guestPrice = 0
+	}
+	if guestPrice < 0 {
+		err = dto.ErrInvalidRequest
+		log.FinalResult = err.Error()
 	}
 	return
 }
