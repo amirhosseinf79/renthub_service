@@ -100,6 +100,10 @@ func (h *service) updateRoomID(fields *dto.UpdateFields) (log *models.Log, err e
 			}
 		}
 	}
+	if err != nil {
+		log.FinalResult = err.Error()
+		return
+	}
 	if !found {
 		err = dto.ErrRoomNotFound
 		log.FinalResult = err.Error()
