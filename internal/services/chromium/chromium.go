@@ -33,6 +33,11 @@ func NewChromiumService() interfaces.ChromeService {
 	}
 
 	for _, p := range pages {
+		url := p.MustInfo().URL
+		if url == "about:blank" || strings.HasPrefix(url, "chrome://") {
+			// این تب رو نبند یا لاگ بزن و رد شو
+			continue
+		}
 		fmt.Println("Closing page:", p.TargetID)
 		p.MustClose()
 	}
