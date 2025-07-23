@@ -2,13 +2,13 @@ package mihmansho
 
 import (
 	"errors"
+	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	mihmansho_dto "github.com/amirhosseinf79/renthub_service/internal/dto/mihmansho"
-	"github.com/amirhosseinf79/renthub_service/pkg"
 	"gorm.io/gorm"
 )
 
@@ -50,36 +50,29 @@ func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.End
 func (h *service) getAddGuestPrice(fields dto.UpdateFields) (guestPrice int, log *models.Log, err error) {
 	guestPrice = -1
 	counter := 0
-	found := false
-	for !found && counter < 2 {
+	roomDetails := mihmansho_dto.RoomDetailsResponse{}
+	for counter < 2 {
 		counter++
-		calendarResponse := mihmansho_dto.CalendarDetailsResponse{}
-		log, err = h.GetCalendarDetails(fields, &calendarResponse)
-		jdates := pkg.DatesToJalali(fields.Dates, false)
-		if len(jdates) == 0 {
-			return
-		}
-
-		firstDate := jdates[0]
-		for _, data := range calendarResponse.CalendarData {
-			dateSection := strings.Split(firstDate, "/")
-			day, _ := strconv.Atoi(dateSection[2])
-			if data.Day == day {
-				currPrice, _ := strconv.Atoi(data.AddedPrice)
-				guestPrice = currPrice
-				found = true
-				break
-			}
-		}
+		log, err = h.GetRoomDetails(fields, &roomDetails)
 	}
 	if err != nil {
 		log.FinalResult = err.Error()
 		return
 	}
-	if guestPrice < 0 {
-		err = dto.ErrInvalidDate
-		log.FinalResult = err.Error()
-		return
+	if roomDetails.Details.PaymentNote != "" {
+		text := roomDetails.Details.PaymentNote
+		cleanText := strings.ReplaceAll(text, ",", "")
+		re := regexp.MustCompile(`\d+`)
+		matches := re.FindAllString(cleanText, -1)
+		for _, match := range matches {
+			realNum, _ := strconv.Atoi(match)
+			if realNum > 1000 {
+				guestPrice = realNum / 1000
+				break
+			}
+		}
+	} else {
+		guestPrice = 0
 	}
 	return
 }
