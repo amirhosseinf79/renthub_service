@@ -37,6 +37,7 @@ func (s *ChromiumService) Close() {
 
 func (s *ChromiumService) GetMihmanshoSessionID(token string, log *models.Log) (string, error) {
 	page := s.browser.MustPage()
+	defer page.Close()
 	// token := "671dd13a-993f-4a49-b68f-c3041586e479"
 	log.StatusCode = 200
 	log.RequestBody = "Normal GET"
@@ -67,6 +68,7 @@ func (s *ChromiumService) GetMihmanshoSessionID(token string, log *models.Log) (
 
 func (s *ChromiumService) GetJajigaHeaders(log *models.Log) (map[string]string, error) {
 	page := s.browser.MustPage()
+	defer page.Close()
 
 	headers := make(chan map[string]string, 1)
 	targetRequestSubstring := "api.jajiga.com"
