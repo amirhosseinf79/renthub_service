@@ -36,7 +36,10 @@ func (s *ChromiumService) Close() {
 }
 
 func (s *ChromiumService) GetMihmanshoSessionID(token string, log *models.Log) (string, error) {
-	page := s.browser.MustPage()
+	incognito := s.browser.MustIncognito()
+	defer incognito.MustClose()
+
+	page := incognito.MustPage()
 	defer page.Close()
 	// token := "671dd13a-993f-4a49-b68f-c3041586e479"
 	log.StatusCode = 200
@@ -44,7 +47,12 @@ func (s *ChromiumService) GetMihmanshoSessionID(token string, log *models.Log) (
 	log.RequestURL = fmt.Sprintf("https://www.mihmansho.com/myapi/v1/checklogin?token=%s&returnUrl=/account/home/manage", token)
 
 	page.MustSetExtraHeaders("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
-	page.MustSetExtraHeaders("ASP.NET_SessionId", token)
+	// page.MustSetExtraHeaders("ASP.NET_SessionId", token)
+	page.MustSetCookies(&proto.NetworkCookieParam{
+		Name:   "ASP.NET_SessionId",
+		Value:  token,
+		Domain: "www.mihmansho.com",
+	})
 
 	page.MustNavigate(log.RequestURL).MustWaitLoad()
 	page.MustNavigate(log.RequestURL).MustWaitLoad()
