@@ -1,6 +1,11 @@
 package jabama_dto
 
-import "github.com/amirhosseinf79/renthub_service/internal/domain/models"
+import (
+	"strings"
+
+	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
+	"github.com/amirhosseinf79/renthub_service/internal/dto"
+)
 
 func (h *Response) GetResult() (ok bool, result string) {
 	ok = h.Error == nil
@@ -22,7 +27,11 @@ func (h *UpdateErrorResponse) GetResult() (ok bool, result string) {
 	if h.Success {
 		return true, "success"
 	}
-	return false, h.Error.Message
+	err := h.Error.Message
+	if strings.Contains(h.Error.Message, "core-api") {
+		err = dto.ErrTimeOut.Error()
+	}
+	return false, err
 }
 
 func (h *UpdateErrorResponse) GetToken() *models.ApiAuth {
