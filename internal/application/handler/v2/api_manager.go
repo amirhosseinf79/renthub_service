@@ -3,6 +3,7 @@ package handler_v2
 import (
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
+	auth_dto "github.com/amirhosseinf79/renthub_service/internal/dto/auth"
 	request_v2 "github.com/amirhosseinf79/renthub_service/internal/dto/request/v2"
 	"github.com/amirhosseinf79/renthub_service/pkg"
 	"github.com/gofiber/fiber/v3"
@@ -177,7 +178,15 @@ func (h *handlerSt) VerifyServiceOTP(ctx fiber.Ctx) error {
 			ServiceMessage: model.FinalResult,
 		})
 	}
-	return ctx.JSON(h.defaultResponse)
+	userToken, err := h.ApiAuthService.GetByUnique(userID, inputBody.ClientID, inputBody.Service)
+	if err != nil {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(dto.OTPErrorResponse{
+			Message:        dto.ErrorUnauthorized.Error(),
+			ServiceMessage: model.FinalResult,
+		})
+	}
+	response := auth_dto.NewResponse(userToken)
+	return ctx.JSON(response)
 }
 
 func (h *handlerSt) TokenLogin(ctx fiber.Ctx) error {
