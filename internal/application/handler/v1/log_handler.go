@@ -16,7 +16,7 @@ func NewLogHandler(logService interfaces.LoggerInterface) interfaces.LoggerHandl
 
 func (h *logHandler) GetLogs(c fiber.Ctx) error {
 	var filters dto.LogFilters
-	c.Bind().Query(filters)
+	c.Bind().Query(&filters)
 	userID := c.Locals("userID").(uint)
 	response, errResp := h.logService.GetLogByfilter(userID, &filters)
 	if errResp != nil {
