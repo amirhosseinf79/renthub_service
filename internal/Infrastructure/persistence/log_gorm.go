@@ -57,7 +57,7 @@ func (r *logRepo) GetByFilter(userID uint, filter *dto.LogFilters) (int64, []*mo
 			model = model.Where("created_at >= ?", parsedTime.UTC())
 		}
 		if filter.ToDate != "" {
-			parsedTime, err := time.Parse("2006-01-02", filter.FromDate)
+			parsedTime, err := time.Parse("2006-01-02", filter.ToDate)
 			if err != nil {
 				return 0, nil, dto.ErrInvalidDate
 			}
