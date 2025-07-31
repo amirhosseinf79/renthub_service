@@ -58,6 +58,7 @@ func (r *logRepo) GetByFilter(userID uint, filter *dto.LogFilters) (int64, []*mo
 		}
 		if filter.ToDate != "" {
 			parsedTime, err := time.Parse("2006-01-02", filter.ToDate)
+			parsedTime = parsedTime.Add(24 * time.Hour)
 			if err != nil {
 				return 0, nil, dto.ErrInvalidDate
 			}
