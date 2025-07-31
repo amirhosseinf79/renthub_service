@@ -7,5 +7,5 @@ import (
 
 type LogRepository interface {
 	Create(*models.Log) error
-	GetByFilter(filter *dto.RequiredFields, service *string) ([]*models.Log, error)
+	GetByFilter(userID uint, filter *dto.LogFilters) (int64, []*models.Log, error)
 }

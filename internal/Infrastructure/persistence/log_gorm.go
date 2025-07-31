@@ -1,6 +1,8 @@
 package persistence
 
 import (
+	"time"
+
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/repository"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
@@ -21,20 +23,50 @@ func (r *logRepo) Create(model *models.Log) error {
 	return r.db.Create(model).Error
 }
 
-func (r *logRepo) GetByFilter(filter *dto.RequiredFields, service *string) ([]*models.Log, error) {
+func (r *logRepo) GetByFilter(userID uint, filter *dto.LogFilters) (int64, []*models.Log, error) {
 	var logs []*models.Log
 	model := r.db.Model(&models.Log{})
+	model = model.Where("user_id = ?", userID)
 	if filter != nil {
-		if filter.UserID > 0 {
-			model = model.Where("user_id = ?", filter.UserID)
+		if filter.Service != "" {
+			model = model.Where("service = ?", filter.Service)
 		}
 		if filter.ClientID != "" {
 			model = model.Where("client_id = ?", filter.ClientID)
 		}
+		if filter.UpdateID != "" {
+			model = model.Where("request_body LIKE ?", "%"+filter.UpdateID+"%")
+		}
+		if filter.RoomID != "" {
+			model = model.Where("request_body LIKE ?", "%"+filter.RoomID+"%")
+		}
+		if filter.Action != "" {
+			model = model.Where("action = ?", filter.Action)
+		}
+		if filter.ResponseBody != "" {
+			model = model.Where("response_body LIKE ?", "%"+filter.ResponseBody+"%")
+		}
+		if filter.IsSucceed != nil {
+			model = model.Where("is_succeed = ?", filter.IsSucceed)
+		}
+		if filter.FromDate != "" {
+			time, err := time.Parse("2006-01-02", filter.FromDate)
+			if err != nil {
+				return 0, nil, dto.ErrInvalidDate
+			}
+			model = model.Where("created_at >= ?", time.UTC().String())
+		}
+		if filter.ToDate != "" {
+			time, err := time.Parse("2006-01-02", filter.FromDate)
+			if err != nil {
+				return 0, nil, dto.ErrInvalidDate
+			}
+			model = model.Where("created_at <= ?", time.UTC().String())
+		}
 	}
-	if service != nil {
-		model.Where("service = ?", service)
-	}
+	var total int64
+	model.Count(&total)
+	model = model.Offset(int(filter.Page) - 1).Limit(int(filter.PageSize))
 	err := model.Find(&logs).Error
-	return logs, err
+	return total, logs, err
 }

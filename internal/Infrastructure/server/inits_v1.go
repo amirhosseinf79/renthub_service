@@ -31,3 +31,8 @@ func (s server) initApiAuthRoutes_v1(api fiber.Router) {
 	auth.Post("/sign-out", s.apiManagerHandler.SignOutClient)
 	// auth.Post("/", s.apiManagerHandler.TokenLogin)
 }
+
+func (s server) initLoggerRoutes_v1(api fiber.Router) {
+	auth := api.Group("/logger", s.tokenMiddleware.CheckTokenAuth)
+	auth.Get("/all", s.loggerHnadler.GetLogs)
+}

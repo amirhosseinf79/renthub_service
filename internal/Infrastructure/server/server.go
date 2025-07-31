@@ -13,6 +13,7 @@ type server struct {
 	app                    *fiber.App
 	tokenMiddleware        interfaces.TokenMiddleware
 	userHandler            interfaces.UserHandler
+	loggerHnadler          interfaces.LoggerHandler
 	apiManagerValidator    interfaces.ValidatorInterface
 	apiTokenMiddleware     interfaces.ApiAuthMiddleware
 	apiManagerHandler      interfaces.ManagerHandlerInterface
@@ -24,6 +25,7 @@ type server struct {
 func NewServer(
 	tokenMiddleware interfaces.TokenMiddleware,
 	userHandler interfaces.UserHandler,
+	loggerHnadler interfaces.LoggerHandler,
 	apiManagerValidator interfaces.ValidatorInterface,
 	apiTokenMiddleware interfaces.ApiAuthMiddleware,
 	apiManagerHandler interfaces.ManagerHandlerInterface,
@@ -34,6 +36,7 @@ func NewServer(
 	return &server{
 		tokenMiddleware:        tokenMiddleware,
 		userHandler:            userHandler,
+		loggerHnadler:          loggerHnadler,
 		apiManagerValidator:    apiManagerValidator,
 		apiTokenMiddleware:     apiTokenMiddleware,
 		apiManagerHandler:      apiManagerHandler,

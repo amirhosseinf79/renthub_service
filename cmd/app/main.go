@@ -20,6 +20,7 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/services/api_service/shab"
 	auth_v1 "github.com/amirhosseinf79/renthub_service/internal/services/auth/v1"
 	"github.com/amirhosseinf79/renthub_service/internal/services/chromium"
+	"github.com/amirhosseinf79/renthub_service/internal/services/logger"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 )
 
@@ -30,6 +31,9 @@ func main() {
 
 	// User auth system
 	authUserService_v1 := auth_v1.ImplementAuthUser(db)
+
+	loggerRepo := persistence.NewLogRepository(db)
+	loggerService := logger.NewLogger(loggerRepo)
 
 	// api auth model
 	apiRepo := persistence.NewApiAuthRepository(db)
@@ -59,6 +63,7 @@ func main() {
 	apiManagerValidator_v1 := middleware_v1.NewValidator()
 	apiTokenMiddleware_v1 := middleware_v1.NewApiTokenMiddleware(broker_v1, apiAuthService)
 	apiManagerHandler_v1 := handler_v1.NewManagerHandler(services, broker_v1, apiAuthService)
+	loggerHandler := handler_v1.NewLogHandler(loggerService)
 
 	// manager middlewares & handler
 	apiManagerValidator_v2 := middleware_v2.NewValidator()
@@ -68,6 +73,7 @@ func main() {
 	server := server.NewServer(
 		authUserService_v1.AuthTokenMiddleware,
 		authUserService_v1.UserHandler,
+		loggerHandler,
 		apiManagerValidator_v1,
 		apiTokenMiddleware_v1,
 		apiManagerHandler_v1,

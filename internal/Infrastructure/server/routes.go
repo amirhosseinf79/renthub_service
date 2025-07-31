@@ -7,6 +7,7 @@ func (s server) InitRoutes() {
 	s.initAuthRoutes_v1(api_v1)
 	s.initManagerRoutes_v1(api_v1)
 	s.initApiAuthRoutes_v1(api_v1)
+	s.initLoggerRoutes_v1(api_v1)
 
 	s.initManagerRoutes_v2(api_v2)
 	s.initApiAuthRoutes_v2(api_v2)

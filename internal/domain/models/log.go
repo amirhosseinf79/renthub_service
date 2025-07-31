@@ -4,15 +4,15 @@ import "gorm.io/gorm"
 
 type Log struct {
 	gorm.Model
-	Service      string
-	Action       string
-	UserID       uint
-	ClientID     string
-	IsSucceed    bool
-	RequestURL   string
-	RequestBody  string
-	StatusCode   int
-	ResponseBody string
-	FinalResult  string
-	User         User
+	Service      string `json:"service"`
+	Action       string `json:"action"`
+	UserID       uint   `json:"-"`
+	ClientID     string `json:"clientID"`
+	IsSucceed    bool   `json:"isSucceed"`
+	RequestURL   string `json:"requestURL"`
+	RequestBody  string `json:"requestBody"`
+	StatusCode   int    `json:"statusCode"`
+	ResponseBody string `json:"responseBody"`
+	FinalResult  string `json:"finalResult"`
+	User         User   `json:"-"`
 }
