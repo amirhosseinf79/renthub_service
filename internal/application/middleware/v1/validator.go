@@ -139,3 +139,12 @@ func (v *validator) CalendarUpdate(c fiber.Ctx) error {
 	}
 	return c.Next()
 }
+
+func (v *validator) PaginationValidator(c fiber.Ctx) error {
+	var inputBody dto.PaginationFilter
+	response, err := pkg.ValidateQueryParams(&inputBody, c)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+	return c.Next()
+}

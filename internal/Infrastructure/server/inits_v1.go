@@ -34,5 +34,5 @@ func (s server) initApiAuthRoutes_v1(api fiber.Router) {
 
 func (s server) initLoggerRoutes_v1(api fiber.Router) {
 	auth := api.Group("/logger", s.tokenMiddleware.CheckTokenAuth)
-	auth.Get("/all", s.loggerHnadler.GetLogs)
+	auth.Get("/all", s.loggerHnadler.GetLogs, s.apiManagerValidator.PaginationValidator)
 }

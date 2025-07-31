@@ -15,12 +15,12 @@ func NewLogHandler(logService interfaces.LoggerInterface) interfaces.LoggerHandl
 }
 
 func (h *logHandler) GetLogs(c fiber.Ctx) error {
-	var filters *dto.LogFilters
+	var filters dto.LogFilters
 	c.Bind().Query(filters)
 	userID := c.Locals("userID").(uint)
-	response, err := h.logService.GetLogByfilter(userID, filters)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(err)
+	response, errResp := h.logService.GetLogByfilter(userID, &filters)
+	if errResp != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(errResp)
 	}
 	return c.JSON(response)
 }
