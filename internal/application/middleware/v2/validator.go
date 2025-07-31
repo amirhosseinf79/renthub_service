@@ -14,7 +14,7 @@ import (
 
 type validator struct{}
 
-func NewValidator() interfaces.ValidatorInterface {
+func NewValidator() interfaces.ValidatorInterface_v2 {
 	return &validator{}
 }
 

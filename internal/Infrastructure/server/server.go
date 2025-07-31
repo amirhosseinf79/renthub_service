@@ -17,7 +17,7 @@ type server struct {
 	apiManagerValidator    interfaces.ValidatorInterface
 	apiTokenMiddleware     interfaces.ApiAuthMiddleware
 	apiManagerHandler      interfaces.ManagerHandlerInterface
-	apiManagerValidator_v2 interfaces.ValidatorInterface
+	apiManagerValidator_v2 interfaces.ValidatorInterface_v2
 	apiTokenMiddleware_v2  interfaces.ApiAuthMiddleware
 	apiManagerHandler_v2   interfaces.ManagerHandlerInterface
 }
@@ -29,7 +29,7 @@ func NewServer(
 	apiManagerValidator interfaces.ValidatorInterface,
 	apiTokenMiddleware interfaces.ApiAuthMiddleware,
 	apiManagerHandler interfaces.ManagerHandlerInterface,
-	apiManagerValidator_v2 interfaces.ValidatorInterface,
+	apiManagerValidator_v2 interfaces.ValidatorInterface_v2,
 	apiTokenMiddleware_v2 interfaces.ApiAuthMiddleware,
 	apiManagerHandler_v2 interfaces.ManagerHandlerInterface,
 ) *server {
