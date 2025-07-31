@@ -50,15 +50,14 @@ func (r *logRepo) GetByFilter(userID uint, filter *dto.LogFilters) (int64, []*mo
 			model = model.Where("is_succeed = ?", filter.IsSucceed)
 		}
 		if filter.FromDate != "" {
-			parsedTime, err := time.Parse("2006-01-02", filter.FromDate)
+			parsedTime, err := time.Parse("2006-01-02T15:04:05", filter.FromDate)
 			if err != nil {
 				return 0, nil, dto.ErrInvalidDate
 			}
 			model = model.Where("created_at >= ?", parsedTime.UTC())
 		}
 		if filter.ToDate != "" {
-			parsedTime, err := time.Parse("2006-01-02", filter.ToDate)
-			parsedTime = parsedTime.Add(24 * time.Hour)
+			parsedTime, err := time.Parse("2006-01-02T15:04:05", filter.ToDate)
 			if err != nil {
 				return 0, nil, dto.ErrInvalidDate
 			}
