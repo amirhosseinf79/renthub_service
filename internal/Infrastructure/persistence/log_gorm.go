@@ -70,6 +70,6 @@ func (r *logRepo) GetByFilter(userID uint, filter *dto.LogFilters) (int64, []*mo
 		filter.PageSize = 10
 	}
 	model = model.Offset(int(filter.Page) - 1).Limit(int(filter.PageSize))
-	err := model.Find(&logs).Error
+	err := model.Order("id DESC").Find(&logs).Error
 	return total, logs, err
 }
