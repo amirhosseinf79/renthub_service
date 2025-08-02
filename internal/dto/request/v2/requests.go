@@ -2,7 +2,7 @@ package request_v2
 
 type ReqHeaderEntry struct {
 	UpdateId    string `json:"updateId" validate:"required"`
-	CallbackUrl string `json:"callbackUrl,omitempty" validate:"required"`
+	CallbackUrl string `json:"callbackUrl" validate:"required"`
 	ClientID    string `json:"clientId,omitempty"`
 }
 
