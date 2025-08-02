@@ -44,8 +44,11 @@ func (s *sm) CheckAuth() request_v2.ManagerResponse {
 	close(chResult)
 
 	result := request_v2.ManagerResponse{
-		ReqHeaderEntry: s.requestHeader,
-		Results:        results,
+		ReqHeaderEntry: request_v2.ReqHeaderEntry{
+			UpdateId: s.requestHeader.UpdateId,
+			ClientID: s.requestHeader.ClientID,
+		},
+		Results: results,
 	}
 	result.SetOveralStatus()
 	return result
