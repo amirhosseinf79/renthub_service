@@ -6,8 +6,8 @@ name: Go Deployer
 on:
   push:
     branches: ["main"]
-  pull_request:
-    branches: ["main"]
+  # pull_request:
+  #   branches: ["main"]
 
 jobs:
   App:
@@ -21,7 +21,16 @@ jobs:
           go-version: "1.23.2"
 
       - name: Build main app
-        run: go build -o renthub_server ./cmd/app/main.go
+        run: |
+          mkdir -p build/app
+          go build -o build/app/renthub_server ./cmd/app/main.go
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: renthub-binaries
+          path: build/
+          retention-days: 7
 
       - name: Copy app binary to server
         uses: appleboy/scp-action@v0.1.7
@@ -30,7 +39,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
-          source: "renthub_server"
+          source: "build/app/renthub_server"
           target: ${{ secrets.SERVER_TARGET_DIR }}
 
       - name: Restart services on server
@@ -55,7 +64,9 @@ jobs:
           go-version: "1.23.2"
 
       - name: Build broker server
-        run: go build -o broker1_server ./cmd/broker_v1/worker.go
+        run: |
+          mkdir -p build/broker_v1
+          go build -o build/broker_v1/broker1_server ./cmd/broker_v1/worker.go
 
       - name: Copy broker binary to server
         uses: appleboy/scp-action@v0.1.7
@@ -64,7 +75,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
-          source: "broker1_server"
+          source: "build/broker_v1/broker1_server"
           target: ${{ secrets.SERVER_TARGET_DIR }}
 
       - name: Restart services on server
@@ -89,7 +100,9 @@ jobs:
           go-version: "1.23.2"
 
       - name: Build broker server v2
-        run: go build -o broker2_server ./cmd/broker_v2/worker.go
+        run: |
+          mkdir -p build/broker_v2
+          go build -o build/broker_v2/broker2_server ./cmd/broker_v2/worker.go
 
       - name: Copy broker binary to server
         uses: appleboy/scp-action@v0.1.7
@@ -98,7 +111,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
-          source: "broker2_server"
+          source: "build/broker_v2/broker2_server"
           target: ${{ secrets.SERVER_TARGET_DIR }}
 
       - name: Restart services on server
