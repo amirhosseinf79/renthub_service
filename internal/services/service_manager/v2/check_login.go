@@ -39,9 +39,7 @@ func (s *sm) CheckAuth() request_v2.ManagerResponse {
 
 	for range len(sites) {
 		eachResult := <-chResult
-		if eachResult.Status != "success" {
-			results = append(results, eachResult)
-		}
+		results = append(results, eachResult)
 	}
 	close(chResult)
 
