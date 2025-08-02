@@ -6,7 +6,6 @@ func (s server) initManagerRoutes_v2(api fiber.Router) {
 	update := api.Group(
 		"/service/update",
 		s.tokenMiddleware.CheckTokenAuth,
-		s.apiTokenMiddleware_v2.ApiAuthValidator,
 		s.apiManagerValidator_v2.DateCheck,
 	)
 	update.Post("/calendar", s.apiManagerHandler_v2.UpdateCalendar, s.apiManagerValidator_v2.CalendarUpdate)
