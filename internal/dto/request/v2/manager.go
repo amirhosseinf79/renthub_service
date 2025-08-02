@@ -6,10 +6,10 @@ type ManagerConfig struct {
 
 type ServiceStats struct {
 	Site         string `json:"site"`
-	ClientID     string `json:"clientId"`
-	Code         string `json:"code"`
+	ClientID     string `json:"clientId,omitempty"`
+	Code         string `json:"code,omitempty"`
 	Status       string `json:"status"`
-	ErrorMessage string `json:"errorMessage"`
+	ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
 type ManagerResponse struct {

@@ -60,7 +60,9 @@ func (s *sm) initServiceStatus(service string) request_v2.ServiceStats {
 
 func (s *sm) recordResult(serviceResult *request_v2.ServiceStats, objId string, log *models.Log, err error) {
 	serviceResult.Code = objId
-	serviceResult.ClientID = log.ClientID
+	if s.requestHeader.ClientID == "" {
+		serviceResult.ClientID = log.ClientID
+	}
 	s.logger.RecordLog(log)
 	if err != nil {
 		serviceResult.Status = "failed"
