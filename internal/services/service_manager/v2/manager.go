@@ -63,6 +63,7 @@ func (s *sm) recordResult(serviceResult *request_v2.ServiceStats, objId string, 
 	if s.requestHeader.ClientID == "" {
 		serviceResult.ClientID = log.ClientID
 	}
+	log.UpdateID = s.requestHeader.UpdateId
 	s.logger.RecordLog(log)
 	if err != nil {
 		serviceResult.Status = "failed"

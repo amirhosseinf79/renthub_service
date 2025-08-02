@@ -7,6 +7,7 @@ type Log struct {
 	Service      string `json:"service"`
 	Action       string `json:"action"`
 	UserID       uint   `json:"-"`
+	UpdateID     string `json:"updateID"`
 	ClientID     string `json:"clientID"`
 	IsSucceed    bool   `json:"isSucceed"`
 	RequestURL   string `json:"requestURL"`

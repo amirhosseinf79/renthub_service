@@ -35,7 +35,7 @@ func (r *logRepo) GetByFilter(userID uint, filter *dto.LogFilters) (int64, []*mo
 			model = model.Where("client_id = ?", filter.ClientID)
 		}
 		if filter.UpdateID != "" {
-			model = model.Where("request_body LIKE ?", "%"+filter.UpdateID+"%")
+			model = model.Where("update_id = ?", filter.UpdateID)
 		}
 		if filter.RoomID != "" {
 			model = model.Where("request_body LIKE ?", "%"+filter.RoomID+"%")
