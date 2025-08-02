@@ -30,6 +30,8 @@ func (w *webhookS) SendResult(response request_v2.ClientUpdateBody) (log *models
 		UserID:   response.UserID,
 		ClientID: "-",
 		Service:  "webhook",
+		Action:   "sendWebhook",
+		UpdateID: response.Header.UpdateId,
 	}
 
 	userM, err := w.userService.GetUserById(response.UserID)
@@ -73,8 +75,11 @@ func (w *webhookS) SendResult(response request_v2.ClientUpdateBody) (log *models
 
 func (w *webhookS) RefreshToken(userID uint) (log *models.Log, err error) {
 	log = &models.Log{
-		UserID:  userID,
-		Service: "webhook",
+		UserID:   userID,
+		Service:  "webhook",
+		Action:   "refreshToken",
+		ClientID: "-",
+		UpdateID: "-",
 	}
 
 	userM, err := w.userService.GetUserById(userID)
