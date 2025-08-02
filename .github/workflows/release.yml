@@ -1,0 +1,89 @@
+name: Build & Parallel Release
+
+on:
+  push:
+    tags:
+      - "v*" # اجرا فقط در صورت push به tag نسخه‌ها
+
+jobs:
+  build-app:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+      - run: go mod download
+      - run: |
+          mkdir -p output
+          go build -o output/renthub_app cmd/app/main.go
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: renthub_app
+          path: output/renthub_app
+
+  build-broker-v1:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+      - run: go mod download
+      - run: |
+          mkdir -p output
+          go build -o output/broker_v1 cmd/broker_v1/worker.go
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: broker_v1
+          path: output/broker_v1
+
+  build-broker-v2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+      - run: go mod download
+      - run: |
+          mkdir -p output
+          go build -o output/broker_v2 cmd/broker_v2/worker.go
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: broker_v2
+          path: output/broker_v2
+
+  release:
+    runs-on: ubuntu-latest
+    needs:
+      - build-app
+      - build-broker-v1
+      - build-broker-v2
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: renthub_app
+          path: binaries
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: broker_v1
+          path: binaries
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: broker_v2
+          path: binaries
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: binaries/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
