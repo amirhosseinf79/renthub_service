@@ -2,6 +2,8 @@ package middleware_v2
 
 import (
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
+	request_v2 "github.com/amirhosseinf79/renthub_service/internal/dto/request/v2"
+	"github.com/amirhosseinf79/renthub_service/pkg"
 	"github.com/gofiber/fiber/v3"
 )
 
@@ -21,11 +23,11 @@ func NewApiTokenMiddleware(
 }
 
 func (s serviceToken) ApiAuthValidator(c fiber.Ctx) error {
-	// var inputBody dto.ReqHeaderEntry
-	// errResponse, err := pkg.ValidateRequestBody(&inputBody, c)
-	// if err != nil {
-	// 	return c.Status(fiber.StatusBadRequest).JSON(errResponse)
-	// }
+	var inputBody request_v2.ReqHeaderWithClientEntry
+	errResponse, err := pkg.ValidateRequestBody(&inputBody, c)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(errResponse)
+	}
 
 	// userID := c.Locals("userID").(uint)
 	// tokens := s.apiAuthService.GetClientAll(userID, inputBody.ClientID)
