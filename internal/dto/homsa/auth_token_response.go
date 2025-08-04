@@ -1,8 +1,6 @@
 package homsa_dto
 
-type HomsaOTPResponse struct {
-	Data homsaOTPData `json:"data"`
-}
+import "github.com/amirhosseinf79/renthub_service/internal/domain/models"
 
 type HomsaAuthResponse struct {
 	UserID       int    `json:"user_id"`
@@ -15,8 +13,14 @@ type HomsaAuthResponse struct {
 	PhoneNumber  string `json:"phone_number"`
 }
 
-type HomsaErrorResponse struct {
-	Code    string              `json:"code"`
-	Message string              `json:"message"`
-	Errors  map[string][]string `json:"errors"`
+// Auth Response
+func (h *HomsaAuthResponse) GetResult() (bool, string) {
+	return true, "success"
+}
+
+func (h *HomsaAuthResponse) GetToken() *models.ApiAuth {
+	return &models.ApiAuth{
+		AccessToken:  h.AccessToken,
+		RefreshToken: h.RefreshToken,
+	}
 }

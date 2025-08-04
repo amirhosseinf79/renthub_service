@@ -1,16 +1,9 @@
 package mihmansho_dto
 
-type MihmanshoErrorResponse struct {
-	ResponseError    int    `json:"responseError"`
-	ErrorCode        int    `json:"errorCode"`
-	ErrorDescription string `json:"errorDescription"`
-}
-
-type MihmanshoProfileResponse struct {
-	MihmanshoErrorResponse
-	Cities   []any    `json:"Cities"`
-	UserInfo userInfo `json:"UserInfo"`
-}
+import (
+	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
+	"github.com/amirhosseinf79/renthub_service/internal/dto"
+)
 
 type userInfo struct {
 	Id                  int        `json:"Id"`
@@ -58,4 +51,21 @@ type userCredit struct {
 	Value    string `json:"Value"`
 	Currency string `json:"Currency"`
 	TextLink string `json:"TextLink"`
+}
+
+type MihmanshoProfileResponse struct {
+	MihmanshoErrorResponse
+	Cities   []any    `json:"Cities"`
+	UserInfo userInfo `json:"UserInfo"`
+}
+
+func (m *MihmanshoProfileResponse) GetResult() (bool, string) {
+	if m.UserInfo.Id == 0 {
+		return false, dto.ErrUserNotFound.Error()
+	}
+	return true, m.UserInfo.UserName
+}
+
+func (m *MihmanshoProfileResponse) GetToken() *models.ApiAuth {
+	return &models.ApiAuth{}
 }

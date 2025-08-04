@@ -7,7 +7,8 @@ import (
 
 func (h *service) UnsetMiniNight(fields dto.UpdateFields) (log *models.Log, err error) {
 	log = h.initLog(fields.UserID, fields.ClientID, dto.UnsetMinNight)
-	endpoint := h.getEndpoints().UnsetMinNight
-	err = h.handleUpdateResult(log, nil, endpoint, fields)
+	// endpoint := h.getEndpoints().UnsetMinNight
+	// err = h.handleUpdateResult(log, nil, endpoint, fields)
+	err = dto.ErrJabamaViaTicket
 	return log, err
 }
