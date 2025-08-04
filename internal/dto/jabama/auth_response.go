@@ -1,14 +1,6 @@
 package jabama_dto
 
-type Response struct {
-	Result              *authResult `json:"result"`
-	TargetURL           *string     `json:"targetUrl"`
-	Success             bool        `json:"success"`
-	Error               *authError  `json:"error"`
-	UnauthorizedRequest bool        `json:"unauthorizedRequest"`
-	Wrapped             bool        `json:"__wrapped"`
-	TraceID             string      `json:"__traceId"`
-}
+import "github.com/amirhosseinf79/renthub_service/internal/domain/models"
 
 type authResult struct {
 	AccessToken  string `json:"access_token"`
@@ -28,12 +20,28 @@ type authError struct {
 	ValidationErrors map[string]string `json:"validationErrors"`
 }
 
-type msg struct {
-	Message string `json:"message"`
+type Response struct {
+	Result              *authResult `json:"result"`
+	TargetURL           *string     `json:"targetUrl"`
+	Success             bool        `json:"success"`
+	Error               *authError  `json:"error"`
+	UnauthorizedRequest bool        `json:"unauthorizedRequest"`
+	Wrapped             bool        `json:"__wrapped"`
+	TraceID             string      `json:"__traceId"`
 }
 
-type UpdateErrorResponse struct {
-	Result  *[]string `json:"result"`
-	Error   msg       `json:"error"`
-	Success bool      `json:"success"`
+func (h *Response) GetResult() (ok bool, result string) {
+	ok = h.Error == nil
+	result = "success"
+	if !ok {
+		result = h.Error.Message
+	}
+	return ok, result
+}
+
+func (h *Response) GetToken() *models.ApiAuth {
+	return &models.ApiAuth{
+		AccessToken:  h.Result.AccessToken,
+		RefreshToken: h.Result.RefreshToken,
+	}
 }

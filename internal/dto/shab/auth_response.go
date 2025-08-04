@@ -1,11 +1,12 @@
 package shab_dto
 
+import (
+	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
+	"github.com/amirhosseinf79/renthub_service/internal/dto"
+)
+
 type authOk struct {
 	AccessToken string `json:"access_token"`
-}
-
-type AuthOTPResponse struct {
-	Meta meta `json:"meta"`
 }
 
 type AuthResponse struct {
@@ -13,11 +14,15 @@ type AuthResponse struct {
 	Meta meta   `json:"meta"`
 }
 
-type ErrResponse struct {
-	Meta meta `json:"meta"`
+func (r *AuthResponse) GetResult() (bool, string) {
+	if r.Meta.Status >= 300 {
+		return false, dto.ErrInvalidRequest.Error()
+	}
+	return true, "success"
 }
 
-type meta struct {
-	Status   int `json:"status"`
-	Messages any `json:"messages"`
+func (r *AuthResponse) GetToken() *models.ApiAuth {
+	return &models.ApiAuth{
+		AccessToken: r.Data.AccessToken,
+	}
 }

@@ -7,20 +7,14 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 )
 
-func (h *Response) GetResult() (ok bool, result string) {
-	ok = h.Error == nil
-	result = "success"
-	if !ok {
-		result = h.Error.Message
-	}
-	return ok, result
+type msg struct {
+	Message string `json:"message"`
 }
 
-func (h *Response) GetToken() *models.ApiAuth {
-	return &models.ApiAuth{
-		AccessToken:  h.Result.AccessToken,
-		RefreshToken: h.Result.RefreshToken,
-	}
+type UpdateErrorResponse struct {
+	Result  *[]string `json:"result"`
+	Error   msg       `json:"error"`
+	Success bool      `json:"success"`
 }
 
 func (h *UpdateErrorResponse) GetResult() (ok bool, result string) {
