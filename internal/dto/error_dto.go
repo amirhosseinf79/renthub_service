@@ -18,3 +18,4 @@ var ErrServiceUnavailable = errors.New("سرویس مورد نظر فعال نم
 var ErrInvalidPrice = errors.New("هزینه وارد شده باید بزرگتر از 0 و به تومان باشد")
 var ErrTimeOut = errors.New("در این لحظه امکان بروزرسانی وجود ندارد")
 var ErrInvalidDay = errors.New("روز انتخاب شده معتبر نیست")
+var ErrUnknownMsg = errors.New("خطایی در بروزرسانی رخ داد")

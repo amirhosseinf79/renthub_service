@@ -24,7 +24,7 @@ func (m *MihmanshoErrorResponse) GetResult() (bool, string) {
 		} else if m.ErrorDescription != "" {
 			msg = m.ErrorDescription
 		} else {
-			msg = "failed"
+			msg = dto.ErrUnknownMsg.Error()
 		}
 		return false, msg
 	}
