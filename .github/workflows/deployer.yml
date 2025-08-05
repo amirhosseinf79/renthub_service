@@ -67,7 +67,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
-          source: "binaries/*"
+          source: "binaries/*/*"
           target: ${{ secrets.SERVER_TARGET_DIR }}
 
       - name: Restart services on server
