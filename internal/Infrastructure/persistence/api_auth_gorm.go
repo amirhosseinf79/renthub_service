@@ -37,8 +37,11 @@ func (r *apiAuthRepo) DeleteService(userID uint, clientID, service string) error
 	if err != nil {
 		return err
 	}
-	r.db.Delete(item)
-	return nil
+	item.AccessToken = ""
+	item.RefreshToken = ""
+	item.Ucode = ""
+	err = r.Update(item)
+	return err
 }
 
 func (r *apiAuthRepo) Create(token *models.ApiAuth) error {

@@ -60,6 +60,6 @@ func (h *apiAuthService) GetClientAll(userID uint, clientID string) (list []*mod
 	return
 }
 
-func (h *apiAuthService) SignOutSerice(userID uint, fields dto.ApiAuthSignOut) error {
+func (h *apiAuthService) SignOutService(userID uint, fields dto.ApiAuthSignOut) error {
 	return h.apiAuthRepo.DeleteService(userID, fields.ClientID, fields.Service)
 }

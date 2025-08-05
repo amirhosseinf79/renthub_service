@@ -206,7 +206,7 @@ func (h *handlerSt) SignOutClient(ctx fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(response)
 	}
 	userID := ctx.Locals("userID").(uint)
-	err = h.ApiAuthService.SignOutSerice(userID, fields)
+	err = h.ApiAuthService.SignOutService(userID, fields)
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(dto.ErrorResponse{
 			Message: dto.ErrorUnauthorized.Error(),
