@@ -6,12 +6,12 @@ import (
 	request_v2 "github.com/amirhosseinf79/renthub_service/internal/dto/request/v2"
 )
 
-func (s *sm) asyncCheckAuth(service request_v2.SiteEntry, chResult chan request_v2.ServiceStats) {
-	serviceResult := s.initServiceStatus(service.Site)
+func (s *sm) asyncCheckAuth(serviceName string, chResult chan request_v2.ServiceStats) {
+	serviceResult := s.initServiceStatus(serviceName)
 	var log *models.Log
 	var err error
 
-	selectedService, ok := s.apiServices[service.Site]
+	selectedService, ok := s.apiServices[serviceName]
 	if !ok {
 		return
 	}
@@ -20,7 +20,7 @@ func (s *sm) asyncCheckAuth(service request_v2.SiteEntry, chResult chan request_
 		ClientID: s.requestHeader.ClientID,
 	}
 	log, err = selectedService.CheckLogin(fields)
-	s.recordResult(&serviceResult, service.Code, log, err)
+	s.recordResult(&serviceResult, "", log, err)
 	chResult <- serviceResult
 }
 
@@ -28,16 +28,11 @@ func (s *sm) CheckAuth() request_v2.ManagerResponse {
 	chResult := make(chan request_v2.ServiceStats)
 	var results []request_v2.ServiceStats
 
-	authList := s.apiAuthService.GetClientAll(s.userID, s.requestHeader.ClientID)
-	var sites []request_v2.SiteEntry
-	for _, auth := range authList {
-		sites = append(sites, request_v2.SiteEntry{Site: auth.Service})
-	}
-	for _, service := range sites {
+	for service := range s.apiServices {
 		go s.asyncCheckAuth(service, chResult)
 	}
 
-	for range len(sites) {
+	for range len(s.apiServices) {
 		eachResult := <-chResult
 		results = append(results, eachResult)
 	}
