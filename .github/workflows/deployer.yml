@@ -67,7 +67,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
-          source: "binaries/*/*"
+          source: "binaries"
           target: ${{ secrets.SERVER_TARGET_DIR }}
 
       - name: Restart services on server
@@ -78,9 +78,9 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
           script: |
-            chmod +x ${{ secrets.SERVER_TARGET_DIR }}/renthub_server
-            chmod +x ${{ secrets.SERVER_TARGET_DIR }}/broker1_server
-            chmod +x ${{ secrets.SERVER_TARGET_DIR }}/broker2_server
+            mv ${{ secrets.SERVER_TARGET_DIR }}/binaries/* ${{ secrets.SERVER_TARGET_DIR }}
+            rm -rf ${{ secrets.SERVER_TARGET_DIR }}/binaries
+            chmod +x ${{ secrets.SERVER_TARGET_DIR }}/*_server
             sudo systemctl restart renthub_new.service
             sudo systemctl restart worker1.service
             sudo systemctl restart worker2.service
