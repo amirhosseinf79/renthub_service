@@ -35,7 +35,8 @@ jobs:
           mkdir -p output
           go build -o output/${{ matrix.name }} ${{ matrix.src }}
 
-      - uses: actions/upload-artifact@v4
+      - name: Saving ${{ matrix.name }}
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.name }}
           path: output/${{ matrix.name }}
@@ -45,17 +46,20 @@ jobs:
     needs:
       - build
     steps:
-      - uses: actions/download-artifact@v4
+      - name: Downloading renthub_server
+        uses: actions/download-artifact@v4
         with:
           name: renthub_server
           path: binaries
 
-      - uses: actions/download-artifact@v4
+      - name: Downloading broker1_server
+        uses: actions/download-artifact@v4
         with:
           name: broker1_server
           path: binaries
 
-      - uses: actions/download-artifact@v4
+      - name: Downloading broker2_server
+        uses: actions/download-artifact@v4
         with:
           name: broker2_server
           path: binaries
