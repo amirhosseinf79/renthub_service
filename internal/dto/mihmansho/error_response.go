@@ -3,6 +3,7 @@ package mihmansho_dto
 import (
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
+	"github.com/amirhosseinf79/renthub_service/internal/services/error_manager"
 )
 
 type MihmanshoErrorResponse struct {
@@ -21,9 +22,9 @@ func (m *MihmanshoErrorResponse) GetResult() (bool, string) {
 		} else {
 			msg = dto.ErrUnknownMsg.Error()
 		}
-		return false, msg
+		return false, error_manager.ErrorLocalization(msg)
 	}
-	return true, msg
+	return true, error_manager.ErrorLocalization(msg)
 }
 
 func (m *MihmanshoErrorResponse) GetToken() *models.ApiAuth {

@@ -1,10 +1,8 @@
 package jabama_dto
 
 import (
-	"strings"
-
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
-	"github.com/amirhosseinf79/renthub_service/internal/dto"
+	"github.com/amirhosseinf79/renthub_service/internal/services/error_manager"
 )
 
 type msg struct {
@@ -21,10 +19,7 @@ func (h *UpdateErrorResponse) GetResult() (ok bool, result string) {
 	if h.Success {
 		return true, "success"
 	}
-	err := h.Error.Message
-	if strings.Contains(h.Error.Message, "core-api") {
-		err = dto.ErrTimeOut.Error()
-	}
+	err := error_manager.ErrorLocalization(h.Error.Message)
 	return false, err
 }
 

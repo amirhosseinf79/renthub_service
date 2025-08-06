@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
+	"github.com/amirhosseinf79/renthub_service/internal/services/error_manager"
 )
 
 type ErrResponse struct {
@@ -17,18 +18,18 @@ func (r *ErrResponse) GetResult() (bool, string) {
 		for _, v := range msgs {
 			if arr, ok := v.([]any); ok && len(arr) > 0 {
 				if msg, ok := arr[0].(string); ok {
-					return false, msg
+					return false, error_manager.ErrorLocalization(msg)
 				}
 			}
 		}
 	case []any: // اگر پیام‌ها به صورت لیست ساده باشه
 		for _, v := range msgs {
 			if msg, ok := v.(string); ok {
-				return false, msg
+				return false, error_manager.ErrorLocalization(msg)
 			}
 		}
 	case string:
-		return false, msgs
+		return false, error_manager.ErrorLocalization(msgs)
 	}
 	return isOk, fmt.Sprintf("Error %v", r.Meta.Status)
 }
