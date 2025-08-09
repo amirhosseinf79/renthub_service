@@ -1,6 +1,7 @@
 package recieve_manager_v2
 
 import (
+	"errors"
 	"time"
 
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
@@ -33,6 +34,12 @@ func (s *sm) asyncGetReservations(field request_v2.SiteRecieve, result chan rece
 		var response any
 		log, err := service.GetReservations(fields, &response)
 		finalResponse = s.recordResult(log, err, response)
+		if err != nil {
+			if errors.Is(err, dto.ErrTimeOut) {
+				continue
+			}
+		}
+		break
 	}
 	result <- finalResponse
 }
