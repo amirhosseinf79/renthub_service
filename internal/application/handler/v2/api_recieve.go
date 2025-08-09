@@ -34,7 +34,7 @@ func (h *handler) GetReservations(ctx fiber.Ctx) error {
 		Services: fields.Sites,
 	}
 
-	err := h.serviceManagerC.AsyncRecieve("recieve:reservation", body)
+	err := h.serviceManagerC.AsyncRecieve("reservation", body)
 	if err != nil {
 		return ctx.Status(fiber.StatusServiceUnavailable).JSON(h.serviceError)
 	}

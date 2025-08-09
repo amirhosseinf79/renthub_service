@@ -68,7 +68,8 @@ func (s *serverS) StartWorker() {
 	mux := asynq.NewServeMux()
 	mux.HandleFunc("otp:send", s.otpSendHandler)
 	mux.HandleFunc("otp:verify", s.otpVerifyHandler)
-	mux.HandleFunc("webhook:send", s.sendWebhook)
+	mux.HandleFunc("update:webhook", s.sendWebhook)
+	mux.HandleFunc("recieve:webhook", s.sendWebhook)
 	mux.HandleFunc("update:", s.updateHandler)
 	mux.HandleFunc("recieve:", s.recieveHandler)
 
@@ -107,7 +108,7 @@ func (s *serverS) updateHandler(ctx context.Context, t *asynq.Task) error {
 		return nil
 	}
 	fmt.Println("Done")
-	s.client.AsyncUpdate("webhook:send", p)
+	s.client.AsyncUpdate("webhook", p)
 	return nil
 }
 
@@ -126,7 +127,7 @@ func (s *serverS) recieveHandler(ctx context.Context, t *asynq.Task) error {
 		return fmt.Errorf("unexpected task type: %s %w", t.Type(), asynq.SkipRetry)
 	}
 	p.WebhookBody = response
-	s.client.AsyncRecieve("webhook:send", p)
+	s.client.AsyncRecieve("webhook", p)
 	return nil
 }
 
