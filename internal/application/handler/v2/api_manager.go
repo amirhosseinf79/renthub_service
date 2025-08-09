@@ -14,6 +14,7 @@ type handlerSt struct {
 	serviceManagerC interfaces.BrokerClientInterface_v2
 	ApiAuthService  interfaces.ApiAuthInterface
 	defaultResponse dto.ErrorResponse
+	serviceError    dto.ErrorResponse
 }
 
 func NewManagerHandler(
@@ -26,6 +27,7 @@ func NewManagerHandler(
 		serviceManagerC: serviceManagerC,
 		ApiAuthService:  apiAuthService,
 		defaultResponse: dto.ErrorResponse{Message: "ok"},
+		serviceError:    dto.ErrorResponse{Message: dto.ErrService.Error()},
 	}
 }
 
@@ -41,7 +43,10 @@ func (h *handlerSt) UpdatePrice(ctx fiber.Ctx) error {
 		Dates:    inputBody.Dates,
 	}
 
-	h.serviceManagerC.AsyncUpdate("price", taskBody)
+	err := h.serviceManagerC.AsyncUpdate("price", taskBody)
+	if err != nil {
+		return ctx.Status(fiber.StatusServiceUnavailable).JSON(h.serviceError)
+	}
 	return ctx.JSON(h.defaultResponse)
 }
 
@@ -58,7 +63,10 @@ func (h *handlerSt) UpdateDiscount(ctx fiber.Ctx) error {
 		DiscountPercent: inputBody.DiscountPercent,
 	}
 
-	h.serviceManagerC.AsyncUpdate("discount", taskBody)
+	err := h.serviceManagerC.AsyncUpdate("discount", taskBody)
+	if err != nil {
+		return ctx.Status(fiber.StatusServiceUnavailable).JSON(h.serviceError)
+	}
 	return ctx.JSON(h.defaultResponse)
 }
 
@@ -75,7 +83,10 @@ func (h *handlerSt) UpdateMinNight(ctx fiber.Ctx) error {
 		LimitDays: inputBody.LimitDays,
 	}
 
-	h.serviceManagerC.AsyncUpdate("minNight", taskBody)
+	err := h.serviceManagerC.AsyncUpdate("minNight", taskBody)
+	if err != nil {
+		return ctx.Status(fiber.StatusServiceUnavailable).JSON(h.serviceError)
+	}
 	return ctx.JSON(h.defaultResponse)
 }
 
@@ -92,7 +103,10 @@ func (h *handlerSt) UpdateCalendar(ctx fiber.Ctx) error {
 		Action:   inputBody.Action,
 	}
 
-	h.serviceManagerC.AsyncUpdate("calendar", taskBody)
+	err := h.serviceManagerC.AsyncUpdate("calendar", taskBody)
+	if err != nil {
+		return ctx.Status(fiber.StatusServiceUnavailable).JSON(h.serviceError)
+	}
 	return ctx.JSON(h.defaultResponse)
 }
 
@@ -107,7 +121,10 @@ func (h *handlerSt) RefreshToken(ctx fiber.Ctx) error {
 		Services: inputBody.Sites,
 	}
 
-	h.serviceManagerC.AsyncUpdate("token", taskBody)
+	err := h.serviceManagerC.AsyncUpdate("token", taskBody)
+	if err != nil {
+		return ctx.Status(fiber.StatusServiceUnavailable).JSON(h.serviceError)
+	}
 	return ctx.JSON(h.defaultResponse)
 }
 
@@ -115,12 +132,18 @@ func (h *handlerSt) CheckAuth(ctx fiber.Ctx) error {
 	var inputBody request_v2.ReqHeaderWithClientEntry
 	ctx.Bind().Body(&inputBody)
 	userId := ctx.Locals("userID").(uint)
-	h.serviceManagerC.AsyncUpdate("checkAuth",
+
+	err := h.serviceManagerC.AsyncUpdate("checkAuth",
 		request_v2.ClientUpdateBody{Header: request_v2.ReqHeaderEntry{
 			UpdateId:    inputBody.UpdateId,
 			CallbackUrl: inputBody.CallbackUrl,
 			ClientID:    inputBody.ClientID,
 		}, UserID: userId})
+
+	if err != nil {
+		return ctx.Status(fiber.StatusServiceUnavailable).JSON(h.serviceError)
+	}
+
 	return ctx.JSON(h.defaultResponse)
 }
 
@@ -128,22 +151,20 @@ func (h *handlerSt) SendServiceOTP(ctx fiber.Ctx) error {
 	var inputBody request_v2.OTPSendRequest
 	ctx.Bind().Body(&inputBody)
 	userID := ctx.Locals("userID").(uint)
-	selectedService, ok := h.services[inputBody.Service]
-	if !ok {
-		return ctx.Status(fiber.StatusBadRequest).JSON(dto.ErrorResponse{
-			Message: dto.ErrInvalidRequest.Error(),
-		})
-	}
+	selectedService := h.services[inputBody.Service]
+
 	model, _ := selectedService.SendOtp(dto.RequiredFields{
 		UserID:   userID,
 		ClientID: inputBody.ClientID,
 	}, inputBody.PhoneNumebr)
+
 	if !model.IsSucceed {
 		return ctx.Status(fiber.StatusBadRequest).JSON(dto.OTPErrorResponse{
 			Message:        dto.ErrInvalidRequest.Error(),
 			ServiceMessage: model.FinalResult,
 		})
 	}
+
 	return ctx.JSON(h.defaultResponse)
 
 	// h.serviceManagerC.AsyncOTP("send", dto.OTPBody{
@@ -159,12 +180,8 @@ func (h *handlerSt) VerifyServiceOTP(ctx fiber.Ctx) error {
 	var inputBody request_v2.OTPVerifyRequest
 	ctx.Bind().Body(&inputBody)
 	userID := ctx.Locals("userID").(uint)
-	selectedService, ok := h.services[inputBody.Service]
-	if !ok {
-		return ctx.Status(fiber.StatusBadRequest).JSON(dto.ErrorResponse{
-			Message: dto.ErrInvalidRequest.Error(),
-		})
-	}
+	selectedService := h.services[inputBody.Service]
+
 	model, _ := selectedService.VerifyOtp(dto.RequiredFields{
 		UserID:   userID,
 		ClientID: inputBody.ClientID,
@@ -172,12 +189,14 @@ func (h *handlerSt) VerifyServiceOTP(ctx fiber.Ctx) error {
 		PhoneNumber: inputBody.PhoneNumebr,
 		OTPCode:     inputBody.Code,
 	})
+
 	if !model.IsSucceed {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(dto.OTPErrorResponse{
 			Message:        dto.ErrInvalidCode.Error(),
 			ServiceMessage: model.FinalResult,
 		})
 	}
+
 	userToken, err := h.ApiAuthService.GetByUnique(userID, inputBody.ClientID, inputBody.Service)
 	if err != nil {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(dto.OTPErrorResponse{
@@ -203,19 +222,15 @@ func (h *handlerSt) TokenLogin(ctx fiber.Ctx) error {
 			Message: err.Error(),
 		})
 	}
-	return ctx.JSON(dto.ErrorResponse{
-		Message: "ok",
-	})
+	return ctx.JSON(h.defaultResponse)
 }
 
 func (h *handlerSt) SignOutClient(ctx fiber.Ctx) error {
 	var fields dto.ApiAuthSignOut
-	response, err := pkg.ValidateRequestBody(&fields, ctx)
-	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(response)
-	}
+	ctx.Bind().Body(&fields)
 	userID := ctx.Locals("userID").(uint)
-	err = h.ApiAuthService.SignOutService(userID, fields)
+
+	err := h.ApiAuthService.SignOutService(userID, fields)
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(dto.ErrorResponse{
 			Message: dto.ErrorUnauthorized.Error(),

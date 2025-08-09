@@ -66,7 +66,7 @@ func main() {
 	loggerHandler := handler_v1.NewLogHandler(loggerService)
 
 	// manager middlewares & handler
-	apiManagerValidator_v2 := middleware_v2.NewValidator()
+	apiManagerValidator_v2 := middleware_v2.NewValidator(services)
 	apiTokenMiddleware_v2 := middleware_v2.NewApiTokenMiddleware(broker_v2, apiAuthService)
 	apiManagerHandler_v2 := handler_v2.NewManagerHandler(services, broker_v2, apiAuthService)
 

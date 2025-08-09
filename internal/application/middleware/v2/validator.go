@@ -12,12 +12,27 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
-type validator struct{}
-
-func NewValidator() interfaces.ValidatorInterface_v2 {
-	return &validator{}
+type validator struct {
+	services map[string]interfaces.ApiService
 }
 
+func NewValidator(services map[string]interfaces.ApiService) interfaces.ValidatorInterface_v2 {
+	return &validator{services: services}
+}
+
+func (v *validator) serviceCheck(c fiber.Ctx, services []string) error {
+	for _, service := range services {
+		_, ok := v.services[service]
+		if !ok {
+			return c.Status(fiber.StatusBadRequest).JSON(dto.ErrorResponse{
+				Message: dto.ErrInvalidRequest.Error(),
+			})
+		}
+	}
+	return c.Next()
+}
+
+// public
 func (v *validator) DateCheck(c fiber.Ctx) error {
 	var inputBody request_v2.DateEntry
 	response := dto.ErrorResponse{
@@ -61,7 +76,7 @@ func (v *validator) SendOTPCheck(c fiber.Ctx) error {
 		}
 		return c.Status(fiber.StatusInternalServerError).JSON(response)
 	}
-	return c.Next()
+	return v.serviceCheck(c, []string{inputBody.Service})
 }
 
 func (v *validator) VerifyOTPCheck(c fiber.Ctx) error {
@@ -83,7 +98,7 @@ func (v *validator) VerifyOTPCheck(c fiber.Ctx) error {
 		}
 		return c.Status(fiber.StatusInternalServerError).JSON(response)
 	}
-	return c.Next()
+	return v.serviceCheck(c, []string{inputBody.Service})
 }
 
 func (v *validator) PriceUpdate(c fiber.Ctx) error {
@@ -101,7 +116,11 @@ func (v *validator) PriceUpdate(c fiber.Ctx) error {
 			return c.Status(fiber.StatusBadRequest).JSON(response)
 		}
 	}
-	return c.Next()
+	var services []string
+	for _, service := range inputBody.Prices {
+		services = append(services, service.Site)
+	}
+	return v.serviceCheck(c, services)
 }
 
 func (v *validator) RefReshTokenCheck(c fiber.Ctx) error {
@@ -110,7 +129,11 @@ func (v *validator) RefReshTokenCheck(c fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
-	return c.Next()
+	var services []string
+	for _, service := range inputBody.Sites {
+		services = append(services, service.Site)
+	}
+	return v.serviceCheck(c, services)
 }
 
 func (v *validator) DiscountUpdate(c fiber.Ctx) error {
@@ -119,7 +142,11 @@ func (v *validator) DiscountUpdate(c fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
-	return c.Next()
+	var services []string
+	for _, service := range inputBody.Sites {
+		services = append(services, service.Site)
+	}
+	return v.serviceCheck(c, services)
 }
 
 func (v *validator) MinNightUpdate(c fiber.Ctx) error {
@@ -128,11 +155,28 @@ func (v *validator) MinNightUpdate(c fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
-	return c.Next()
+	var services []string
+	for _, service := range inputBody.Sites {
+		services = append(services, service.Site)
+	}
+	return v.serviceCheck(c, services)
 }
 
 func (v *validator) CalendarUpdate(c fiber.Ctx) error {
 	var inputBody request_v2.EditCalendarRequest
+	response, err := pkg.ValidateRequestBody(&inputBody, c)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+	var services []string
+	for _, service := range inputBody.Sites {
+		services = append(services, service.Site)
+	}
+	return v.serviceCheck(c, services)
+}
+
+func (v *validator) SignOutValidator(c fiber.Ctx) error {
+	var inputBody dto.ApiAuthSignOut
 	response, err := pkg.ValidateRequestBody(&inputBody, c)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response)

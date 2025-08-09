@@ -8,7 +8,14 @@ type ClientUpdateBody struct {
 	Action          string
 	LimitDays       int
 	DiscountPercent int
-	FinalResult     ManagerResponse
+	WebhookBody     any
+}
+
+type ClientRecieveBody struct {
+	UserID      uint
+	Header      ReqHeaderEntry
+	Services    []SiteRecieve
+	WebhookBody any
 }
 
 type OTPBody struct {

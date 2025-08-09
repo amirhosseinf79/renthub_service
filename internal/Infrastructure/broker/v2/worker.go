@@ -16,17 +16,19 @@ import (
 )
 
 type serverS struct {
-	client         interfaces.BrokerClientInterface_v2
-	server         *asynq.Server
-	serices        map[string]interfaces.ApiService
-	serviceManager interfaces.ServiceManager_v2
-	logger         interfaces.LoggerInterface
-	webhookService interfaces.WebhookService_v2
+	client                interfaces.BrokerClientInterface_v2
+	server                *asynq.Server
+	serices               map[string]interfaces.ApiService
+	serviceUpdateManager  interfaces.ServiceUpdateManager_v2
+	serviceRecieveManager interfaces.ServiceRecieveManager_v2
+	logger                interfaces.LoggerInterface
+	webhookService        interfaces.WebhookService_v2
 }
 
 func NewWorker(
 	client interfaces.BrokerClientInterface_v2,
-	sericeManager interfaces.ServiceManager_v2,
+	serviceUpdateManager interfaces.ServiceUpdateManager_v2,
+	serviceRecieveManager interfaces.ServiceRecieveManager_v2,
 	logger interfaces.LoggerInterface,
 	serices map[string]interfaces.ApiService,
 	webhookService interfaces.WebhookService_v2,
@@ -34,11 +36,12 @@ func NewWorker(
 	redisServer := os.Getenv("RedisServer")
 	redisPass := os.Getenv("RedisPass")
 	return &serverS{
-		serices:        serices,
-		serviceManager: sericeManager,
-		client:         client,
-		logger:         logger,
-		webhookService: webhookService,
+		serices:               serices,
+		serviceUpdateManager:  serviceUpdateManager,
+		serviceRecieveManager: serviceRecieveManager,
+		client:                client,
+		logger:                logger,
+		webhookService:        webhookService,
 		server: asynq.NewServer(
 			asynq.RedisClientOpt{
 				Addr:     redisServer,
@@ -63,7 +66,7 @@ func (s *serverS) StartWorker() {
 	mux := asynq.NewServeMux()
 	mux.HandleFunc("otp:send", s.otpSendHandler)
 	mux.HandleFunc("otp:verify", s.otpVerifyHandler)
-	mux.HandleFunc("update:webhook", s.sendWebhook)
+	mux.HandleFunc("webhook:sendUpdate", s.sendWebhook)
 	mux.HandleFunc("update:", s.updateHandler)
 
 	if err := s.server.Run(mux); err != nil {
@@ -78,7 +81,7 @@ func (s *serverS) updateHandler(ctx context.Context, t *asynq.Task) error {
 		return fmt.Errorf("%v: %w", err, asynq.SkipRetry)
 	}
 	var result request_v2.ManagerResponse
-	serviceManager := s.serviceManager.SetConfigs(p.UserID, p.Header, p.Services, p.Dates)
+	serviceManager := s.serviceUpdateManager.SetConfigs(p.UserID, p.Header, p.Services, p.Dates)
 
 	switch t.Type() {
 	case "update:calendar":
@@ -96,12 +99,29 @@ func (s *serverS) updateHandler(ctx context.Context, t *asynq.Task) error {
 	default:
 		return fmt.Errorf("unexpected task type: %s %w", t.Type(), asynq.SkipRetry)
 	}
-	p.FinalResult = result
+	p.WebhookBody = result
 	if len(result.Results) == 0 {
 		return nil
 	}
 	fmt.Println("Done")
-	s.client.AsyncUpdate("webhook", p)
+	s.client.AsyncUpdate("webhook:sendUpdate", p)
+	return nil
+}
+
+func (s *serverS) recieveUpdate(ctx context.Context, t *asynq.Task) error {
+	var p request_v2.ClientRecieveBody
+	if err := json.Unmarshal(t.Payload(), &p); err != nil {
+		return fmt.Errorf("%v: %w", err, asynq.SkipRetry)
+	}
+
+	recieveManager := s.serviceRecieveManager.SetConfigs(p.UserID, p.Header, p.Services)
+
+	switch t.Type() {
+	case "recieve:reservation":
+		recieveManager.GetReservations()
+	default:
+		return fmt.Errorf("unexpected task type: %s %w", t.Type(), asynq.SkipRetry)
+	}
 	return nil
 }
 
@@ -143,7 +163,7 @@ func (s *serverS) otpVerifyHandler(ctx context.Context, t *asynq.Task) error {
 }
 
 func (s *serverS) sendWebhook(ctx context.Context, t *asynq.Task) error {
-	fmt.Println("update:webhook")
+	fmt.Println(t.Type())
 	var p request_v2.ClientUpdateBody
 	if err := json.Unmarshal(t.Payload(), &p); err != nil {
 		return fmt.Errorf("%v: %w", err, asynq.SkipRetry)

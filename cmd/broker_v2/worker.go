@@ -17,8 +17,8 @@ import (
 	auth_v1 "github.com/amirhosseinf79/renthub_service/internal/services/auth/v1"
 	"github.com/amirhosseinf79/renthub_service/internal/services/chromium"
 	"github.com/amirhosseinf79/renthub_service/internal/services/logger"
+	manager_v2 "github.com/amirhosseinf79/renthub_service/internal/services/manager/update_manager/v2"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
-	manager_v2 "github.com/amirhosseinf79/renthub_service/internal/services/service_manager/v2"
 	webhook_v2 "github.com/amirhosseinf79/renthub_service/internal/services/webhook/v2"
 )
 

@@ -11,6 +11,12 @@ type ReqHeaderWithClientEntry struct {
 	ClientID string `json:"clientId" validate:"required"`
 }
 
+type SiteRecieve struct {
+	ClientID string   `json:"clientId" validate:"required"`
+	Site     string   `json:"site" validate:"required"`
+	Filters  []string `json:"filters"`
+}
+
 type SiteEntry struct {
 	ClientID string `json:"clientId" validate:"required"`
 	Site     string `json:"site" validate:"required"`

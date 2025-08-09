@@ -23,4 +23,5 @@ type ValidatorInterface_v2 interface {
 	RefReshTokenCheck(c fiber.Ctx) error
 	SendOTPCheck(c fiber.Ctx) error
 	VerifyOTPCheck(c fiber.Ctx) error
+	SignOutValidator(c fiber.Ctx) error
 }

@@ -27,18 +27,34 @@ func NewClient() interfaces.BrokerClientInterface_v2 {
 	}
 }
 
-func (c *client) AsyncUpdate(task string, body request_v2.ClientUpdateBody) {
+func (c *client) AsyncUpdate(task string, body request_v2.ClientUpdateBody) error {
 	payload, err := json.Marshal(body)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	t1 := asynq.NewTask(fmt.Sprintf("update:%v", task), payload, asynq.MaxRetry(3))
 	_, err = c.client.Enqueue(t1)
 	if err != nil {
 		fmt.Println(err.Error())
-		return
+		return err
 	}
 	log.Printf("[*] Successfully enqueued task %v", task)
+	return nil
+}
+
+func (c *client) AsyncRecieve(task string, body request_v2.ClientRecieveBody) error {
+	payload, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+	t1 := asynq.NewTask(fmt.Sprintf("recieve:%v", task), payload, asynq.MaxRetry(3))
+	_, err = c.client.Enqueue(t1)
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+	log.Printf("[*] Successfully enqueued task %v", task)
+	return nil
 }
 
 func (c *client) AsyncOTP(task string, body request_v2.OTPBody) {

@@ -1,0 +1,50 @@
+package recieve_manager_v2
+
+import (
+	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
+	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
+	request_v2 "github.com/amirhosseinf79/renthub_service/internal/dto/request/v2"
+)
+
+type sm struct {
+	apiAuthService interfaces.ApiAuthInterface
+	logger         interfaces.LoggerInterface
+	apiServices    map[string]interfaces.ApiService
+	requestHeader  request_v2.ReqHeaderEntry
+	timeLimit      int64
+	userID         uint
+	services       []request_v2.SiteRecieve
+}
+
+func New(
+	apiServices map[string]interfaces.ApiService,
+	apiAuthService interfaces.ApiAuthInterface,
+	logger interfaces.LoggerInterface,
+) interfaces.ServiceRecieveManager_v2 {
+	return &sm{
+		apiAuthService: apiAuthService,
+		apiServices:    apiServices,
+		logger:         logger,
+		timeLimit:      15,
+	}
+}
+
+func (s *sm) SetConfigs(
+	userID uint,
+	header request_v2.ReqHeaderEntry,
+	services []request_v2.SiteRecieve,
+) interfaces.ServiceRecieveManager_v2 {
+	return &sm{
+		apiAuthService: s.apiAuthService,
+		apiServices:    s.apiServices,
+		logger:         s.logger,
+		timeLimit:      s.timeLimit,
+		requestHeader:  header,
+		services:       services,
+		userID:         userID,
+	}
+}
+
+func (s *sm) recordResult(serviceResult *request_v2.ServiceStats, objId string, log *models.Log, err error) {
+	s.logger.RecordLog(log)
+}

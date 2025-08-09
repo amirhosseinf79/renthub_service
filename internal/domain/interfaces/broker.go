@@ -11,7 +11,8 @@ type BrokerClientInterface interface {
 }
 
 type BrokerClientInterface_v2 interface {
-	AsyncUpdate(task string, body request_v2.ClientUpdateBody)
+	AsyncUpdate(task string, body request_v2.ClientUpdateBody) error
+	AsyncRecieve(task string, body request_v2.ClientRecieveBody) error
 	AsyncOTP(task string, body request_v2.OTPBody)
 }
 

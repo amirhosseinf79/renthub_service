@@ -20,3 +20,4 @@ var ErrTimeOut = errors.New("در این لحظه امکان بروزرسانی 
 var ErrInvalidDay = errors.New("روز انتخاب شده معتبر نیست")
 var ErrUnknownMsg = errors.New("خطایی در بروزرسانی رخ داد")
 var ErrJabamaViaTicket = errors.New("محدویت رزرو خود را از طریق تیکت در بخش پشتیبانی جاباما اطلاع دهید")
+var ErrService = errors.New("سرویس به درستی کار نمیکند")

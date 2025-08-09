@@ -20,6 +20,6 @@ func (s server) initApiAuthRoutes_v2(api fiber.Router) {
 	auth.Post("/refresh", s.apiManagerHandler_v2.RefreshToken, s.apiManagerValidator_v2.RefReshTokenCheck)
 	auth.Post("/send-otp", s.apiManagerHandler_v2.SendServiceOTP, s.apiManagerValidator_v2.SendOTPCheck)
 	auth.Post("/verify-otp", s.apiManagerHandler_v2.VerifyServiceOTP, s.apiManagerValidator_v2.VerifyOTPCheck)
-	auth.Post("/sign-out", s.apiManagerHandler_v2.SignOutClient)
+	auth.Post("/sign-out", s.apiManagerHandler_v2.SignOutClient, s.apiManagerValidator_v2.SignOutValidator)
 	// auth.Post("/", s.apiManagerHandler.TokenLogin)
 }

@@ -53,7 +53,7 @@ func (w *webhookS) SendResult(response request_v2.ClientUpdateBody) (log *models
 		"Authorization": userM.HookToken,
 	}
 	request := w.request.New("POST", response.Header.CallbackUrl, header, extraH, log)
-	err = request.Start(response.FinalResult, "body")
+	err = request.Start(response.WebhookBody, "body")
 	if err != nil {
 		var dnsErr *net.DNSError
 		if has := errors.As(err, &dnsErr); has {
