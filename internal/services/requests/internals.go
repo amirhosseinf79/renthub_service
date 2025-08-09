@@ -72,7 +72,7 @@ func (f *fetchS) requestQuery(queryRow any) error {
 	if ok {
 		for title, value := range filters {
 			if value != nil {
-				queries += fmt.Sprintf("%s=%s&", title, value)
+				queries += fmt.Sprintf("%s=%v&", title, value)
 			}
 		}
 		queries = strings.TrimRight(queries, "&")
