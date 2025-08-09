@@ -190,5 +190,9 @@ func (v *validator) RecieveDataValidator(c fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
-	return c.Next()
+	var services []string
+	for _, service := range fields.Sites {
+		services = append(services, service.Site)
+	}
+	return v.serviceCheck(c, services)
 }
