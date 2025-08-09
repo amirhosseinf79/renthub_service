@@ -24,7 +24,7 @@ func NewRecieveHandler(
 }
 
 func (h *handler) GetReservations(ctx fiber.Ctx) error {
-	var fields request_v2.RecieveBody
+	var fields = request_v2.RecieveBody{}
 	ctx.Bind().Body(&fields)
 	userID := ctx.Locals("userID").(uint)
 
