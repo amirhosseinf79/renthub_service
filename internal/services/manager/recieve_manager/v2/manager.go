@@ -50,11 +50,13 @@ func (s *sm) recordResult(log *models.Log, err error, response any) receive_mana
 	s.logger.RecordLog(log)
 	if err != nil {
 		return receive_manager_dto.SiteResponse{
+			ResponseCode: log.StatusCode,
 			ErrorMessage: err.Error(),
 		}
 	}
 	return receive_manager_dto.SiteResponse{
-		Success:  true,
-		Response: response,
+		Success:      true,
+		ResponseCode: log.StatusCode,
+		Response:     response,
 	}
 }
