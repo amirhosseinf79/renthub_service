@@ -25,7 +25,7 @@ func (v *validator) serviceCheck(c fiber.Ctx, services []string) error {
 		_, ok := v.services[service]
 		if !ok {
 			return c.Status(fiber.StatusBadRequest).JSON(dto.ErrorResponse{
-				Message: dto.ErrInvalidRequest.Error(),
+				Message: dto.ErrServiceNotExists.Error(),
 			})
 		}
 	}
