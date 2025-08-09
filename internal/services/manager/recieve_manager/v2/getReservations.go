@@ -30,6 +30,7 @@ func (s *sm) asyncGetReservations(field request_v2.SiteRecieve, result chan rece
 }
 
 func (s *sm) GetReservations() (response receive_manager_dto.RecieveResponse) {
+	response = make(receive_manager_dto.RecieveResponse)
 	siteResponse := make(chan receive_manager_dto.SiteResponse)
 	defer close(siteResponse)
 
