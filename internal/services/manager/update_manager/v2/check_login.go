@@ -1,6 +1,9 @@
 package update_manager_v2
 
 import (
+	"errors"
+	"time"
+
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	request_v2 "github.com/amirhosseinf79/renthub_service/internal/dto/request/v2"
@@ -19,8 +22,19 @@ func (s *sm) asyncCheckAuth(serviceName string, chResult chan request_v2.Service
 		UserID:   s.userID,
 		ClientID: s.requestHeader.ClientID,
 	}
-	log, err = selectedService.CheckLogin(fields)
-	s.recordResult(&serviceResult, "", log, err)
+	savedTime := time.Now().Unix()
+	currentTime := savedTime
+	for currentTime-savedTime < s.timeLimit {
+		currentTime = time.Now().Unix()
+		log, err = selectedService.CheckLogin(fields)
+		s.recordResult(&serviceResult, "", log, err)
+		if err != nil {
+			if errors.Is(err, dto.ErrTimeOut) {
+				continue
+			}
+		}
+		break
+	}
 	chResult <- serviceResult
 }
 
