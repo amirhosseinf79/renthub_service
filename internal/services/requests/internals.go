@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"regexp"
+	"strings"
 
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	"github.com/google/go-querystring/query"
@@ -66,11 +67,24 @@ func (f *fetchS) requestMultipart(bodyRow any) (*bytes.Buffer, string, error) {
 // }
 
 func (f *fetchS) requestQuery(queryRow any) error {
-	v, err := query.Values(queryRow)
-	if err != nil {
-		return err
+	filters, ok := queryRow.(map[string]any)
+	queries := ""
+	if ok {
+		for title, value := range filters {
+			if value != nil {
+				queries += fmt.Sprintf("%s=%s&", title, value)
+			}
+		}
+		queries = strings.TrimRight(queries, "&")
+	} else {
+		v, err := query.Values(queryRow)
+		if err != nil {
+			return err
+		}
+		queries = v.Encode()
 	}
-	fullURL := fmt.Sprintf("%s?%s", f.url, v.Encode())
+
+	fullURL := fmt.Sprintf("%s?%s", f.url, queries)
 	f.url = fullURL
 	return nil
 }
