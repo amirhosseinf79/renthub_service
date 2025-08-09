@@ -11,6 +11,11 @@ func (s *sm) asyncGetReservations(field request_v2.SiteRecieve, result chan rece
 	if !ok {
 		return
 	}
+
+	if field.Filters == nil {
+		field.Filters = make(map[string]any)
+	}
+
 	fields := dto.RecieveFields{
 		RequiredFields: dto.RequiredFields{
 			UserID:   s.userID,
