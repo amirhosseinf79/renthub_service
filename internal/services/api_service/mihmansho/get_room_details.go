@@ -15,6 +15,7 @@ func (h *service) GetRoomDetails(fields dto.UpdateFields, response any) (log *mo
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = dto.ErrorApiTokenExpired
 		}
+		log.StatusCode = 401
 		log.FinalResult = err.Error()
 		return
 	}

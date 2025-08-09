@@ -16,6 +16,7 @@ func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.End
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = dto.ErrorApiTokenExpired
 		}
+		log.StatusCode = 401
 		log.FinalResult = err.Error()
 		return err
 	}
@@ -54,6 +55,7 @@ func (h *service) handleGetResult(log *models.Log, endpoint dto.EndP, fields dto
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = dto.ErrorApiTokenExpired
 		}
+		log.StatusCode = 401
 		log.FinalResult = err.Error()
 		return err
 	}
