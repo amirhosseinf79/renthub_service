@@ -15,6 +15,7 @@ func (h *service) AutoLogin(fields dto.RequiredFields) (log *models.Log, err err
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			err = dto.ErrorApiTokenExpired
 		}
+		log.FinalResult = err.Error()
 		return log, err
 	}
 	// newSessionID, err := h.getSession(model.AccessToken, log)

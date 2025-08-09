@@ -5,6 +5,7 @@ import (
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
+	"gorm.io/gorm"
 )
 
 func (h *service) AutoLogin(fields dto.RequiredFields) (log *models.Log, err error) {
@@ -12,6 +13,9 @@ func (h *service) AutoLogin(fields dto.RequiredFields) (log *models.Log, err err
 	endpoint := h.getEndpoints().LoginWithPass
 	model, err := h.apiAuthService.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = dto.ErrorApiTokenExpired
+		}
 		log.FinalResult = err.Error()
 		return log, err
 	}
