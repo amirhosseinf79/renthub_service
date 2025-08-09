@@ -47,6 +47,7 @@ func (s *sm) SetConfigs(
 }
 
 func (s *sm) recordResult(log *models.Log, err error, response any) receive_manager_dto.SiteResponse {
+	log.UpdateID = s.requestHeader.UpdateId
 	s.logger.RecordLog(log)
 	if err != nil {
 		return receive_manager_dto.SiteResponse{
