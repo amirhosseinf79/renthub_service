@@ -1,6 +1,8 @@
 package recieve_manager_v2
 
 import (
+	"time"
+
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 	receive_manager_dto "github.com/amirhosseinf79/renthub_service/internal/dto/receive_manager"
 	request_v2 "github.com/amirhosseinf79/renthub_service/internal/dto/request/v2"
@@ -23,9 +25,15 @@ func (s *sm) asyncGetReservations(field request_v2.SiteRecieve, result chan rece
 		},
 		Filters: field.Filters,
 	}
-	var response any
-	log, err := service.GetReservations(fields, &response)
-	finalResponse := s.recordResult(log, err, response)
+	var finalResponse receive_manager_dto.SiteResponse
+	savedTime := time.Now().Unix()
+	currentTime := savedTime
+	for currentTime-savedTime < s.timeLimit {
+		currentTime = time.Now().Unix()
+		var response any
+		log, err := service.GetReservations(fields, &response)
+		finalResponse = s.recordResult(log, err, response)
+	}
 	result <- finalResponse
 }
 
