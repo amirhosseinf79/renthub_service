@@ -48,7 +48,7 @@ func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.End
 	return nil
 }
 
-func (h *service) handleGet(log *models.Log, body any, endpoint dto.EndP, fields dto.GetDetail, response any) (err error) {
+func (h *service) handleGetResult(log *models.Log, endpoint dto.EndP, fields dto.RecieveFields, response any) error {
 	model, err := h.apiAuthService.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -57,13 +57,15 @@ func (h *service) handleGet(log *models.Log, body any, endpoint dto.EndP, fields
 		log.FinalResult = err.Error()
 		return err
 	}
-	url, err := h.getFullURL(endpoint, fields.RoomID)
+
+	url, err := h.getFullURL(endpoint)
 	if err != nil {
 		log.FinalResult = err.Error()
 		return err
 	}
+
 	request := h.request.New(endpoint.Method, url, h.getHeader(), h.getExtraHeader(model), log)
-	err = request.Start(body, endpoint.ContentType)
+	err = request.Start(fields.Filters, endpoint.ContentType)
 	if err != nil {
 		log.FinalResult = err.Error()
 		return err
@@ -71,14 +73,23 @@ func (h *service) handleGet(log *models.Log, body any, endpoint dto.EndP, fields
 	ok, err := request.Ok()
 	if !ok {
 		log.FinalResult = err.Error()
+		response := h.generateUpdateErrResponse()
+		err2 := request.ParseInterface(response)
+		if err2 != nil {
+			return err
+		}
+		_, result := response.GetResult()
+		log.FinalResult = result
+		err = errors.New(result)
 		return err
 	}
-	log.IsSucceed = true
-	log.FinalResult = "success"
-	err2 := request.ParseInterface(response)
-	if err2 != nil {
-		return err2
+	err = request.ParseInterface(response)
+	if err != nil {
+		log.FinalResult = err.Error()
+		return err
 	}
+	log.FinalResult = "success"
+	log.IsSucceed = true
 	return nil
 }
 
@@ -88,7 +99,7 @@ func (h *service) updateRoomID(fields *dto.UpdateFields) (log *models.Log, err e
 	for !found && counter < 2 {
 		counter++
 		result := jabama_dto.RoomListResponse{}
-		getFields := dto.GetDetail{
+		getFields := dto.RecieveFields{
 			RequiredFields: fields.RequiredFields,
 		}
 		log, err = h.GetRoomList(getFields, &result)

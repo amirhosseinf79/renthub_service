@@ -69,7 +69,9 @@ func main() {
 	apiManagerValidator_v2 := middleware_v2.NewValidator(services)
 	apiTokenMiddleware_v2 := middleware_v2.NewApiTokenMiddleware(broker_v2, apiAuthService)
 	apiManagerHandler_v2 := handler_v2.NewManagerHandler(services, broker_v2, apiAuthService)
+	apiRecieveHandler_v2 := handler_v2.NewRecieveHandler(broker_v2)
 
+	// server
 	server := server.NewServer(
 		authUserService_v1.AuthTokenMiddleware,
 		authUserService_v1.UserHandler,
@@ -80,6 +82,7 @@ func main() {
 		apiManagerValidator_v2,
 		apiTokenMiddleware_v2,
 		apiManagerHandler_v2,
+		apiRecieveHandler_v2,
 	)
 
 	server.InitServer()

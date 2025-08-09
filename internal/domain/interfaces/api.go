@@ -17,6 +17,7 @@ type ApiService interface {
 	RemoveDiscount(dto.UpdateFields) (*models.Log, error)
 	SetMinNight(dto.UpdateFields) (*models.Log, error)
 	UnsetMiniNight(dto.UpdateFields) (*models.Log, error)
+	GetReservations(dto.RecieveFields, any) (*models.Log, error)
 	// GetRooms()
 	// GetRoomDetails()
 }

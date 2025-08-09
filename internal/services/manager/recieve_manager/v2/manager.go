@@ -3,6 +3,7 @@ package recieve_manager_v2
 import (
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
+	receive_manager_dto "github.com/amirhosseinf79/renthub_service/internal/dto/receive_manager"
 	request_v2 "github.com/amirhosseinf79/renthub_service/internal/dto/request/v2"
 )
 
@@ -20,7 +21,7 @@ func New(
 	apiServices map[string]interfaces.ApiService,
 	apiAuthService interfaces.ApiAuthInterface,
 	logger interfaces.LoggerInterface,
-) interfaces.ServiceRecieveManager_v2 {
+) interfaces.ServiceRecieveManagerV2 {
 	return &sm{
 		apiAuthService: apiAuthService,
 		apiServices:    apiServices,
@@ -33,7 +34,7 @@ func (s *sm) SetConfigs(
 	userID uint,
 	header request_v2.ReqHeaderEntry,
 	services []request_v2.SiteRecieve,
-) interfaces.ServiceRecieveManager_v2 {
+) interfaces.ServiceRecieveManagerV2 {
 	return &sm{
 		apiAuthService: s.apiAuthService,
 		apiServices:    s.apiServices,
@@ -45,6 +46,15 @@ func (s *sm) SetConfigs(
 	}
 }
 
-func (s *sm) recordResult(serviceResult *request_v2.ServiceStats, objId string, log *models.Log, err error) {
+func (s *sm) recordResult(log *models.Log, err error, response any) receive_manager_dto.SiteResponse {
 	s.logger.RecordLog(log)
+	if err != nil {
+		return receive_manager_dto.SiteResponse{
+			ErrorMessage: err.Error(),
+		}
+	}
+	return receive_manager_dto.SiteResponse{
+		Success:  true,
+		Response: response,
+	}
 }

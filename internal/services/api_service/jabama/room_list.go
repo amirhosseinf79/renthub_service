@@ -5,9 +5,9 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
 )
 
-func (h *service) GetRoomList(fields dto.GetDetail, result any) (log *models.Log, err error) {
+func (h *service) GetRoomList(fields dto.RecieveFields, result any) (log *models.Log, err error) {
 	log = h.initLog(fields.UserID, fields.ClientID, dto.GetRoomList)
 	endpoint := h.getEndpoints().GETRooms
-	err = h.handleGet(log, nil, endpoint, fields, result)
+	err = h.handleGetResult(log, endpoint, fields, result)
 	return
 }

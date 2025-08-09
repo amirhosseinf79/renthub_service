@@ -9,7 +9,6 @@ import (
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
-	request_v2 "github.com/amirhosseinf79/renthub_service/internal/dto/request/v2"
 	"github.com/hibiken/asynq"
 )
 
@@ -25,13 +24,13 @@ func NewWebhookService(userService interfaces.UserService, request interfaces.Fe
 	}
 }
 
-func (w *webhookS) SendResult(response request_v2.ClientUpdateBody) (log *models.Log, err error) {
+func (w *webhookS) SendResult(response dto.WebhookFields) (log *models.Log, err error) {
 	log = &models.Log{
 		UserID:   response.UserID,
 		ClientID: "-",
 		Service:  "webhook",
 		Action:   "sendWebhook",
-		UpdateID: response.Header.UpdateId,
+		UpdateID: response.UpdateId,
 	}
 
 	userM, err := w.userService.GetUserById(response.UserID)
@@ -40,7 +39,7 @@ func (w *webhookS) SendResult(response request_v2.ClientUpdateBody) (log *models
 		return
 	}
 
-	_, err = url.ParseRequestURI(response.Header.CallbackUrl)
+	_, err = url.ParseRequestURI(response.CallbackUrl)
 	if err != nil {
 		log.FinalResult = "ignored/invalid url"
 		return log, fmt.Errorf("err: %w %w", err, asynq.SkipRetry)
@@ -52,8 +51,8 @@ func (w *webhookS) SendResult(response request_v2.ClientUpdateBody) (log *models
 	extraH := map[string]string{
 		"Authorization": userM.HookToken,
 	}
-	request := w.request.New("POST", response.Header.CallbackUrl, header, extraH, log)
-	err = request.Start(response.WebhookBody, "body")
+	request := w.request.New("POST", response.CallbackUrl, header, extraH, log)
+	err = request.Start(response.Body, "body")
 	if err != nil {
 		var dnsErr *net.DNSError
 		if has := errors.As(err, &dnsErr); has {

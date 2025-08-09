@@ -183,3 +183,12 @@ func (v *validator) SignOutValidator(c fiber.Ctx) error {
 	}
 	return c.Next()
 }
+
+func (v *validator) RecieveDataValidator(c fiber.Ctx) error {
+	var fields request_v2.RecieveBody
+	response, err := pkg.ValidateRequestBody(&fields, c)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+	return c.Next()
+}

@@ -10,7 +10,9 @@ import (
 	"time"
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/interfaces"
+	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
+	receive_manager_dto "github.com/amirhosseinf79/renthub_service/internal/dto/receive_manager"
 	request_v2 "github.com/amirhosseinf79/renthub_service/internal/dto/request/v2"
 	"github.com/hibiken/asynq"
 )
@@ -19,16 +21,16 @@ type serverS struct {
 	client                interfaces.BrokerClientInterface_v2
 	server                *asynq.Server
 	serices               map[string]interfaces.ApiService
-	serviceUpdateManager  interfaces.ServiceUpdateManager_v2
-	serviceRecieveManager interfaces.ServiceRecieveManager_v2
+	serviceUpdateManager  interfaces.ServiceUpdateManagerV2
+	serviceRecieveManager interfaces.ServiceRecieveManagerV2
 	logger                interfaces.LoggerInterface
 	webhookService        interfaces.WebhookService_v2
 }
 
 func NewWorker(
 	client interfaces.BrokerClientInterface_v2,
-	serviceUpdateManager interfaces.ServiceUpdateManager_v2,
-	serviceRecieveManager interfaces.ServiceRecieveManager_v2,
+	serviceUpdateManager interfaces.ServiceUpdateManagerV2,
+	serviceRecieveManager interfaces.ServiceRecieveManagerV2,
 	logger interfaces.LoggerInterface,
 	serices map[string]interfaces.ApiService,
 	webhookService interfaces.WebhookService_v2,
@@ -66,8 +68,9 @@ func (s *serverS) StartWorker() {
 	mux := asynq.NewServeMux()
 	mux.HandleFunc("otp:send", s.otpSendHandler)
 	mux.HandleFunc("otp:verify", s.otpVerifyHandler)
-	mux.HandleFunc("webhook:sendUpdate", s.sendWebhook)
+	mux.HandleFunc("webhook:send", s.sendWebhook)
 	mux.HandleFunc("update:", s.updateHandler)
+	mux.HandleFunc("recieve:", s.recieveHandler)
 
 	if err := s.server.Run(mux); err != nil {
 		log.Fatal(err)
@@ -104,24 +107,26 @@ func (s *serverS) updateHandler(ctx context.Context, t *asynq.Task) error {
 		return nil
 	}
 	fmt.Println("Done")
-	s.client.AsyncUpdate("webhook:sendUpdate", p)
+	s.client.AsyncUpdate("webhook:send", p)
 	return nil
 }
 
-func (s *serverS) recieveUpdate(ctx context.Context, t *asynq.Task) error {
+func (s *serverS) recieveHandler(ctx context.Context, t *asynq.Task) error {
 	var p request_v2.ClientRecieveBody
 	if err := json.Unmarshal(t.Payload(), &p); err != nil {
 		return fmt.Errorf("%v: %w", err, asynq.SkipRetry)
 	}
 
 	recieveManager := s.serviceRecieveManager.SetConfigs(p.UserID, p.Header, p.Services)
-
+	var response receive_manager_dto.RecieveResponse
 	switch t.Type() {
 	case "recieve:reservation":
-		recieveManager.GetReservations()
+		response = recieveManager.GetReservations()
 	default:
 		return fmt.Errorf("unexpected task type: %s %w", t.Type(), asynq.SkipRetry)
 	}
+	p.WebhookBody = response
+	s.client.AsyncRecieve("webhook:send", p)
 	return nil
 }
 
@@ -164,15 +169,43 @@ func (s *serverS) otpVerifyHandler(ctx context.Context, t *asynq.Task) error {
 
 func (s *serverS) sendWebhook(ctx context.Context, t *asynq.Task) error {
 	fmt.Println(t.Type())
-	var p request_v2.ClientUpdateBody
-	if err := json.Unmarshal(t.Payload(), &p); err != nil {
+	var log *models.Log
+	var err error
+
+	var p1 request_v2.ClientUpdateBody
+	var p2 request_v2.ClientRecieveBody
+
+	err1 := json.Unmarshal(t.Payload(), &p1)
+	err2 := json.Unmarshal(t.Payload(), &p2)
+
+	var whFields dto.WebhookFields
+
+	if err1 == nil {
+		whFields = dto.WebhookFields{
+			UserID:      p1.UserID,
+			UpdateId:    p1.Header.UpdateId,
+			CallbackUrl: p1.Header.CallbackUrl,
+			Body:        p1.WebhookBody,
+		}
+		log, err = s.webhookService.SendResult(whFields)
+
+	} else if err2 == nil {
+		whFields = dto.WebhookFields{
+			UserID:      p2.UserID,
+			UpdateId:    p2.Header.UpdateId,
+			CallbackUrl: p2.Header.CallbackUrl,
+			Body:        p2.WebhookBody,
+		}
+		log, err = s.webhookService.SendResult(whFields)
+
+	} else {
 		return fmt.Errorf("%v: %w", err, asynq.SkipRetry)
 	}
-	log, err := s.webhookService.SendResult(p)
+
 	s.logger.RecordLog(log)
 	if err != nil {
 		if log.StatusCode == 401 {
-			log, err2 := s.webhookService.RefreshToken(p.UserID)
+			log, err2 := s.webhookService.RefreshToken(whFields.UserID)
 			s.logger.RecordLog(log)
 			if err2 != nil {
 				fmt.Println(err2)

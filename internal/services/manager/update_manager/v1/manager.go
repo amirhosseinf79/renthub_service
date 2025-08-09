@@ -1,4 +1,4 @@
-package manager_v1
+package update_manager_v1
 
 import (
 	"sort"

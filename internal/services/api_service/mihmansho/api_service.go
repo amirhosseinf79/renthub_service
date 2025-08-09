@@ -47,6 +47,7 @@ func New(
 				UnsetMinNight:      dto.EndP{Address: "/Account/Home/AddSpecificsMinDay", Method: "POST", ContentType: "multipart"},
 				GetCalendarDetails: dto.EndP{Address: "/myapi/v1/getcalendar", Method: "POST", ContentType: "query"},
 				GETRoomDetails:     dto.EndP{Address: "/myapi/v1/homedetails?id=%v", Method: "GET", ContentType: "body"},
+				GetReservations:    dto.EndP{Address: "myapi/v1/filterandsearchuserrequest", Method: "GET", ContentType: "body"},
 			},
 			Headers: map[string]string{
 				"user-agent":      "okhttp/3.12.1",

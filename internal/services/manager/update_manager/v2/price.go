@@ -1,4 +1,4 @@
-package manager_v2
+package update_manager_v2
 
 import (
 	"errors"

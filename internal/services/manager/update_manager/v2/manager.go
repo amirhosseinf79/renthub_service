@@ -1,4 +1,4 @@
-package manager_v2
+package update_manager_v2
 
 import (
 	"sort"
@@ -23,7 +23,7 @@ func New(
 	apiServices map[string]interfaces.ApiService,
 	apiAuthService interfaces.ApiAuthInterface,
 	logger interfaces.LoggerInterface,
-) interfaces.ServiceUpdateManager_v2 {
+) interfaces.ServiceUpdateManagerV2 {
 	return &sm{
 		apiAuthService: apiAuthService,
 		apiServices:    apiServices,
@@ -37,7 +37,7 @@ func (s *sm) SetConfigs(
 	header request_v2.ReqHeaderEntry,
 	services []request_v2.SiteEntry,
 	dates []string,
-) interfaces.ServiceUpdateManager_v2 {
+) interfaces.ServiceUpdateManagerV2 {
 	sort.Strings(dates)
 	return &sm{
 		apiAuthService: s.apiAuthService,

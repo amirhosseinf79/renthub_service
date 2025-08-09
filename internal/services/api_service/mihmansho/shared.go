@@ -47,6 +47,51 @@ func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.End
 	return err
 }
 
+func (h *service) handleGetResult(log *models.Log, endpoint dto.EndP, fields dto.RecieveFields, response any) error {
+	model, err := h.apiAuthService.GetByUnique(fields.UserID, fields.ClientID, h.service)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = dto.ErrorApiTokenExpired
+		}
+		log.FinalResult = err.Error()
+		return err
+	}
+
+	url, err := h.getFullURL(endpoint)
+	if err != nil {
+		log.FinalResult = err.Error()
+		return err
+	}
+
+	request := h.request.New(endpoint.Method, url, h.getHeader(), h.getExtraHeader(model), log)
+	err = request.Start(fields.Filters, endpoint.ContentType)
+	if err != nil {
+		log.FinalResult = err.Error()
+		return err
+	}
+	ok, err := request.Ok()
+	if !ok {
+		log.FinalResult = err.Error()
+		response := h.generateUpdateErrResponse()
+		err2 := request.ParseInterface(response)
+		if err2 != nil {
+			return err
+		}
+		_, result := response.GetResult()
+		log.FinalResult = result
+		err = errors.New(result)
+		return err
+	}
+	err = request.ParseInterface(response)
+	if err != nil {
+		log.FinalResult = err.Error()
+		return err
+	}
+	log.FinalResult = "success"
+	log.IsSucceed = true
+	return nil
+}
+
 func (h *service) getAddGuestPrice(fields dto.UpdateFields) (guestPrice int, log *models.Log, err error) {
 	guestPrice = -1
 	counter := 0

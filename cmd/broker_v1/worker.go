@@ -17,8 +17,8 @@ import (
 	auth_v1 "github.com/amirhosseinf79/renthub_service/internal/services/auth/v1"
 	"github.com/amirhosseinf79/renthub_service/internal/services/chromium"
 	"github.com/amirhosseinf79/renthub_service/internal/services/logger"
+	update_manager_v1 "github.com/amirhosseinf79/renthub_service/internal/services/manager/update_manager/v1"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
-	manager_v1 "github.com/amirhosseinf79/renthub_service/internal/services/service_manager/v1"
 	webhook_v1 "github.com/amirhosseinf79/renthub_service/internal/services/webhook/v1"
 )
 
@@ -60,7 +60,7 @@ func main() {
 		"shab":      shabService,
 	}
 
-	serviceManager := manager_v1.New(
+	serviceManager := update_manager_v1.New(
 		services,
 		apiAuthService,
 		logService,

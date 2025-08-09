@@ -1,4 +1,4 @@
-package manager_v1
+package update_manager_v1
 
 import (
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"

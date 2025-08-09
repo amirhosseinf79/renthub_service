@@ -14,6 +14,14 @@ func (s server) initManagerRoutes_v2(api fiber.Router) {
 	update.Post("/price", s.apiManagerHandler_v2.UpdatePrice, s.apiManagerValidator_v2.PriceUpdate)
 }
 
+func (s server) initRecieveRoutes_v2(api fiber.Router) {
+	update := api.Group(
+		"/service/recieve",
+		s.tokenMiddleware.CheckTokenAuth,
+	)
+	update.Post("/reservations", s.apiRecieveManager_v2.GetReservations, s.apiManagerValidator_v2.RecieveDataValidator)
+}
+
 func (s server) initApiAuthRoutes_v2(api fiber.Router) {
 	auth := api.Group("/service/auth", s.tokenMiddleware.CheckTokenAuth)
 	auth.Post("/check", s.apiManagerHandler_v2.CheckAuth, s.apiTokenMiddleware_v2.ApiAuthValidator)

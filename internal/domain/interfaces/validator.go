@@ -24,4 +24,5 @@ type ValidatorInterface_v2 interface {
 	SendOTPCheck(c fiber.Ctx) error
 	VerifyOTPCheck(c fiber.Ctx) error
 	SignOutValidator(c fiber.Ctx) error
+	RecieveDataValidator(c fiber.Ctx) error
 }

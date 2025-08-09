@@ -1,5 +1,7 @@
 package request_v2
 
+import "github.com/amirhosseinf79/renthub_service/internal/dto"
+
 type ReqHeaderEntry struct {
 	UpdateId    string `json:"updateId" validate:"required"`
 	CallbackUrl string `json:"callbackUrl" validate:"required"`
@@ -12,9 +14,9 @@ type ReqHeaderWithClientEntry struct {
 }
 
 type SiteRecieve struct {
-	ClientID string   `json:"clientId" validate:"required"`
-	Site     string   `json:"site" validate:"required"`
-	Filters  []string `json:"filters"`
+	ClientID string          `json:"clientId" validate:"required"`
+	Site     string          `json:"site" validate:"required"`
+	Filters  dto.SiteFilters `json:"filters"`
 }
 
 type SiteEntry struct {

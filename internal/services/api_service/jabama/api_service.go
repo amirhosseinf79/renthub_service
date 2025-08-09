@@ -37,6 +37,7 @@ func New(apiAuthService interfaces.ApiAuthInterface, request interfaces.FetchSer
 				RemoveDiscount:     dto.EndP{Address: "/taraaz/v1/accommodation/host/base-price/update/calendar/%v", Method: "PUT", ContentType: "body"},
 				GetCalendarDetails: dto.EndP{Address: "/taraaz/v1/pricing/management/accommodation/%v", Method: "POST", ContentType: "body"},
 				GETRooms:           dto.EndP{Address: "/v2/accommodation/host/accommodation", Method: "GET", ContentType: "query"},
+				GetReservations:    dto.EndP{Address: "/taraaz/v1/order/reserve-management/all", Method: "GET", ContentType: "query"},
 				// GETRoomDetails:  dto.EndP{Address: "/v2/accommodation/host/accommodation", Method: "GET", ContentType: "query"},
 			},
 			Headers: map[string]string{

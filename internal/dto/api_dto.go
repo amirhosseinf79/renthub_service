@@ -18,6 +18,13 @@ type UpdateFields struct {
 	Amount int
 }
 
+type SiteFilters = map[string]any
+
+type RecieveFields struct {
+	RequiredFields
+	Filters SiteFilters
+}
+
 type ApiEasyLogin struct {
 	RequiredFields
 	Username string
@@ -45,6 +52,7 @@ type ApiEndpoints struct {
 	GETRooms           EndP
 	GETRoomDetails     EndP
 	GetCalendarDetails EndP
+	GetReservations    EndP
 }
 
 type ApiSettings struct {

@@ -17,7 +17,8 @@ import (
 	auth_v1 "github.com/amirhosseinf79/renthub_service/internal/services/auth/v1"
 	"github.com/amirhosseinf79/renthub_service/internal/services/chromium"
 	"github.com/amirhosseinf79/renthub_service/internal/services/logger"
-	manager_v2 "github.com/amirhosseinf79/renthub_service/internal/services/manager/update_manager/v2"
+	recieve_manager_v2 "github.com/amirhosseinf79/renthub_service/internal/services/manager/recieve_manager/v2"
+	update_manager_v2 "github.com/amirhosseinf79/renthub_service/internal/services/manager/update_manager/v2"
 	"github.com/amirhosseinf79/renthub_service/internal/services/requests"
 	webhook_v2 "github.com/amirhosseinf79/renthub_service/internal/services/webhook/v2"
 )
@@ -60,16 +61,14 @@ func main() {
 		"shab":      shabService,
 	}
 
-	serviceManager := manager_v2.New(
-		services,
-		apiAuthService,
-		logService,
-	)
+	serviceUpdateManager := update_manager_v2.New(services, apiAuthService, logService)
+	serviceRecieveManager := recieve_manager_v2.New(services, apiAuthService, logService)
 
 	fmt.Println("Connecting to worker...")
 	broker := broker_v2.NewWorker(
 		clientServiceManager,
-		serviceManager,
+		serviceUpdateManager,
+		serviceRecieveManager,
 		logService,
 		services,
 		webhookService,

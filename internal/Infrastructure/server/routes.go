@@ -11,4 +11,5 @@ func (s server) InitRoutes() {
 
 	s.initManagerRoutes_v2(api_v2)
 	s.initApiAuthRoutes_v2(api_v2)
+	s.initRecieveRoutes_v2(api_v2)
 }

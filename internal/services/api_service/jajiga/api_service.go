@@ -45,6 +45,7 @@ func New(
 				RemoveDiscount:  dto.EndP{Address: "/nights", Method: "PUT", ContentType: "body"},
 				SetMinNight:     dto.EndP{Address: "/nights", Method: "PUT", ContentType: "body"},
 				UnsetMinNight:   dto.EndP{Address: "/nights", Method: "PUT", ContentType: "body"},
+				GetReservations: dto.EndP{Address: "/reserves", Method: "GET", ContentType: "query"},
 			},
 			Headers: map[string]string{
 				"user-Agent":      "Dart/2.19 (dart:io)",

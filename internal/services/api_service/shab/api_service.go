@@ -36,6 +36,7 @@ func New(apiAuthService interfaces.ApiAuthInterface, request interfaces.FetchSer
 				RemoveDiscount:  dto.EndP{Address: "/house/%v/calendar", Method: "POST", ContentType: "body"},
 				SetMinNight:     dto.EndP{Address: "/house/%v/calendar", Method: "POST", ContentType: "body"},
 				UnsetMinNight:   dto.EndP{Address: "/house/%v/calendar", Method: "POST", ContentType: "body"},
+				GetReservations: dto.EndP{Address: "/reserve", Method: "GET", ContentType: "query"},
 			},
 			Headers: map[string]string{
 				"User-Agent":    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:138.0) Gecko/20100101 Firefox/138.0",

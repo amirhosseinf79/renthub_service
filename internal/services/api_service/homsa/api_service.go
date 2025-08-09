@@ -37,6 +37,7 @@ func New(apiAuthService interfaces.ApiAuthInterface, request interfaces.FetchSer
 				RemoveDiscount:  dto.EndP{Address: "/host/room/%v/calendar/remove_discount", Method: "POST", ContentType: "body"},
 				SetMinNight:     dto.EndP{Address: "/host/room/%v/calendar/update_availability_rule", Method: "POST", ContentType: "body"},
 				UnsetMinNight:   dto.EndP{Address: "/host/room/%v/calendar/delete_availability_rule", Method: "POST", ContentType: "body"},
+				GetReservations: dto.EndP{Address: "/host/reservations", Method: "GET", ContentType: "query"},
 			},
 			Headers: map[string]string{
 				"user-Agent":     "Dart/2.19 (dart:io)",
