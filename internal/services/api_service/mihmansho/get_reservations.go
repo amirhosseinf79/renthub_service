@@ -11,7 +11,10 @@ func (h *service) GetReservations(fields dto.RecieveFields, response any) (*mode
 	log := h.initLog(fields.UserID, fields.ClientID, dto.GetReservations)
 	endpoint := h.getEndpoints().GetReservations
 
+	fields.Filters["pagenumber"] = 1
 	fields.Filters["pagesize"] = 30
+	fields.Filters["typeproduct"] = 1
+	fields.Filters["type"] = 1
 
 	err := h.handleGetResult(log, endpoint, fields, response)
 	return log, err
