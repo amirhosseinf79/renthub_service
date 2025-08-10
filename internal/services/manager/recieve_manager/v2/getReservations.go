@@ -38,6 +38,12 @@ func (s *sm) asyncGetReservations(field request_v2.SiteRecieve, result chan rece
 			if errors.Is(err, dto.ErrTimeOut) {
 				continue
 			}
+			if field.Site == "jabama" && log.StatusCode == 401 {
+				log, _ := service.AutoLogin(fields.RequiredFields)
+				if log.StatusCode == 200 {
+					continue
+				}
+			}
 		}
 		break
 	}
