@@ -15,9 +15,10 @@ func NewTokenService(repo repository.TokenRepository) interfaces.TokenService {
 	return &tokenService{repo: repo}
 }
 
-func (t *tokenService) GenerateToken(userId uint) (*models.Token, error) {
+func (t *tokenService) GenerateToken(userID uint, accessIP string) (*models.Token, error) {
 	token := &models.Token{
-		UserID: userId,
+		UserID:   userID,
+		AccessIP: accessIP,
 	}
 
 	err := t.repo.Create(token)

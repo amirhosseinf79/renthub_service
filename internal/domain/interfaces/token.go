@@ -6,7 +6,7 @@ import (
 )
 
 type TokenService interface {
-	GenerateToken(userId uint) (*models.Token, error)
+	GenerateToken(userID uint, accessIP string) (*models.Token, error)
 	RefreshToken(refreshToken string) (*models.Token, error)
 	GetByToken(token string) (*models.Token, error)
 }

@@ -7,16 +7,14 @@ type UserFilter struct {
 type UserLogin struct {
 	Email    string `form:"email" validate:"required,email"`
 	Password string `form:"password" validate:"required"`
+	AccessIP string `json:"accessIP" validate:"omitempty"`
 }
 
 type UserRegister struct {
-	Email       string `json:"email" validate:"required,email"`
-	Password    string `json:"password" validate:"required"`
-	FirstName   string `json:"first_name" validate:"required"`
-	LastName    string `json:"last_name" validate:"required"`
-	HookToken   string `json:"hook_token" validate:"required"`
-	HookRefresh string `json:"hook_refresh" validate:"required"`
-	RefreshURL  string `json:"refresh_url" validate:"required"`
+	Email     string `json:"email" validate:"required,email"`
+	Password  string `json:"password" validate:"required"`
+	FirstName string `json:"first_name" validate:"required"`
+	LastName  string `json:"last_name" validate:"required"`
 }
 
 type UserUpdate struct {

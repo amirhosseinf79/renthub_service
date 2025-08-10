@@ -3,10 +3,11 @@ package server
 import "github.com/gofiber/fiber/v3"
 
 func (s server) initAuthRoutes_v1(api fiber.Router) {
-	api.Post("/auth/register", s.userHandler.RegisterUser)
-	api.Post("/auth/login", s.userHandler.LoginUser)
-	api.Post("/auth/refresh", s.userHandler.RefreshToken)
-	api.Post("/auth/update", s.userHandler.UpdateUser, s.tokenMiddleware.CheckTokenAuth)
+	user := api.Group("/auth")
+	user.Post("/register", s.userHandler.RegisterUser)
+	user.Post("/login", s.userHandler.LoginUser)
+	user.Post("/refresh", s.userHandler.RefreshToken)
+	user.Post("/update", s.userHandler.UpdateUser, s.tokenMiddleware.CheckTokenAuth)
 }
 
 func (s server) initManagerRoutes_v1(api fiber.Router) {

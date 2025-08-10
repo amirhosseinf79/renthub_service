@@ -36,13 +36,10 @@ func (s *userService) RegisterUser(creds dto.UserRegister) (*models.Token, error
 	}
 
 	user := models.User{
-		Email:       creds.Email,
-		Password:    hashedPassword,
-		FirstName:   creds.FirstName,
-		LastName:    creds.LastName,
-		HookToken:   creds.HookToken,
-		HookRefresh: creds.HookRefresh,
-		RefreshURL:  creds.RefreshURL,
+		Email:     creds.Email,
+		Password:  hashedPassword,
+		FirstName: creds.FirstName,
+		LastName:  creds.LastName,
 	}
 
 	err = s.userRepo.Create(&user)
@@ -50,7 +47,7 @@ func (s *userService) RegisterUser(creds dto.UserRegister) (*models.Token, error
 		return nil, err
 	}
 
-	token, err := s.tokenService.GenerateToken(user.ID)
+	token, err := s.tokenService.GenerateToken(user.ID, "---")
 	return token, err
 }
 
@@ -64,7 +61,7 @@ func (s *userService) LoginUser(creds dto.UserLogin) (*models.Token, error) {
 		return nil, dto.ErrInvalidCredentials
 	}
 
-	token, err := s.tokenService.GenerateToken(user.ID)
+	token, err := s.tokenService.GenerateToken(user.ID, creds.AccessIP)
 	if err != nil {
 		return nil, err
 	}

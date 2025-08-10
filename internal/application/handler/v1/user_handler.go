@@ -58,13 +58,7 @@ func (h *userHandler) UpdateUser(c fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
 
-	userID, ok := c.Locals("userID").(uint)
-	if !ok {
-		return c.Status(fiber.StatusUnauthorized).JSON(dto.ErrorResponse{
-			Message: "unauthorized",
-		})
-	}
-
+	userID := c.Locals("userID").(uint)
 	err = h.userService.UpdateUser(userID, body)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(dto.ErrorResponse{
