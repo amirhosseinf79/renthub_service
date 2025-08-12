@@ -1,13 +1,15 @@
 package homsa_dto
 
-type ReservationStatus struct {
-	Slug       string `json:"slug"`
-	Title      string `json:"title"`
-	TitleColor string `json:"title_color"`
-	BgColor    string `json:"bg_color"`
+type ReservationResponse struct {
+	Data []ReservationData `json:"data"`
+	Meta Meta              `json:"meta"`
 }
 
-type ReservationResponse struct {
+func (r *ReservationResponse) GetList() []ReservationData {
+	return r.Data
+}
+
+type ReservationData struct {
 	ID                int               `json:"id"`
 	RoomID            int               `json:"room_id"`
 	HostID            int               `json:"host_id"`
@@ -31,16 +33,18 @@ type ReservationResponse struct {
 	GuestPhoneNumber  string            `json:"guest_phone_number,omitempty"`
 }
 
-type MetaResponse struct {
+type ReservationStatus struct {
+	Slug       string `json:"slug"`
+	Title      string `json:"title"`
+	TitleColor string `json:"title_color"`
+	BgColor    string `json:"bg_color"`
+}
+
+type Meta struct {
 	CurrentPage int `json:"current_page"`
 	From        int `json:"from"`
 	LastPage    int `json:"last_page"`
 	PerPage     int `json:"per_page"`
 	To          int `json:"to"`
 	Total       int `json:"total"`
-}
-
-type ReservationListResponse struct {
-	Data []ReservationResponse `json:"data"`
-	Meta MetaResponse          `json:"meta"`
 }
