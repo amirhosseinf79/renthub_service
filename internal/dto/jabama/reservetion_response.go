@@ -5,7 +5,7 @@ type ReservationResponse struct {
 	Success bool              `json:"success"`
 }
 
-func (r *ReservationResponse) GetList() []ReservationData {
+func (r *ReservationResponse) GetList() any {
 	return r.Result.Data
 }
 

@@ -5,7 +5,7 @@ type ReservationResponse struct {
 	Meta Meta              `json:"meta"`
 }
 
-func (r *ReservationResponse) GetList() []ReservationData {
+func (r *ReservationResponse) GetList() any {
 	return r.Data
 }
 

@@ -31,9 +31,7 @@ func (s *sm) asyncGetReservations(field request_v2.SiteRecieve, result chan rece
 	currentTime := savedTime
 	for currentTime-savedTime < s.timeLimit {
 		currentTime = time.Now().Unix()
-		var response any
-		log, err := service.GetReservations(fields, &response)
-		finalResponse = s.recordResult(log, err, response)
+		log, response, err := service.GetReservations(fields)
 		if err != nil {
 			if errors.Is(err, dto.ErrTimeOut) {
 				continue
@@ -45,6 +43,7 @@ func (s *sm) asyncGetReservations(field request_v2.SiteRecieve, result chan rece
 				}
 			}
 		}
+		finalResponse = s.recordResult(log, err, response.GetList())
 		break
 	}
 	result <- finalResponse

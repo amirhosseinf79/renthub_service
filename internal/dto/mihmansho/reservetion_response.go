@@ -14,7 +14,7 @@ type ReservationResponse struct {
 	ListRequest             []ReservationListItem `json:"ListRequest"`
 }
 
-func (r *ReservationResponse) GetList() []ReservationListItem {
+func (r *ReservationResponse) GetList() any {
 	return r.ListRequest
 }
 
