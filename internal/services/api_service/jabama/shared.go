@@ -47,6 +47,7 @@ func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.End
 	if result != nil {
 		err = request.ParseInterface(result)
 		if err != nil {
+			log.FinalResult = err.Error()
 			return err
 		}
 	}
