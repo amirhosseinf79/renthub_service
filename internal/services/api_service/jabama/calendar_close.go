@@ -5,15 +5,13 @@ import (
 
 	"github.com/amirhosseinf79/renthub_service/internal/domain/models"
 	"github.com/amirhosseinf79/renthub_service/internal/dto"
-	jabama_dto "github.com/amirhosseinf79/renthub_service/internal/dto/jabama"
 )
 
 func (h *service) CloseCalendar(fields dto.UpdateFields) (log *models.Log, err error) {
 	endpoint := h.getEndpoints().CloseCalendar
 	log = h.initLog(fields.UserID, fields.ClientID, dto.CloseCalendar)
 	body := h.generateCalendarBody(fields.Dates)
-	finalResult := jabama_dto.UpdateCalendarStatusResponse{}
-	err = h.handleUpdateResult(log, body, endpoint, fields, &finalResult)
+	err = h.handleUpdateResult(log, body, endpoint, fields, nil)
 	if err != nil {
 		return log, err
 	}
