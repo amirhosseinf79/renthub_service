@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.EndP, fields dto.UpdateFields) (err error) {
+func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.EndP, fields dto.UpdateFields, result any) (err error) {
 	model, err := h.apiAuthService.GetByUnique(fields.UserID, fields.ClientID, h.service)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -43,6 +43,12 @@ func (h *service) handleUpdateResult(log *models.Log, body any, endpoint dto.End
 		log.FinalResult = result
 		err = errors.New(result)
 		return err
+	}
+	if result != nil {
+		err = request.ParseInterface(result)
+		if err != nil {
+			return err
+		}
 	}
 	log.FinalResult = "success"
 	log.IsSucceed = true
