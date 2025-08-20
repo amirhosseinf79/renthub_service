@@ -52,6 +52,7 @@ type ApiEndpoints struct {
 	GETRooms           EndP
 	GETRoomDetails     EndP
 	GetCalendarDetails EndP
+	GetCalendarPrice   EndP
 	GetReservations    EndP
 }
 

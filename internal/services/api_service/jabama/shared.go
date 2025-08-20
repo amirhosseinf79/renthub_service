@@ -133,7 +133,7 @@ func (h *service) updateRoomID(fields *dto.UpdateFields) (log *models.Log, err e
 
 func (h *service) getCurrentPrice(fields dto.UpdateFields) (price int, log *models.Log, err error) {
 	response := jabama_dto.CalendarResponse{}
-	log, err = h.GetCalendarDetails(fields, &response)
+	log, err = h.GetCalendarPriceDetails(fields, &response)
 	if err != nil {
 		log.FinalResult = err.Error()
 		return
