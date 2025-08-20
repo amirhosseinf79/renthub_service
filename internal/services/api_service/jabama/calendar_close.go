@@ -17,9 +17,9 @@ func (h *service) CloseCalendar(fields dto.UpdateFields) (log *models.Log, err e
 	if err != nil {
 		return log, err
 	}
-	_, calendarResponse, err := h.GetCalendarDetails(fields)
+	log2, calendarResponse, err := h.GetCalendarDetails(fields)
 	if err != nil {
-		return log, err
+		return log2, err
 	}
 	for _, data := range calendarResponse.Result.Calendar {
 		if slices.Contains(fields.Dates, data.Date) {
