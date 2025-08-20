@@ -126,7 +126,7 @@ func (h *service) updateRoomID(fields *dto.UpdateFields) (log *models.Log, err e
 	}
 	if !found {
 		err = dto.ErrRoomNotFound
-		log.FinalResult = err.Error()
+		log.FinalResult = err.Error() + fmt.Sprintf("(%v)", fields.RoomID)
 		return
 	}
 	return
