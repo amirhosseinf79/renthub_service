@@ -24,10 +24,8 @@ func (h *service) CloseCalendar(fields dto.UpdateFields) (log *models.Log, err e
 			if data.Status != "disabledByHost" {
 				err = dto.ErrUnknownMsg
 				log.FinalResult = err.Error()
+				return log2, err
 			}
-		}
-		if err != nil {
-			break
 		}
 	}
 	return log, err

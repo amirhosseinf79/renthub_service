@@ -13,7 +13,7 @@ var ErrorSessionNotFound = errors.New("کد دسترسی میهمان شو یا�
 var ErrorPermission = errors.New("دسترسی مجاز نیست")
 var ErrInvalidRequest = errors.New("ورودی نامعتبر است")
 var ErrInvalidDate = errors.New("تاریخ ورودی نامعتبر است")
-var ErrRoomNotFound = errors.New("اتاق مورد نظر یافت نشد")
+var ErrRoomNotFound = errors.New("اقامتگاه یافت نشد")
 var ErrServiceUnavailable = errors.New("سرویس مورد نظر فعال نمی باشد")
 var ErrServiceNotExists = errors.New("سرویس وارد شده وجود ندارد")
 var ErrInvalidPrice = errors.New("هزینه وارد شده باید بزرگتر از 0 و به تومان باشد")

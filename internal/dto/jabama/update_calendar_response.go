@@ -7,7 +7,7 @@ type UpdateCalendarStatusResponse struct {
 }
 
 type UpdateCalendarResult struct {
-	ID    int                 `json:"id"`
+	ID    string              `json:"id"`
 	Price UpdateCalendarPrice `json:"price"`
 }
 
