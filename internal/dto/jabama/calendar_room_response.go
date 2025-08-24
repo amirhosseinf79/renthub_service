@@ -16,31 +16,31 @@ type CalendarRoomResult struct {
 }
 
 type RoomCalendar struct {
-	JalaliDateString  string  `json:"jalaliDateString"`
-	Date              string  `json:"date"`
-	Status            string  `json:"status"`
-	Type              string  `json:"type"`
-	Price             int64   `json:"price"`
-	Discount          int64   `json:"discount"`
-	DiscountedPrice   int64   `json:"discountedPrice"`
-	IsHoliday         bool    `json:"isHoliday"`
-	IsWeekend         bool    `json:"isWeekend"`
-	IsCustomHoliday   bool    `json:"isCustomHoliday"`
-	MaxAvailableUnits int64   `json:"maxAvailableUnits"`
-	AvailableUnits    int64   `json:"availableUnits"`
-	MinNight          int64   `json:"minNight"`
-	RecommendedPrice  int64   `json:"recommendedPrice"`
-	CanPricing        bool    `json:"canPricing"`
-	NeedToBeUpdated   bool    `json:"needToBeUpdated"`
-	IsPeak            bool    `json:"isPeak"`
-	IsPackaged        bool    `json:"isPackaged"`
-	PackageColor      string  `json:"packageColor"`
-	DemandType        string  `json:"demandType"`
-	FilterType        string  `json:"filterType"`
-	Hint              *string `json:"hint"`
-	SmartPrice        int64   `json:"smartPrice"`
-	Guarantee         bool    `json:"guarantee"`
-	HasSmartPrice     bool    `json:"hasSmartPrice"`
+	JalaliDateString  string            `json:"jalaliDateString"`
+	Date              string            `json:"date"`
+	Status            string            `json:"status"`
+	Type              string            `json:"type"`
+	Price             int64             `json:"price"`
+	Discount          int64             `json:"discount"`
+	DiscountedPrice   int64             `json:"discountedPrice"`
+	IsHoliday         bool              `json:"isHoliday"`
+	IsWeekend         bool              `json:"isWeekend"`
+	IsCustomHoliday   bool              `json:"isCustomHoliday"`
+	MaxAvailableUnits int64             `json:"maxAvailableUnits"`
+	AvailableUnits    int64             `json:"availableUnits"`
+	MinNight          int64             `json:"minNight"`
+	RecommendedPrice  int64             `json:"recommendedPrice"`
+	CanPricing        bool              `json:"canPricing"`
+	NeedToBeUpdated   bool              `json:"needToBeUpdated"`
+	IsPeak            bool              `json:"isPeak"`
+	IsPackaged        bool              `json:"isPackaged"`
+	PackageColor      string            `json:"packageColor"`
+	DemandType        string            `json:"demandType"`
+	FilterType        string            `json:"filterType"`
+	Hint              *RoomCalendarHint `json:"hint"`
+	SmartPrice        int64             `json:"smartPrice"`
+	Guarantee         bool              `json:"guarantee"`
+	HasSmartPrice     bool              `json:"hasSmartPrice"`
 }
 
 type RoomAccommodation struct {
@@ -61,4 +61,17 @@ type RoomAccommodation struct {
 	AffiliateDescription string `json:"affiliateDescription"`
 	SmartPricing         bool   `json:"smartPricing"`
 	ReservationType      string `json:"reservationType"`
+}
+
+type RoomCalendarHint struct {
+	Text        string                   `json:"text"`
+	Description string                   `json:"description"`
+	Color       string                   `json:"color"`
+	Icon        string                   `json:"icon"`
+	Actions     []RoomCalendarHintAction `json:"actions"`
+}
+
+type RoomCalendarHintAction struct {
+	Title      string `json:"title"`
+	ActionType string `json:"action_type"`
 }
